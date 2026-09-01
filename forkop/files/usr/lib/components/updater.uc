@@ -900,15 +900,15 @@ function byedpi_select_asset(series, asset_ext, arch_candidates) {
     }
 }
 
-// qwdtt-openwrt (SpaceNeuroX) выпускает архивы qwdtt-openwrt-<arch>.tar.gz
-// для архитектур: x86_64, aarch64, armv7, mipsel. Маппит кандидатов
-// OpenWrt на имя архитектуры в имени ассета.
+// qwdtt (SpaceNeuroX/qwdtt-openwrt) — полные бинарники (vpn/rawtun/socks)
+// публикуются как ассеты win64exe/topkop: qwdtt-client-linux-<arch>.tar.gz.
+// Сборка без тега openwrt включает userspace WireGuard и SOCKS5.
 function qwdtt_asset_arch_name(arch) {
     arch = as_string(arch);
     if (str_contains(arch, "x86_64") || arch == "amd64")
-        return "x86_64";
+        return "amd64";
     if (str_contains(arch, "aarch64") || arch == "arm64")
-        return "aarch64";
+        return "arm64";
     if (str_contains(arch, "armv7") || str_contains(arch, "arm_cortex") || str_contains(arch, "arm_"))
         return "armv7";
     if (str_contains(arch, "mipsel") || str_contains(arch, "mipsle"))
@@ -919,8 +919,6 @@ function qwdtt_asset_arch_name(arch) {
 function qwdtt_select_asset(arch_candidates) {
     let releases = array_or_empty(read_stdin_json());
 
-    // Проект выпускает релизы всегда с флагом prerelease, поэтому фильтруем
-    // только черновики (draft).
     for (let release in releases) {
         if (type(release) != "object")
             continue;
@@ -933,7 +931,7 @@ function qwdtt_select_asset(arch_candidates) {
             let asset_arch = qwdtt_asset_arch_name(arch);
             if (asset_arch == "")
                 continue;
-            let asset_name = "qwdtt-openwrt-" + asset_arch + ".tar.gz";
+            let asset_name = "qwdtt-client-linux-" + asset_arch + ".tar.gz";
             for (let asset in array_or_empty(release.assets)) {
                 if (type(asset) != "object")
                     continue;

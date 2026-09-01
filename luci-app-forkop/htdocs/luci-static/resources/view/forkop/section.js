@@ -4264,6 +4264,32 @@ function getRuleResolvedAction(section_id) {
   return getRuleConfiguredAction(section_id) || "connection";
 }
 
+// Читает выбранное действие из живой формы (включая несохранённые изменения
+// новой секции), а не только из uci-кэша. Валидаторы полей, которые зависят
+// от action, должны использовать её: иначе для только что созданной секции
+// action ещё не записан в uci и возвращается "connection".
+function getLiveRuleAction(option, section_id) {
+  try {
+    const section =
+      option && typeof option.section === "object" && option.section
+        ? option.section
+        : null;
+    const actionOption =
+      section && typeof section.getOption === "function"
+        ? section.getOption("action")
+        : null;
+    if (actionOption && typeof actionOption.formvalue === "function") {
+      const live = actionOption.formvalue(section_id);
+      if (live != null && `${live}`.length) {
+        return `${live}`;
+      }
+    }
+  } catch (_error) {
+    // Fall through to the UCI cache.
+  }
+  return getRuleResolvedAction(section_id);
+}
+
 function getActionOptionLabel(action) {
   switch (`${action}`) {
     case "block":
@@ -7484,7 +7510,7 @@ function createSectionContent(section) {
   o.placeholder =
     "http://SERVER:56090/TOKEN/links?n=4 | qwdtt://config?peer=server:56000&hashes=... | olcrtc://jitsi?datachannel@room#0000...0000";
   o.validate = function (section_id, value) {
-    const action = getRuleResolvedAction(section_id);
+    const action = getLiveRuleAction(this, section_id);
     const values = normalizeOptionValues(value);
     for (const entry of values) {
       if (action === "olcrtc") {
@@ -7626,6 +7652,165 @@ function createSectionContent(section) {
   o.depends("action", "wdtt");
   o.default = "0";
   o.rmempty = false;
+  o.modalonly = true;
+
+  o = section.taboption(
+    "settings",
+    form.ListValue,
+    "qwdtt_mode",
+    _("qwdtt client mode"),
+    _(
+      "rawtun = RAW-IP tunnel (default, works with the OpenWrt build); vpn = userspace WireGuard; socks = local SOCKS5 proxy. vpn/socks require the full qwdtt build.",
+    ),
+  );
+  o.depends("action", "wdtt");
+  o.value("rawtun", "rawtun (RAW-IP)");
+  o.value("vpn", "vpn (WireGuard)");
+  o.value("socks", "socks (SOCKS5)");
+  o.default = "rawtun";
+  o.rmempty = true;
+  o.modalonly = true;
+
+  o = section.taboption(
+    "settings",
+    form.Value,
+    "socks_addr",
+    _("qwdtt SOCKS5 listen address"),
+    _("Local SOCKS5 listen address for qwdtt mode socks (default 127.0.0.1:1080)."),
+  );
+  o.depends("action", "wdtt");
+  o.default = "127.0.0.1:1080";
+  o.rmempty = true;
+  o.modalonly = true;
+  o.placeholder = "127.0.0.1:1080";
+
+  o = section.taboption(
+    "settings",
+    form.Value,
+    "device_id",
+    _("qwdtt device ID"),
+    _("Unique device ID sent to the server. Empty = auto-generated from the LAN MAC address."),
+  );
+  o.depends("action", "wdtt");
+  o.rmempty = true;
+  o.modalonly = true;
+
+  o = section.taboption(
+    "settings",
+    form.Value,
+    "dns",
+    _("qwdtt DNS"),
+    _("DNS for VK: yandex, cloudflare, google, doh-yandex/doh-cloudflare/doh-google, custom:IP or doh:URL."),
+  );
+  o.depends("action", "wdtt");
+  o.default = "yandex";
+  o.rmempty = true;
+  o.modalonly = true;
+  o.placeholder = "yandex";
+
+  o = section.taboption(
+    "settings",
+    form.ListValue,
+    "obfs",
+    _("qwdtt obfuscation"),
+    _("RTP masking mode: audio or video."),
+  );
+  o.depends("action", "wdtt");
+  o.value("audio", "audio");
+  o.value("video", "video");
+  o.default = "audio";
+  o.rmempty = true;
+  o.modalonly = true;
+
+  o = section.taboption(
+    "settings",
+    form.ListValue,
+    "captcha_mode",
+    _("qwdtt captcha mode"),
+    _("Captcha bypass mode: auto, wv, or rjs."),
+  );
+  o.depends("action", "wdtt");
+  o.value("auto", "auto");
+  o.value("wv", "wv");
+  o.value("rjs", "rjs");
+  o.default = "auto";
+  o.rmempty = true;
+  o.modalonly = true;
+
+  o = section.taboption(
+    "settings",
+    form.ListValue,
+    "vk_auth",
+    _("qwdtt VK auth mode"),
+    _("VK authorization: anonymous or account."),
+  );
+  o.depends("action", "wdtt");
+  o.value("anonymous", "anonymous");
+  o.value("account", "account");
+  o.default = "anonymous";
+  o.rmempty = true;
+  o.modalonly = true;
+
+  o = section.taboption(
+    "settings",
+    form.ListValue,
+    "vk_anon_path",
+    _("qwdtt VK anon path"),
+    _("Anonymous VK TURN path: vkcalls or legacy."),
+  );
+  o.depends("action", "wdtt");
+  o.value("vkcalls", "vkcalls");
+  o.value("legacy", "legacy");
+  o.default = "vkcalls";
+  o.rmempty = true;
+  o.modalonly = true;
+
+  o = section.taboption(
+    "settings",
+    form.Flag,
+    "no_dtls",
+    _("qwdtt direct mode (no DTLS)"),
+    _("RTP-obfs AEAD without DTLS over TURN; requires a server with -listen-direct."),
+  );
+  o.depends("action", "wdtt");
+  o.default = "0";
+  o.rmempty = false;
+  o.modalonly = true;
+
+  o = section.taboption(
+    "settings",
+    form.Flag,
+    "turn_tcp",
+    _("qwdtt TURN over TCP"),
+    _("Connect to the TURN relay over TCP instead of UDP (bypasses UDP throttling on some ISPs)."),
+  );
+  o.depends("action", "wdtt");
+  o.default = "0";
+  o.rmempty = false;
+  o.modalonly = true;
+
+  o = section.taboption(
+    "settings",
+    form.Value,
+    "tun_name",
+    _("qwdtt TUN interface name"),
+    _("RAW TUN interface name (default qwdtt0)."),
+  );
+  o.depends("action", "wdtt");
+  o.default = "qwdtt0";
+  o.rmempty = true;
+  o.modalonly = true;
+
+  o = section.taboption(
+    "settings",
+    form.Value,
+    "lan_iface",
+    _("qwdtt LAN interface"),
+    _("OpenWrt LAN interface routed through the RAW TUN (default br-lan)."),
+  );
+  o.depends("action", "wdtt");
+  o.default = "br-lan";
+  o.rmempty = true;
   o.modalonly = true;
 
 

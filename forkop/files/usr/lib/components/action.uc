@@ -1060,7 +1060,9 @@ function qwdtt_installed_version() {
 }
 
 function resolve_qwdtt_release(arch) {
-    let releases_json = fetch_github_releases_json("SpaceNeuroX", "qwdtt-openwrt", "10");
+    // Полные бинарники qwdtt (vpn/rawtun/socks) публикуются как ассеты
+    // win64exe/topkop: qwdtt-client-linux-<arch>.tar.gz (как olcrtc).
+    let releases_json = fetch_github_releases_json("win64exe", "topkop", "10");
     if (releases_json == "")
         return null;
     let resolved = trim(helper_output_input(releases_json, "qwdtt-select-asset", [ arch.candidates ]));
@@ -1069,7 +1071,7 @@ function resolve_qwdtt_release(arch) {
         return null;
 
     let bundle_name = as_string(fields[1]);
-    let asset_arch = replace(replace(bundle_name, /^qwdtt-openwrt-/, ""), /\.tar\.gz$/, "");
+    let asset_arch = replace(replace(bundle_name, /^qwdtt-client-linux-/, ""), /\.tar\.gz$/, "");
     let version = as_string(fields[4]);
     if (str_startswith(version, "v"))
         version = substr(version, 1);

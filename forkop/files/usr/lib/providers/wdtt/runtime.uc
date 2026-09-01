@@ -243,12 +243,17 @@ function qwdtt_hashes_list(qwdtt, hashes_file) {
     return hashes;
 }
 
-// Пишет /etc/qwdtt/config.json (RAW-IP клиент SpaceNeuroX/qwdtt-openwrt).
+// Пишет /etc/qwdtt/config.json (клиент SpaceNeuroX/qwdtt-openwrt).
+// Все опции секции map-ятся в config.json 1:1, см.
+// files/etc/qwdtt/config.json в qwdtt-openwrt.
 function write_qwdtt_json_config(section, name, peer, password, device_id, workers, qwdtt, hashes_file) {
     let hashes = qwdtt_hashes_list(qwdtt, hashes_file);
     let tun_name = as_string(option(section, "tun_name", "qwdtt0"));
     let lan_interface = as_string(option(section, "lan_iface", "br-lan"));
     let dns = as_string(option(section, "dns", "yandex"));
+    let mode = as_string(option(section, "qwdtt_mode", ""));
+    if (mode == "")
+        mode = "rawtun";
 
     let config = {
         peer: peer,
@@ -257,15 +262,23 @@ function write_qwdtt_json_config(section, name, peer, password, device_id, worke
         device_id: device_id,
         workers: int(workers, 10) > 0 ? int(workers, 10) : 9,
         dns: dns,
-        obfs: "audio",
-        captcha_mode: "auto",
-        vk_auth: "anonymous",
-        vk_anon_path: "vkcalls",
-        no_dtls: false,
-        turn_tcp: false,
+        obfs: as_string(option(section, "obfs", "audio")),
+        captcha_mode: as_string(option(section, "captcha_mode", "auto")),
+        vk_auth: as_string(option(section, "vk_auth", "anonymous")),
+        vk_anon_path: as_string(option(section, "vk_anon_path", "vkcalls")),
+        no_dtls: bool_option(section, "no_dtls", false),
+        turn_tcp: bool_option(section, "turn_tcp", false),
         tun_name: tun_name,
         lan_interface: lan_interface
     };
+    if (mode == "socks") {
+        config.mode = "socks";
+        config.socks = as_string(option(section, "socks_addr", "127.0.0.1:1080"));
+    }
+    else if (mode == "vpn")
+        config.mode = "vpn";
+    else
+        config.mode = "rawtun";
 
     if (!command_success_from_args([ "mkdir", "-p", "/etc/qwdtt" ]))
         return false;

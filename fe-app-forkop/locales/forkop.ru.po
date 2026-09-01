@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FORKOP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-01 21:36+0300\n"
-"PO-Revision-Date: 2026-09-01 21:36+0300\n"
+"POT-Creation-Date: 2026-09-01 22:28+0300\n"
+"PO-Revision-Date: 2026-09-01 22:28+0300\n"
 "Last-Translator: win64exe\n"
 "Language-Team: none\n"
 "Language: ru\n"
@@ -146,6 +146,9 @@ msgstr "ALPN"
 msgid "Alter ID"
 msgstr "Идентификатор Alter"
 
+msgid "Anonymous VK TURN path: vkcalls or legacy."
+msgstr ""
+
 msgid "Apply section rules only to the specified local IP addresses"
 msgstr "Применять правила секции только к указанным локальным IP-адресам"
 
@@ -269,6 +272,9 @@ msgstr "Не удалось сохранить сервер"
 msgid "Cannot save settings"
 msgstr "Не удалось сохранить настройки"
 
+msgid "Captcha bypass mode: auto, wv, or rjs."
+msgstr ""
+
 msgid "Cascade connection"
 msgstr "Каскадное подключение"
 
@@ -361,6 +367,9 @@ msgstr "Настройте User-Agent в настройках элемента"
 
 msgid "Connect through"
 msgstr "Подключаться через"
+
+msgid "Connect to the TURN relay over TCP instead of UDP (bypasses UDP throttling on some ISPs)."
+msgstr ""
 
 msgid "Connection URL"
 msgstr "URL подключения"
@@ -463,6 +472,9 @@ msgstr "Отображаемое имя"
 
 msgid "DNS Check Interval"
 msgstr "Период проверки DNS"
+
+msgid "DNS for VK: yandex, cloudflare, google, doh-yandex/doh-cloudflare/doh-google, custom:IP or doh:URL."
+msgstr ""
 
 msgid "DNS inside the tunnel in HOST:PORT form, e.g. 8.8.8.8:53."
 msgstr "DNS внутри туннеля в формате HOST:PORT, например 8.8.8.8:53."
@@ -1193,6 +1205,9 @@ msgstr "Загрузка подключений"
 msgid "Loading..."
 msgstr "Загрузка..."
 
+msgid "Local SOCKS5 listen address for qwdtt mode socks (default 127.0.0.1:1080)."
+msgstr ""
+
 msgid "Log Level"
 msgstr "Уровень логов"
 
@@ -1403,6 +1418,9 @@ msgstr "Откройте настройки приоритета и укажит
 msgid "Open Project Page"
 msgstr "Открыть страницу проекта"
 
+msgid "OpenWrt LAN interface routed through the RAW TUN (default br-lan)."
+msgstr ""
+
 msgid "Operation timed out"
 msgstr "Время ожидания истекло"
 
@@ -1523,6 +1541,42 @@ msgstr "Публичный хост"
 msgid "QR code is too large"
 msgstr "QR-код слишком большой"
 
+msgid "qwdtt captcha mode"
+msgstr ""
+
+msgid "qwdtt client mode"
+msgstr ""
+
+msgid "qwdtt device ID"
+msgstr ""
+
+msgid "qwdtt direct mode (no DTLS)"
+msgstr ""
+
+msgid "qwdtt DNS"
+msgstr ""
+
+msgid "qwdtt LAN interface"
+msgstr ""
+
+msgid "qwdtt obfuscation"
+msgstr ""
+
+msgid "qwdtt SOCKS5 listen address"
+msgstr ""
+
+msgid "qwdtt TUN interface name"
+msgstr ""
+
+msgid "qwdtt TURN over TCP"
+msgstr ""
+
+msgid "qwdtt VK anon path"
+msgstr ""
+
+msgid "qwdtt VK auth mode"
+msgstr ""
+
 msgid "qwdtt:// peer must be HOST:PORT (e.g. server:56000)"
 msgstr "peer в qwdtt:// должен быть HOST:PORT (например server:56000)"
 
@@ -1534,6 +1588,12 @@ msgstr "в qwdtt:// URI отсутствует параметр peer=HOST:PORT"
 
 msgid "qwdtt:// workers must be a number"
 msgstr "workers в qwdtt:// должны быть числом"
+
+msgid "RAW TUN interface name (default qwdtt0)."
+msgstr ""
+
+msgid "rawtun = RAW-IP tunnel (default, works with the OpenWrt build); vpn = userspace WireGuard; socks = local SOCKS5 proxy. vpn/socks require the full qwdtt build."
+msgstr ""
 
 msgid "Reality fake site"
 msgstr "Fake-сайт Reality"
@@ -1621,6 +1681,12 @@ msgstr "Правила маршрутизации"
 
 msgid "Routing section"
 msgstr "Секция маршрутизации"
+
+msgid "RTP masking mode: audio or video."
+msgstr ""
+
+msgid "RTP-obfs AEAD without DTLS over TURN; requires a server with -listen-direct."
+msgstr ""
 
 msgid "Rule set must be an HTTP(S) URL or a local .srs / .json path"
 msgstr "Набор правил должен быть HTTP(S) URL или локальным путём .srs / .json"
@@ -2177,6 +2243,9 @@ msgstr "Обнаружен лишний NFQWS Topkop"
 msgid "Unexpected Topkop-managed nfqws2 runtime is running"
 msgstr "Обнаружен лишний NFQWS2 Topkop"
 
+msgid "Unique device ID sent to the server. Empty = auto-generated from the LAN MAC address."
+msgstr ""
+
 msgid "unique UCI identifier"
 msgstr "уникальный идентификатор UCI"
 
@@ -2323,6 +2392,9 @@ msgstr "Посмотреть логи"
 
 msgid "Visible name of this section"
 msgstr "Видимое имя этой секции"
+
+msgid "VK authorization: anonymous or account."
+msgstr ""
 
 msgid "VLESS flow"
 msgstr "VLESS flow"
