@@ -274,6 +274,66 @@ function parseOlcrtcUri(value) {
   };
 }
 
+function decodeQueryComponent(value) {
+  return `${value || ""}`
+    .replace(/\+/g, " ")
+    .replace(/%([0-9a-fA-F]{2})/g, (_, hex) =>
+      String.fromCharCode(parseInt(hex, 16)),
+    );
+}
+
+// Парсит qwdtt:// config ссылку по формату qwdtt-android
+// (SpaceNeuroX/proxy-turn-vk-android, SubscriptionImport.kt):
+//   qwdtt://config?hashes=H1,H2,...&name=NAME&pass=PASS&peer=HOST:PORT&port=PORT&workers=N
+function parseQwdttUri(value) {
+  const input = `${value || ""}`.trim();
+  if (!/^qwdtt:(\/\/)?config(\?|$)/i.test(input)) {
+    return { valid: false, reason: _("Expected a qwdtt://config link") };
+  }
+
+  const query = input.replace(/^qwdtt:(\/\/)?config\??/i, "");
+  const params = {};
+  for (const pair of query.split("&")) {
+    const eq = pair.indexOf("=");
+    if (eq < 0) continue;
+    params[pair.slice(0, eq)] = decodeQueryComponent(pair.slice(eq + 1));
+  }
+
+  const peer = params.peer || "";
+  const hashes = params.hashes || "";
+  const name = params.name || "";
+  const pass = params.pass || params.password || "";
+  const workers = params.workers || "";
+  const port = params.port || "";
+
+  if (!peer) {
+    return {
+      valid: false,
+      reason: _("qwdtt:// URI is missing the peer=HOST:PORT parameter"),
+    };
+  }
+  if (!/^[^\s:]+:[0-9]{1,5}$/.test(peer)) {
+    return {
+      valid: false,
+      reason: _("qwdtt:// peer must be HOST:PORT (e.g. server:56000)"),
+    };
+  }
+  if (workers && !/^[0-9]+$/.test(workers)) {
+    return {
+      valid: false,
+      reason: _("qwdtt:// workers must be a number"),
+    };
+  }
+  if (port && !/^[0-9]{1,5}$/.test(port)) {
+    return {
+      valid: false,
+      reason: _("qwdtt:// port must be a number"),
+    };
+  }
+
+  return { valid: true, peer, hashes, name, pass, workers, port };
+}
+
 const ZAPRET_LEGACY_DEFAULT_NFQWS_OPT =
   "--filter-tcp=80 <HOSTLIST> --dpi-desync=fake,fakedsplit --dpi-desync-autottl=2 --dpi-desync-fooling=badsum --new --filter-tcp=443 --hostlist=/opt/zapret/ipset/zapret-hosts-google.txt --dpi-desync=fake,multidisorder --dpi-desync-split-pos=1,midsld --dpi-desync-repeats=11 --dpi-desync-fooling=badsum --dpi-desync-fake-tls-mod=rnd,dupsid,sni=www.google.com --new --filter-udp=443 --hostlist=/opt/zapret/ipset/zapret-hosts-google.txt --dpi-desync=fake --dpi-desync-repeats=11 --dpi-desync-fake-quic=/opt/zapret/files/fake/quic_initial_www_google_com.bin --new --filter-udp=443 <HOSTLIST_NOAUTO> --dpi-desync=fake --dpi-desync-repeats=11 --new --filter-tcp=443 <HOSTLIST> --dpi-desync=multidisorder --dpi-desync-split-pos=1,sniext+1,host+1,midsld-2,midsld,midsld+2,endhost-1";
 
@@ -7414,22 +7474,30 @@ function createSectionContent(section) {
     "subscription_links",
     _("WDTT subscription links"),
     _(
-      "WDTT link formats (see wdtt-openwrt): http://SERVER:56090/TOKEN/links?n=4 — hashes_url of the wdtt-linkd endpoint (add &slot=N for multiple routers); a local token file path like /etc/wdtt/vk-calls.txt; remote domain list URLs like https://example.com/domains.txt.",
+      "WDTT link formats (see wdtt-openwrt and qwdtt-android): http://SERVER:56090/TOKEN/links?n=4 — hashes_url of the wdtt-linkd endpoint (add &slot=N for multiple routers); a qwdtt://config link with direct VK hashes (qwdtt://config?peer=HOST:PORT&hashes=H1,H2&pass=...&workers=N); a local token file path like /etc/wdtt/vk-calls.txt; remote domain list URLs like https://example.com/domains.txt.",
     ),
   );
   o.depends("action", "wdtt");
   o.rmempty = true;
   o.modalonly = true;
-  o.placeholder = "http://SERVER:56090/TOKEN/links?n=4";
+  o.placeholder =
+    "http://SERVER:56090/TOKEN/links?n=4 | qwdtt://config?peer=server:56000&hashes=...";
   o.validate = function (_section_id, value) {
     const values = normalizeOptionValues(value);
     for (const entry of values) {
-      if (
+      if (/^qwdtt:(\/\/)?config/i.test(entry)) {
+        const parsed = parseQwdttUri(entry);
+        if (!parsed || parsed.valid !== true) {
+          return parsed && parsed.reason
+            ? parsed.reason
+            : _("Invalid qwdtt://config link");
+        }
+      } else if (
         !/^https?:\/\/\S+$/i.test(entry) &&
         !/^\/\S+$/.test(entry)
       ) {
         return _(
-          "Enter a WDTT hashes_url (http://SERVER:56090/TOKEN/links?n=4), a local file path, or an http(s) domain list URL",
+          "Enter a WDTT hashes_url (http://SERVER:56090/TOKEN/links?n=4), a qwdtt://config link, a local file path, or an http(s) domain list URL",
         );
       }
     }

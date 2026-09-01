@@ -145,6 +145,41 @@ function first_local_file(values) {
     return "";
 }
 
+// Первая qwdtt:// config ссылка из списка подписок.
+function first_qwdtt_link(values) {
+    for (let value in values)
+        if (match(as_string(value), /^qwdtt:(\/\/)?config/i) != null)
+            return as_string(value);
+    return "";
+}
+
+// Записывает прямые VK-хэши из qwdtt:// ссылки в локальный файл (wdtt hashes_file).
+function write_qwdtt_hashes_file(hashes_value) {
+    let hashes = [];
+    for (let item in split(as_string(hashes_value), /[ \t\r\n,]+/))
+        if (as_string(item) != "")
+            push(hashes, as_string(item));
+    if (length(hashes) == 0)
+        return "";
+
+    let path = getenv("WDTT_HASHES_FILE") || "/etc/wdtt/vk-calls.txt";
+    let content = join("\n", hashes) + "\n";
+    if (!command_success_from_args([ "mkdir", "-p", "/etc/wdtt" ]))
+        return "";
+
+    let tmp_path = path + ".tmp";
+    let handle = fs.open(tmp_path, "w");
+    if (!handle)
+        return "";
+    handle.write(content);
+    handle.close();
+    if (!command_success_from_args([ "mv", tmp_path, path ]))
+        return "";
+
+    log_message("WDTT: wrote " + length(hashes) + " VK hashes from qwdtt:// link to " + path, "info");
+    return path;
+}
+
 function provider_available() {
     return fs.stat(WDTT_CONFIG) != null;
 }
@@ -179,18 +214,41 @@ function write_wdtt_config(section) {
     let subscription_links = list_option(section, "subscription_links");
     let hashes_url = option(section, "hashes_url", first_http_url(subscription_links));
     let hashes_file = option(section, "hashes_file", first_local_file(subscription_links));
+
+    // qwdtt:// config ссылка: peer/pass/workers/port из ссылки, прямые хэши — в файл.
+    let qwdtt_link = first_qwdtt_link(subscription_links);
+    let qwdtt = "";
+    if (qwdtt_link != "") {
+        qwdtt = validator().parse_qwdtt_uri(qwdtt_link);
+        if (qwdtt == null || !qwdtt.valid) {
+            log_message("WDTT: invalid qwdtt:// link in section '" + name + "': " + (qwdtt && qwdtt.reason || "parse failed"), "error");
+            qwdtt = "";
+        }
+        else if (qwdtt.hashes != "") {
+            let written = write_qwdtt_hashes_file(qwdtt.hashes);
+            if (written != "")
+                hashes_file = written;
+        }
+    }
+
     let device_id = as_string(option(section, "device_id", ""));
     if (device_id == "")
         device_id = lan_mac_address();
 
+    // Если qwdtt:// ссылка несёт прямые хэши, а max_hashes в секции не задан —
+    // используем ровно столько, сколько хэшей в ссылке.
+    let max_hashes = option(section, "max_hashes", WDTT_DEFAULT_MAX_HASHES);
+    if (qwdtt && qwdtt.hashes != "" && option(section, "max_hashes", "") == "")
+        max_hashes = "" + length(split(as_string(qwdtt.hashes), /[, \t\r\n]+/));
+
     let commands = [];
     let sets = {
         enabled: bool_option(section, "enabled", true) ? "1" : "0",
-        peer: option(section, "peer", WDTT_DEFAULT_PEER),
-        password: option(section, "password", ""),
+        peer: option(section, "peer", qwdtt && qwdtt.peer || WDTT_DEFAULT_PEER),
+        password: option(section, "password", qwdtt && qwdtt.pass || ""),
         device_id: device_id,
-        max_hashes: option(section, "max_hashes", WDTT_DEFAULT_MAX_HASHES),
-        workers: option(section, "workers", WDTT_DEFAULT_WORKERS),
+        max_hashes: max_hashes,
+        workers: option(section, "workers", qwdtt && qwdtt.workers || WDTT_DEFAULT_WORKERS),
         mode: option(section, "mode", WDTT_DEFAULT_MODE),
         mtu: option(section, "mtu", WDTT_DEFAULT_MTU),
         refresh: option(section, "refresh", WDTT_DEFAULT_REFRESH),
@@ -198,6 +256,9 @@ function write_wdtt_config(section) {
         block_doh: bool_option(section, "block_doh", false) ? "1" : "0",
         block_ipv6: bool_option(section, "block_ipv6", false) ? "1" : "0"
     };
+
+    if (qwdtt && qwdtt.port != "")
+        sets.listen = "127.0.0.1:" + qwdtt.port;
 
     if (hashes_url != "")
         sets.hashes_url = hashes_url;

@@ -51,19 +51,88 @@ function valid_peer(value) {
     return match(as_string(value), /^[^ \t\r\n:]+:[0-9]{1,5}$/) != null;
 }
 
-function valid_mode(value) {
-    for (let mode in WDTT_MODES)
-        if (mode == as_string(value))
-            return true;
-    return false;
-}
-
 function valid_number(value, min_value, max_value) {
     value = as_string(value);
     if (match(value, /^[0-9]+$/) == null)
         return false;
     let number = int(value, 10);
     return number >= min_value && number <= max_value;
+}
+
+// Декодирует percent-encoding (%2C -> ',', %3A -> ':', '+' -> ' ').
+function url_decode(value) {
+    value = as_string(value);
+    let result = "";
+    for (let i = 0; i < length(value);) {
+        let ch = substr(value, i, 1);
+        if (ch == "%" && i + 2 < length(value)) {
+            let hex = substr(value, i + 1, 2);
+            if (match(hex, /^[0-9a-fA-F]{2}$/) != null) {
+                result += sprintf("%c", int(hex, 16));
+                i += 3;
+                continue;
+            }
+        }
+        result += ch == "+" ? " " : ch;
+        i++;
+    }
+    return result;
+}
+
+// Парсит qwdtt:// ссылку по формату qwdtt-android (SpaceNeuroX/proxy-turn-vk-android):
+//   qwdtt://config?hashes=H1,H2,...&name=NAME&pass=PASS&peer=HOST:PORT&port=PORT&workers=N
+// Поля (из SubscriptionImport.kt): name, peer (обязательный), hashes (через запятую,
+// URL-encoded %2C), workers (default 9), port (default 9000), pass/password.
+function parse_qwdtt_uri(value) {
+    value = trim(as_string(value));
+    if (match(value, /^qwdtt:(\/\/)?config(\?|$)/i) == null)
+        return null;
+
+    let query = replace(value, /^qwdtt:(\/\/)?config/i, "");
+    query = replace(query, /^\?/, "");
+    let params = {};
+    for (let pair in split(query, "&")) {
+        pair = as_string(pair);
+        let eq = index(pair, "=");
+        if (eq < 0)
+            continue;
+        let key = substr(pair, 0, eq);
+        let val = url_decode(substr(pair, eq + 1));
+        params[key] = val;
+    }
+
+    let peer = as_string(params.peer || "");
+    let hashes = as_string(params.hashes || "");
+    let name = as_string(params.name || "");
+    let pass = as_string(params.pass || params.password || "");
+    let workers = as_string(params.workers || "");
+    let port = as_string(params.port || "");
+
+    if (peer == "")
+        return { valid: false, reason: "qwdtt:// URI is missing the peer=HOST:PORT parameter" };
+    if (!valid_peer(peer))
+        return { valid: false, reason: "qwdtt:// peer must be HOST:PORT (e.g. server:56000)" };
+    if (workers != "" && !valid_number(workers, 1, 1024))
+        return { valid: false, reason: "qwdtt:// workers must be a number between 1 and 1024" };
+    if (port != "" && !valid_number(port, 1, 65535))
+        return { valid: false, reason: "qwdtt:// port must be a number between 1 and 65535" };
+
+    return {
+        valid: true,
+        peer,
+        hashes,
+        name,
+        pass,
+        workers,
+        port
+    };
+}
+
+function valid_mode(value) {
+    for (let mode in WDTT_MODES)
+        if (mode == as_string(value))
+            return true;
+    return false;
 }
 
 function valid_community_list(value) {
@@ -115,10 +184,16 @@ function validate_section(section) {
         push(errors, "mtu must be a number between 576 and 1500");
 
     for (let link in list_values(section && section.subscription_links)) {
-        if (as_string(link) == "")
+        link = as_string(link);
+        if (link == "")
             continue;
-        if (!valid_url(link) && !match(as_string(link), /^\/[^ \t\r\n]+$/))
-            push(errors, "subscription link must be a wdtt hashes_url (http://SERVER:56090/TOKEN/links?n=4), a remote domain list URL (https://example.com/domains.txt) or a local file path (/etc/wdtt/vk-calls.txt): " + as_string(link));
+        if (match(link, /^qwdtt:(\/\/)?config/i) != null) {
+            let parsed = parse_qwdtt_uri(link);
+            if (parsed == null || !parsed.valid)
+                push(errors, (parsed && parsed.reason || "invalid qwdtt:// URI") + ": " + link);
+        }
+        else if (!valid_url(link) && !match(link, /^\/[^ \t\r\n]+$/))
+            push(errors, "subscription link must be a wdtt hashes_url (http://SERVER:56090/TOKEN/links?n=4), a qwdtt:// config link (qwdtt://config?peer=...&hashes=...), a remote domain list URL (https://example.com/domains.txt) or a local file path (/etc/wdtt/vk-calls.txt): " + link);
     }
 
     for (let list_id in list_values(section && section.community_lists))
@@ -149,6 +224,8 @@ function validate_section_json() {
 function module_exports() {
     return {
         validate_section,
+        parse_qwdtt_uri,
+        url_decode,
         valid_peer,
         valid_mode,
         valid_url,
