@@ -1,6 +1,6 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=luci-app-forkop
+PKG_NAME:=luci-app-topkop
 
 FORKOP_SOURCE_VERSION:=$(or $(FORKOP_PACKAGE_VERSION),$(FORKOP_VERSION))
 FORKOP_HAS_RELEASE_VERSION:=$(if $(filter dev,$(FORKOP_SOURCE_VERSION)),,$(FORKOP_SOURCE_VERSION))
@@ -15,13 +15,13 @@ PKG_VERSION:=$(or $(FORKOP_HAS_RELEASE_VERSION),0.0.0)
 PKG_RELEASE:=
 PKG_PO_VERSION:=$(PKG_VERSION)
 
-LUCI_TITLE:=LuCI Forkop app
-LUCI_DEPENDS:=+luci-base +forkop
+LUCI_TITLE:=LuCI Topkop app
+LUCI_DEPENDS:=+luci-base +topkop
 LUCI_PKGARCH:=all
 LUCI_LANG.ru:=Русский (Russian)
 LUCI_LANG.en:=English
-LUCI_MAINTAINER:=ushan0v <ushan0v@users.noreply.github.com>
-LUCI_DESCRIPTION:=Rule-based Forkop LuCI app with hybrid sing-box + zapret orchestration
+LUCI_MAINTAINER:=win64exe <win64exe@users.noreply.github.com>
+LUCI_DESCRIPTION:=Rule-based Topkop LuCI app with hybrid sing-box + zapret orchestration
 LUCI_MINIFY_JS:=0
 
 PKG_LICENSE:=GPL-2.0-or-later

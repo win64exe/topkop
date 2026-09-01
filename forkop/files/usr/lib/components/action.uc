@@ -289,7 +289,7 @@ function updates_response(success, component, action, message, current_version, 
 function restart_forkop_after_failed_sing_box_change() {
     if (!forkop_stopped_for_sing_box_change || !forkop_was_running || !file_exists(SERVICE_INIT))
         return;
-    updates_log("Restarting Forkop after failed sing-box component change");
+    updates_log("Restarting Topkop after failed sing-box component change");
     if (!command_success_from_args([ SERVICE_INIT, "start" ]))
         command_success_from_args([ SERVICE_INIT, "restart" ]);
 }
@@ -732,11 +732,11 @@ function restart_forkop_after_successful_change() {
     if (!file_exists(SERVICE_INIT))
         return;
     if (!forkop_was_running) {
-        updates_log("Forkop was not running before component change; restart skipped");
+        updates_log("Topkop was not running before component change; restart skipped");
         prepare_sing_box_service_disabled();
         return;
     }
-    run_logged("Restarting Forkop after successful component change", command_from_args([ SERVICE_INIT, "restart" ]));
+    run_logged("Restarting Topkop after successful component change", command_from_args([ SERVICE_INIT, "restart" ]));
 }
 
 function stop_forkop_before_sing_box_change() {
@@ -745,7 +745,7 @@ function stop_forkop_before_sing_box_change() {
     forkop_stopped_for_sing_box_change = true;
 
     if (forkop_was_running && file_exists(SERVICE_INIT))
-        run_logged("Stopping Forkop before sing-box package change", command_from_args([ SERVICE_INIT, "stop" ]));
+        run_logged("Stopping Topkop before sing-box package change", command_from_args([ SERVICE_INIT, "stop" ]));
 
     if (forkop_was_running && file_exists(BIN_PATH))
         command_success_from_args([ BIN_PATH, "restore_dnsmasq" ]);
@@ -1172,6 +1172,126 @@ function remove_qwdtt(action) {
     action_success("qwdtt", "remove", "qwdtt client has been removed", current_version, "", 1);
 }
 
+function olcrtc_binary_installed() {
+    return file_exists("/usr/bin/olcrtc");
+}
+
+function olcrtc_installed_version() {
+    if (!olcrtc_binary_installed())
+        return "";
+    let version = trim(read_file("/etc/olcrtc/.version"));
+    if (version != "")
+        return version;
+    return "unknown";
+}
+
+function resolve_olcrtc_release(arch) {
+    // Бинарники olcrtc публикуются как ассеты релизов win64exe/topkop.
+    let releases_json = fetch_github_releases_json("win64exe", "topkop", "10");
+    if (releases_json == "")
+        return null;
+    let resolved = trim(helper_output_input(releases_json, "olcrtc-select-asset", [ arch.candidates ]));
+    let fields = split(resolved, "\t");
+    if (length(fields) < 5 || as_string(fields[1]) == "")
+        return null;
+
+    let bundle_name = as_string(fields[1]);
+    let version = as_string(fields[4]);
+    if (str_startswith(version, "v"))
+        version = substr(version, 1);
+
+    return {
+        arch: as_string(fields[0]),
+        bundle_name,
+        bundle_url: as_string(fields[2]),
+        release_url: as_string(fields[3]),
+        version
+    };
+}
+
+function install_olcrtc(action) {
+    init_tmp_dir() || action_fail("olcrtc", action, "Failed to create temporary directory");
+    let arch = resolve_arch_candidates();
+    if (arch == null)
+        action_fail("olcrtc", action, "Failed to detect package architecture");
+
+    let release = null;
+    retry_resolve("Resolving olcrtc package", function() {
+        release = resolve_olcrtc_release(arch);
+        return release != null;
+    });
+    if (release == null)
+        action_fail("olcrtc", action, "Failed to resolve olcrtc package for this router architecture");
+
+    let installed = olcrtc_binary_installed();
+    let current_version = olcrtc_installed_version();
+    if (action == "check_update") {
+        if (!installed)
+            action_fail("olcrtc", action, "olcrtc is not installed", current_version, release.version, "", release.release_url || "");
+        check_success_compared("olcrtc", current_version, release.version, current_version, release.version, release.release_url || "");
+    }
+
+    let bundle_file = tmp_dir + "/" + release.bundle_name;
+    if (!download_with_retry(release.bundle_url, bundle_file, release.bundle_name) || !file_nonempty(bundle_file))
+        action_fail("olcrtc", action, "Failed to download olcrtc package", current_version, release.version, "", release.release_url || "");
+
+    let extract_dir = tmp_dir + "/olcrtc-extract";
+    command_success_from_args([ "rm", "-rf", extract_dir ]);
+    if (!ensure_dir(extract_dir) ||
+        !command_success_from_args([ "tar", "-xzf", bundle_file, "-C", extract_dir ]))
+        action_fail("olcrtc", action, "Failed to extract olcrtc package", current_version, release.version, "", release.release_url || "");
+
+    let bin_src = extract_dir + "/olcrtc";
+    let init_src = extract_dir + "/files/etc/init.d/olcrtc";
+    let uci_src = extract_dir + "/files/etc/config/olcrtc";
+    let names_src = extract_dir + "/files/etc/olcrtc/data/names";
+    let surnames_src = extract_dir + "/files/etc/olcrtc/data/surnames";
+    if (!file_exists(bin_src) || !file_exists(init_src) || !file_exists(uci_src))
+        action_fail("olcrtc", action, "olcrtc package has an unexpected layout", current_version, release.version, "", release.release_url || "");
+
+    run_logged("Installing olcrtc client", command_from_args([ "sh", "-c", "cp -f " + shell_quote(bin_src) + " " + shell_quote("/usr/bin/olcrtc") + " && chmod 0755 /usr/bin/olcrtc" ]));
+    run_logged("Installing olcrtc service", command_from_args([ "sh", "-c", "cp -f " + shell_quote(init_src) + " " + shell_quote("/etc/init.d/olcrtc") + " && chmod 0755 /etc/init.d/olcrtc" ]));
+    if (!file_exists("/etc/config/olcrtc"))
+        run_logged("Installing olcrtc UCI config", command_from_args([ "sh", "-c", "cp -f " + shell_quote(uci_src) + " /etc/config/olcrtc && chmod 0600 /etc/config/olcrtc" ]));
+    if (file_exists(names_src) && file_exists(surnames_src)) {
+        ensure_dir("/etc/olcrtc/data");
+        run_logged("Installing olcrtc data files", command_from_args([ "sh", "-c", "cp -f " + shell_quote(names_src) + " " + shell_quote(surnames_src) + " /etc/olcrtc/data/ && chmod 0644 /etc/olcrtc/data/names /etc/olcrtc/data/surnames" ]));
+    }
+
+    ensure_dir("/etc/olcrtc");
+    let version_handle = fs.open("/etc/olcrtc/.version", "w");
+    if (version_handle) {
+        version_handle.write(as_string(release.version), "\n");
+        version_handle.close();
+    }
+
+    disable_standalone_service("olcrtc");
+    restart_forkop_after_successful_change();
+    clear_version_caches();
+    current_version = olcrtc_installed_version();
+    if (current_version == "")
+        current_version = "unknown";
+    action_success("olcrtc", action, "olcrtc client has been installed", current_version, release.version, 1, "latest", release.release_url || "");
+}
+
+function remove_olcrtc(action) {
+    let current_version = olcrtc_installed_version();
+    if (!olcrtc_binary_installed()) {
+        action_success("olcrtc", "remove", "olcrtc is already removed", current_version, "", 0);
+        return;
+    }
+
+    if (file_exists("/etc/init.d/olcrtc"))
+        command_success_from_args([ "/etc/init.d/olcrtc", "stop" ]);
+
+    run_logged("Removing olcrtc client", command_from_args([ "rm", "-f", "/usr/bin/olcrtc", "/etc/init.d/olcrtc", "/etc/olcrtc/.version" ]));
+    command_success_from_args([ "rm", "-rf", "/etc/olcrtc" ]);
+
+    clear_version_caches();
+    restart_forkop_after_successful_change();
+    action_success("olcrtc", "remove", "olcrtc client has been removed", current_version, "", 1);
+}
+
 function remove_optional_component(component, package_name, label, runtime_module) {
     if (!pkg_is_installed(package_name)) {
         if (provider_installed(runtime_module))
@@ -1591,9 +1711,9 @@ function install_sing_box_extended_package(action) {
         if (restore_sing_box_after_failed_extended_package_install(current_variant, backup_binary, backup_cronet, previous_marker, previous_version_state, package_file, cronet_touched)) {
             remove_file(backup_binary);
             remove_file(backup_cronet);
-            action_fail("sing_box", action, "sing-box-extended package was installed but Forkop did not start cleanly; previous sing-box variant was restored", current_version, latest_version);
+            action_fail("sing_box", action, "sing-box-extended package was installed but Topkop did not start cleanly; previous sing-box variant was restored", current_version, latest_version);
         }
-        action_fail("sing_box", action, "sing-box-extended package was installed but Forkop did not start cleanly and previous sing-box variant could not be restored", current_version, latest_version);
+        action_fail("sing_box", action, "sing-box-extended package was installed but Topkop did not start cleanly and previous sing-box variant could not be restored", current_version, latest_version);
     }
 
     remove_file(backup_binary);
@@ -1755,9 +1875,9 @@ function install_sing_box_extended(action, compressed) {
         if (restore_sing_box_after_failed_extended_install(current_variant, backup_binary, backup_cronet, previous_marker, previous_version_state, archive_file, cronet_touched)) {
             remove_file(backup_binary);
             remove_file(backup_cronet);
-            action_fail("sing_box", action, label + " was installed but Forkop did not start cleanly; previous sing-box variant was restored", current_version, latest_version);
+            action_fail("sing_box", action, label + " was installed but Topkop did not start cleanly; previous sing-box variant was restored", current_version, latest_version);
         }
-        action_fail("sing_box", action, label + " was installed but Forkop did not start cleanly and previous sing-box variant could not be restored", current_version, latest_version);
+        action_fail("sing_box", action, label + " was installed but Topkop did not start cleanly and previous sing-box variant could not be restored", current_version, latest_version);
     }
 
     remove_file(backup_binary);
@@ -1838,7 +1958,7 @@ function install_package_sing_box(action, tiny) {
     write_sing_box_variant_state(tiny ? "tiny" : "stable", new_version);
     restart_forkop_after_successful_change();
     if (!wait_forkop_running_after_sing_box_change())
-        fail_package_sing_box_install(action, tiny, "was installed, but Forkop did not start cleanly", new_version, latest_version,
+        fail_package_sing_box_install(action, tiny, "was installed, but Topkop did not start cleanly", new_version, latest_version,
             package_name, previous_variant, backup_binary, backup_cronet, previous_marker, previous_version_state, cronet_touched);
     remove_file(backup_binary);
     remove_file(backup_cronet);
@@ -1852,29 +1972,29 @@ function check_forkop() {
     let latest_version = length(fields) > 0 && as_string(fields[0]) != "" ? as_string(fields[0]) : "unknown";
     let release_url = length(fields) > 1 ? as_string(fields[1]) : "";
     if (latest_version == "unknown")
-        action_fail("forkop", "check_update", "Failed to check Forkop updates", FORKOP_VERSION, latest_version);
+        action_fail("forkop", "check_update", "Failed to check Topkop updates", FORKOP_VERSION, latest_version);
 
     write_forkop_latest_version_cache(latest_version, now_seconds());
     if (!helper_success("forkop-release-version-valid", [ FORKOP_VERSION ])) {
-        updates_log("Forkop current version is not a release version (" + FORKOP_VERSION + ")");
+        updates_log("Topkop current version is not a release version (" + FORKOP_VERSION + ")");
         action_success("forkop", "check_update", "Installed version is newer than release", FORKOP_VERSION, latest_version, 0, "dev", release_url);
     }
 
     let compare = trim(helper_output("forkop-release-version-compare", [ FORKOP_VERSION, latest_version ]));
     if (compare == "")
-        action_fail("forkop", "check_update", "Failed to compare Forkop versions", FORKOP_VERSION, latest_version);
+        action_fail("forkop", "check_update", "Failed to compare Topkop versions", FORKOP_VERSION, latest_version);
     let status = status_from_compare(int(compare));
     if (status == "")
-        action_fail("forkop", "check_update", "Failed to compare Forkop versions", FORKOP_VERSION, latest_version);
+        action_fail("forkop", "check_update", "Failed to compare Topkop versions", FORKOP_VERSION, latest_version);
     if (status == "latest") {
-        updates_log("Forkop is already up to date (" + FORKOP_VERSION + ")");
+        updates_log("Topkop is already up to date (" + FORKOP_VERSION + ")");
         action_success("forkop", "check_update", "Latest version is installed", FORKOP_VERSION, latest_version, 0, status, release_url);
     }
     if (status == "outdated") {
-        updates_log("Forkop update found: " + FORKOP_VERSION + " -> " + latest_version);
+        updates_log("Topkop update found: " + FORKOP_VERSION + " -> " + latest_version);
         action_success("forkop", "check_update", "Update is available", FORKOP_VERSION, latest_version, 0, status, release_url);
     }
-    updates_log("Forkop installed version is newer than upstream release: " + FORKOP_VERSION + " -> " + latest_version);
+    updates_log("Topkop installed version is newer than upstream release: " + FORKOP_VERSION + " -> " + latest_version);
     action_success("forkop", "check_update", "Installed version is newer than release", FORKOP_VERSION, latest_version, 0, status, release_url);
 }
 
@@ -1904,14 +2024,14 @@ function install_forkop() {
     if (latest_version == "")
         latest_version = "unknown";
     if (latest_version == "unknown")
-        action_fail("forkop", "install", "Failed to resolve Forkop release", FORKOP_VERSION, latest_version);
+        action_fail("forkop", "install", "Failed to resolve Topkop release", FORKOP_VERSION, latest_version);
 
     write_forkop_latest_version_cache(latest_version, now_seconds());
     init_tmp_dir() || action_fail("forkop", "install", "Failed to create temporary directory", FORKOP_VERSION, latest_version);
-    updates_log("Resolving Forkop release " + latest_version + " packages");
+    updates_log("Resolving Topkop release " + latest_version + " packages");
     let release = resolve_forkop_release(latest_version);
     if (release == null)
-        action_fail("forkop", "install", "Failed to resolve Forkop release packages", FORKOP_VERSION, latest_version);
+        action_fail("forkop", "install", "Failed to resolve Topkop release packages", FORKOP_VERSION, latest_version);
 
     let backend_file = tmp_dir + "/" + release.backend_name;
     let app_file = tmp_dir + "/" + release.app_name;
@@ -1919,14 +2039,14 @@ function install_forkop() {
     if (!download_with_retry(release.backend_url, backend_file, release.backend_name) ||
         !download_with_retry(release.app_url, app_file, release.app_name) ||
         (release.i18n_url != "" && !download_with_retry(release.i18n_url, i18n_file, release.i18n_name)))
-        action_fail("forkop", "install", "Failed to download Forkop release packages", FORKOP_VERSION, latest_version);
+        action_fail("forkop", "install", "Failed to download Topkop release packages", FORKOP_VERSION, latest_version);
 
     if (!run_logged("Installing LuCI app package " + release.app_name, pkg_install_files_command([ app_file ])))
         action_fail("forkop", "install", "Failed to install LuCI app package", FORKOP_VERSION, latest_version);
     if (i18n_file != "" && !run_logged("Installing LuCI Russian i18n package " + release.i18n_name, pkg_install_files_command([ i18n_file ])))
         action_fail("forkop", "install", "Failed to install LuCI Russian i18n package", FORKOP_VERSION, latest_version);
-    if (!run_logged("Installing Forkop package " + release.backend_name, pkg_install_files_command([ backend_file ])))
-        action_fail("forkop", "install", "Failed to install Forkop package", FORKOP_VERSION, latest_version);
+    if (!run_logged("Installing Topkop package " + release.backend_name, pkg_install_files_command([ backend_file ])))
+        action_fail("forkop", "install", "Failed to install Topkop package", FORKOP_VERSION, latest_version);
 
     remove_file("/var/luci-indexcache");
     command_success("rm -f /var/luci-indexcache* /tmp/luci-indexcache* 2>/dev/null");
@@ -1940,8 +2060,8 @@ function install_forkop() {
     let new_version = installed_package_version("forkop");
     if (new_version == "")
         new_version = latest_version;
-    updates_log("Forkop updated to " + new_version);
-    action_success("forkop", "install", "Forkop has been installed", new_version, latest_version, 1, "latest", release.release_url);
+    updates_log("Topkop updated to " + new_version);
+    action_success("forkop", "install", "Topkop has been installed", new_version, latest_version, 1, "latest", release.release_url);
 }
 
 function dispatch_sing_box(action) {
@@ -2015,6 +2135,10 @@ function component_action(component, action) {
         install_qwdtt(action);
     else if (component == "qwdtt" && action == "remove")
         remove_qwdtt(action);
+    else if (component == "olcrtc" && (action == "check_update" || action == "install"))
+        install_olcrtc(action);
+    else if (component == "olcrtc" && action == "remove")
+        remove_olcrtc(action);
     else
         action_fail(component != "" ? component : "unknown", action != "" ? action : "unknown", "Unknown component action");
 }

@@ -67,7 +67,7 @@ describe('ForkopShellMethods.componentAction', () => {
         success: true,
         component: 'forkop',
         action: 'install',
-        message: 'Forkop has been installed',
+        message: 'Topkop has been installed',
         current_version: '0.7.17.11',
         latest_version: '0.7.17.11',
         changed: true,

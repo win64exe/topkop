@@ -1699,7 +1699,7 @@ function validate_runtime_mark_ranges_context(context) {
     let outbound_mark = parse_number(context.nft_outbound_mark);
 
     if (fakeip_mark == null || outbound_mark == null)
-        fail_validation("Forkop marks contain invalid numeric constants. Aborted.");
+        fail_validation("Topkop marks contain invalid numeric constants. Aborted.");
     if ((fakeip_mark & TAILSCALE_FWMARK_MASK) != 0)
         fail_validation("FakeIP mark overlaps Tailscale fwmark mask 0x00ff0000. Aborted.");
     if ((outbound_mark & TAILSCALE_FWMARK_MASK) != 0)
@@ -2045,7 +2045,7 @@ function check_provider_requirements(ctx) {
         ctx.zapret_provider_nfqws_bin,
         [ ctx.zapret_state_dir, ctx.zapret_pid_dir, ctx.zapret_child_pid_dir, ctx.zapret_log_dir ],
         "Zapret provider is not available at " + ctx.zapret_provider_nfqws_bin + ". Rules with action 'zapret' will be skipped until the zapret provider is installed.",
-        "Failed to prepare the Forkop zapret state directory in " + ctx.zapret_state_dir + ". Aborted."
+        "Failed to prepare the Topkop zapret state directory in " + ctx.zapret_state_dir + ". Aborted."
     );
 
     check_provider_requirement(
@@ -2054,7 +2054,7 @@ function check_provider_requirements(ctx) {
         ctx.zapret2_provider_nfqws2_bin,
         [ ctx.zapret2_state_dir, ctx.zapret2_pid_dir, ctx.zapret2_child_pid_dir, ctx.zapret2_log_dir ],
         "Zapret2 provider is not available at " + ctx.zapret2_provider_nfqws2_bin + ". Rules with action 'zapret2' will be skipped until the zapret2 provider is installed.",
-        "Failed to prepare the Forkop zapret2 state directory in " + ctx.zapret2_state_dir + ". Aborted."
+        "Failed to prepare the Topkop zapret2 state directory in " + ctx.zapret2_state_dir + ". Aborted."
     );
 
     check_provider_requirement(
@@ -2063,7 +2063,7 @@ function check_provider_requirements(ctx) {
         ctx.byedpi_bin,
         [ ctx.byedpi_state_dir, ctx.byedpi_pid_dir, ctx.byedpi_child_pid_dir, ctx.byedpi_log_dir ],
         "ByeDPI provider is not available at " + ctx.byedpi_bin + ". Rules with action 'byedpi' will be skipped until the byedpi package is installed.",
-        "Failed to prepare the Forkop ByeDPI state directory in " + ctx.byedpi_state_dir + ". Aborted."
+        "Failed to prepare the Topkop ByeDPI state directory in " + ctx.byedpi_state_dir + ". Aborted."
     );
 }
 
@@ -2097,12 +2097,12 @@ function check_runtime_requirements() {
         log_message("Package 'coreutils-base64' version (" + coreutils_base64_version + ") is lower than the required minimum (" + ctx.coreutils_base64_required_version + "). This may cause issues when decoding base64 streams with missing padding, as automatic padding support is not available in older versions.", "warn");
 
     if (dhcp_has_https_dns_proxy_options("/etc/config/dhcp") === true)
-        log_message("https-dns-proxy is enabled in DHCP config. Disable it or edit /etc/config/dhcp before starting Forkop.", "error");
+        log_message("https-dns-proxy is enabled in DHCP config. Disable it or edit /etc/config/dhcp before starting Topkop.", "error");
 
     if (has_outbound_section(ctx))
         log_message("Proxy outbound configuration found", "debug");
     else
-        log_message("No proxy outbound sections found. Forkop will use direct and/or provider-only routing.", "warn");
+        log_message("No proxy outbound sections found. Topkop will use direct and/or provider-only routing.", "warn");
 
     check_provider_requirements(ctx);
 }

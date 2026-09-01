@@ -265,7 +265,7 @@ function run_pending_reload_if_requested(path, init_script) {
     if (!consume_pending_reload(path))
         return;
 
-    command_success_from_args([ "logger", "-t", "forkop", "[info] Applying pending Forkop reload" ]);
+    command_success_from_args([ "logger", "-t", "forkop", "[info] Applying pending Topkop reload" ]);
     system(shell_quote(init_script) + " reload pending >/dev/null 2>&1 1000>&- &");
 }
 

@@ -109,7 +109,7 @@ grep -Fq '!file_exists("/etc/init.d/sing-box") && file_nonempty("/usr/bin/sing-b
   fail "binary rollback must restore a managed sing-box service when the package script is missing"
 grep -Fq 'fail_package_sing_box_install(action, tiny, "package was installed, but sing-box binary is not available"' "$ACTION_UC" ||
   fail "stable and tiny sing-box binary validation failures must use transactional rollback"
-grep -Fq 'fail_package_sing_box_install(action, tiny, "was installed, but Forkop did not start cleanly"' "$ACTION_UC" ||
+grep -Fq 'fail_package_sing_box_install(action, tiny, "was installed, but Topkop did not start cleanly"' "$ACTION_UC" ||
   fail "stable and tiny sing-box startup failures must use transactional rollback"
 if grep -Fq 'command_success_from_args([ SERVICE_INIT, "status" ])' "$ACTION_UC"; then
   fail "components/action.uc must not call init.d status without a timeout"

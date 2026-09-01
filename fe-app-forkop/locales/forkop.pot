@@ -293,7 +293,7 @@ msgid "By flag emoji from name"
 msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:6303
-msgid "ByeDPI listen address and port are assigned by Forkop and must not be set in the strategy."
+msgid "ByeDPI listen address and port are assigned by Topkop and must not be set in the strategy."
 msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:6480
@@ -508,7 +508,7 @@ msgid "Config File Path"
 msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/forkop.js:343
-msgid "Configuration for Forkop service"
+msgid "Configuration for Topkop service"
 msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:4473
@@ -581,7 +581,7 @@ msgid "Default address for checking server availability and latency. URLTest use
 msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/settings.js:398
-msgid "Delay in milliseconds before reloading Forkop after interface UP"
+msgid "Delay in milliseconds before reloading Topkop after interface UP"
 msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/settings.js:405
@@ -643,7 +643,7 @@ msgid "Disable the QUIC protocol to improve compatibility or fix issues with vid
 msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:5904
-msgid "Disabling interception is incompatible with action=zapret2 because Forkop sends matched traffic through NFQUEUE."
+msgid "Disabling interception is incompatible with action=zapret2 because Topkop sends matched traffic through NFQUEUE."
 msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:2446
@@ -994,11 +994,11 @@ msgid "Expose this section as a local HTTP+SOCKS proxy"
 msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:5438
-msgid "External nfqws config files bypass Forkop queue management and explicit validation."
+msgid "External nfqws config files bypass Topkop queue management and explicit validation."
 msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:5883
-msgid "External nfqws2 config files bypass Forkop queue management and explicit validation."
+msgid "External nfqws2 config files bypass Topkop queue management and explicit validation."
 msgstr ""
 
 #: src/forkop/tabs/monitoring/initController.ts:1213
@@ -1082,79 +1082,79 @@ msgid "Forced device routing"
 msgstr ""
 
 #: src/forkop/services/core.service.ts:52
-msgid "Forkop Error"
+msgid "Topkop Error"
 msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:6312
-msgid "Forkop manages ciadpi pid files itself, so pidfile options are not allowed here."
+msgid "Topkop manages ciadpi pid files itself, so pidfile options are not allowed here."
 msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:6309
-msgid "Forkop manages the ciadpi process lifecycle itself, so daemon mode is not allowed here."
+msgid "Topkop manages the ciadpi process lifecycle itself, so daemon mode is not allowed here."
 msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:5456
-msgid "Forkop manages the nfqws process lifecycle itself, so daemon mode is not allowed here."
+msgid "Topkop manages the nfqws process lifecycle itself, so daemon mode is not allowed here."
 msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:5907
-msgid "Forkop manages the nfqws2 process lifecycle itself, so daemon mode is not allowed here."
+msgid "Topkop manages the nfqws2 process lifecycle itself, so daemon mode is not allowed here."
 msgstr ""
 
 #: src/forkop/tabs/monitoring/initController.ts:925
-msgid "Forkop service is stopped. Start the service to display connections."
+msgid "Topkop service is stopped. Start the service to display connections."
 msgstr ""
 
 #: src/forkop/tabs/dashboard/render.ts:17
-msgid "Forkop service is stopped. Start the service to display the dashboard."
+msgid "Topkop service is stopped. Start the service to display the dashboard."
 msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/forkop.js:342
-msgid "Forkop Settings"
+msgid "Topkop Settings"
 msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/settings.js:602
-msgid "Forkop will not modify your DHCP configuration"
+msgid "Topkop will not modify your DHCP configuration"
 msgstr ""
 
 #: src/forkop/tabs/diagnostic/checks/runByedpiCheck.ts:91
-msgid "Forkop-managed ciadpi runtime has restarted"
+msgid "Topkop-managed ciadpi runtime has restarted"
 msgstr ""
 
 #: src/forkop/tabs/diagnostic/checks/runByedpiCheck.ts:94
-msgid "Forkop-managed ciadpi runtime is not ready"
+msgid "Topkop-managed ciadpi runtime is not ready"
 msgstr ""
 
 #: src/forkop/tabs/diagnostic/checks/runByedpiCheck.ts:97
-msgid "Forkop-managed ciadpi runtime is not running"
+msgid "Topkop-managed ciadpi runtime is not running"
 msgstr ""
 
 #: src/forkop/tabs/diagnostic/checks/runByedpiCheck.ts:93
-msgid "Forkop-managed ciadpi runtime is ready"
+msgid "Topkop-managed ciadpi runtime is ready"
 msgstr ""
 
 #: src/forkop/tabs/diagnostic/checks/runZapretCheck.ts:87
-msgid "Forkop-managed nfqws runtime is not ready"
+msgid "Topkop-managed nfqws runtime is not ready"
 msgstr ""
 
 #: src/forkop/tabs/diagnostic/checks/runZapretCheck.ts:90
-msgid "Forkop-managed nfqws runtime is not running"
+msgid "Topkop-managed nfqws runtime is not running"
 msgstr ""
 
 #: src/forkop/tabs/diagnostic/checks/runZapretCheck.ts:86
-msgid "Forkop-managed nfqws runtime is ready"
+msgid "Topkop-managed nfqws runtime is ready"
 msgstr ""
 
 #: src/forkop/tabs/diagnostic/checks/runZapret2Check.ts:90
-msgid "Forkop-managed nfqws2 runtime is not ready"
+msgid "Topkop-managed nfqws2 runtime is not ready"
 msgstr ""
 
 #: src/forkop/tabs/diagnostic/checks/runZapret2Check.ts:93
-msgid "Forkop-managed nfqws2 runtime is not running"
+msgid "Topkop-managed nfqws2 runtime is not running"
 msgstr ""
 
 #: src/forkop/tabs/diagnostic/checks/runZapret2Check.ts:89
-msgid "Forkop-managed nfqws2 runtime is ready"
+msgid "Topkop-managed nfqws2 runtime is ready"
 msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/server.js:3008
@@ -1170,7 +1170,7 @@ msgid "Fronting proxy protocol"
 msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:5901
-msgid "Fuzzing is not supported here because Forkop needs deterministic runtime validation."
+msgid "Fuzzing is not supported here because Topkop needs deterministic runtime validation."
 msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:2325
@@ -2242,7 +2242,7 @@ msgid "Resource selection by IP or CIDR inside nfqws2 is not supported here; sin
 msgstr ""
 
 #: src/forkop/tabs/diagnostic/partials/renderAvailableActions.ts:49
-msgid "Restart Forkop"
+msgid "Restart Topkop"
 msgstr ""
 
 #: src/forkop/tabs/monitoring/initController.ts:691
@@ -2619,7 +2619,7 @@ msgid "Standalone ByeDPI autostart is enabled"
 msgstr ""
 
 #: src/forkop/tabs/diagnostic/checks/runByedpiCheck.ts:119
-msgid "Standalone ByeDPI is active together with Forkop ByeDPI rules"
+msgid "Standalone ByeDPI is active together with Topkop ByeDPI rules"
 msgstr ""
 
 #: src/forkop/tabs/diagnostic/checks/runByedpiCheck.ts:120
@@ -2631,7 +2631,7 @@ msgid "Standalone ByeDPI service is inactive"
 msgstr ""
 
 #: src/forkop/tabs/diagnostic/checks/runZapretCheck.ts:111
-msgid "Standalone Zapret is active together with Forkop Zapret rules"
+msgid "Standalone Zapret is active together with Topkop Zapret rules"
 msgstr ""
 
 #: src/forkop/tabs/diagnostic/checks/runZapretCheck.ts:112
@@ -2647,7 +2647,7 @@ msgid "Standalone Zapret2 autostart is enabled"
 msgstr ""
 
 #: src/forkop/tabs/diagnostic/checks/runZapret2Check.ts:118
-msgid "Standalone Zapret2 is active together with Forkop Zapret2 rules"
+msgid "Standalone Zapret2 is active together with Topkop Zapret2 rules"
 msgstr ""
 
 #: src/forkop/tabs/diagnostic/checks/runZapret2Check.ts:119
@@ -2659,7 +2659,7 @@ msgid "Standalone Zapret2 service is inactive"
 msgstr ""
 
 #: src/forkop/tabs/diagnostic/partials/renderAvailableActions.ts:69
-msgid "Start Forkop"
+msgid "Start Topkop"
 msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:2504
@@ -2667,7 +2667,7 @@ msgid "Stop checking when URLTest group is not used. Use sing-box duration forma
 msgstr ""
 
 #: src/forkop/tabs/diagnostic/partials/renderAvailableActions.ts:59
-msgid "Stop Forkop"
+msgid "Stop Topkop"
 msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:3891
@@ -2771,12 +2771,12 @@ msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:5453
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:5898
-msgid "The desync fwmark is managed by Forkop for loop prevention and must not be overridden here."
+msgid "The desync fwmark is managed by Topkop for loop prevention and must not be overridden here."
 msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:5450
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:5895
-msgid "The NFQUEUE number is assigned by Forkop for each rule and must not be overridden here."
+msgid "The NFQUEUE number is assigned by Topkop for each rule and must not be overridden here."
 msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:7722
@@ -2873,7 +2873,7 @@ msgid "Traffic Total"
 msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:6306
-msgid "Transparent proxy mode is incompatible with action=byedpi because Forkop connects to ciadpi through SOCKS."
+msgid "Transparent proxy mode is incompatible with action=byedpi because Topkop connects to ciadpi through SOCKS."
 msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:1935
@@ -2945,15 +2945,15 @@ msgid "Unexpected ByeDPI strategy argument: %s"
 msgstr ""
 
 #: src/forkop/tabs/diagnostic/checks/runByedpiCheck.ts:96
-msgid "Unexpected Forkop-managed ciadpi runtime is running"
+msgid "Unexpected Topkop-managed ciadpi runtime is running"
 msgstr ""
 
 #: src/forkop/tabs/diagnostic/checks/runZapretCheck.ts:89
-msgid "Unexpected Forkop-managed nfqws runtime is running"
+msgid "Unexpected Topkop-managed nfqws runtime is running"
 msgstr ""
 
 #: src/forkop/tabs/diagnostic/checks/runZapret2Check.ts:92
-msgid "Unexpected Forkop-managed nfqws2 runtime is running"
+msgid "Unexpected Topkop-managed nfqws2 runtime is running"
 msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:5611
@@ -3229,7 +3229,7 @@ msgid "WAN public IP"
 msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:7043
-msgid "What Forkop should do when this section matches"
+msgid "What Topkop should do when this section matches"
 msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:2968
@@ -3253,7 +3253,7 @@ msgid "You can select Output Network Interface, by default autodetect"
 msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:5447
-msgid "Zapret hostlist templates are not supported here because Forkop does not expand them for per-rule NFQWS strategies."
+msgid "Zapret hostlist templates are not supported here because Topkop does not expand them for per-rule NFQWS strategies."
 msgstr ""
 
 #: src/forkop/tabs/diagnostic/checks/runZapretCheck.ts:71
@@ -3281,7 +3281,7 @@ msgid "Zapret sing-box outbound is not configured"
 msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:5892
-msgid "Zapret2 hostlist templates are not supported here because Forkop does not expand them for per-rule NFQWS2 strategies."
+msgid "Zapret2 hostlist templates are not supported here because Topkop does not expand them for per-rule NFQWS2 strategies."
 msgstr ""
 
 #: src/forkop/tabs/diagnostic/checks/runZapret2Check.ts:74

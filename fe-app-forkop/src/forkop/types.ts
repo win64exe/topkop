@@ -562,7 +562,8 @@ export namespace Forkop {
     | 'zapret'
     | 'zapret2'
     | 'byedpi'
-    | 'qwdtt';
+    | 'qwdtt'
+    | 'olcrtc';
 
   export type ComponentAction =
     | 'check_update'

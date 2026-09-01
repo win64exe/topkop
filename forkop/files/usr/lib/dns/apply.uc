@@ -232,10 +232,10 @@ function dnsmasq_configure(force) {
 
     if (as_string(force) != "force" && uci_get(CONFIG_NAME + ".settings.shutdown_correctly") == "0") {
         if (dnsmasq_default_config_is_complete()) {
-            log("Previous Forkop shutdown was unclean; dnsmasq already points to sing-box", "info");
+            log("Previous Topkop shutdown was unclean; dnsmasq already points to sing-box", "info");
             return true;
         }
-        log("Previous Forkop shutdown was unclean and dnsmasq is not ready; applying Forkop DNS settings", "info");
+        log("Previous Topkop shutdown was unclean and dnsmasq is not ready; applying Topkop DNS settings", "info");
     }
 
     log("Configuring dnsmasq to forward DNS to sing-box", "info");
@@ -254,10 +254,10 @@ function dnsmasq_restore(force, quiet) {
         log("Restoring DNS settings in dnsmasq", "info");
     if (as_string(force) != "force" && uci_get(CONFIG_NAME + ".settings.shutdown_correctly") == "1") {
         if (!dnsmasq_has_forkop_dns()) {
-            log("dnsmasq already uses non-Forkop DNS settings; restore is not required", "info");
+            log("dnsmasq already uses non-Topkop DNS settings; restore is not required", "info");
             return true;
         }
-        log("Forkop DNS settings are still present after a clean shutdown; restoring DNS settings in dnsmasq", "info");
+        log("Topkop DNS settings are still present after a clean shutdown; restoring DNS settings in dnsmasq", "info");
     }
 
     dnsmasq_cleanup_legacy_instance();
@@ -273,14 +273,14 @@ function failsafe_restore() {
 
     if (dnsmasq_management_disabled()) {
         if (!dnsmasq_has_forkop_managed_state()) {
-            log("DNS rollback skipped: dont_touch_dhcp is enabled and no Forkop dnsmasq changes were found", "info");
+            log("DNS rollback skipped: dont_touch_dhcp is enabled and no Topkop dnsmasq changes were found", "info");
             return true;
         }
 
-        log("Rolling back previous Forkop dnsmasq changes because dont_touch_dhcp is enabled", "warn");
+        log("Rolling back previous Topkop dnsmasq changes because dont_touch_dhcp is enabled", "warn");
     }
     else {
-        log("Rolling back Forkop DNS changes in dnsmasq", "warn");
+        log("Rolling back Topkop DNS changes in dnsmasq", "warn");
     }
 
     dnsmasq_restore("force", true);

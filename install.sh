@@ -31,6 +31,9 @@ FORKOP_I18N_URL=""
 FORKOP_I18N_NAME=""
 FORKOP_I18N_FILE=""
 FORKOP_PACKAGE_VERSION=""
+OLD_BRAND_FOUND=0
+OLD_CONFIG_BACKUP=""
+OLD_BRAND_PACKAGES="luci-app-forkop luci-i18n-forkop-ru forkop"
 LEGACY_BRAND="$(printf '\160\157\144\153\157\160')"
 LEGACY_BACKEND_PACKAGE="${LEGACY_BRAND}-plus"
 LEGACY_CONFIG_PACKAGE_ALT="${LEGACY_BRAND}_plus"
@@ -55,10 +58,10 @@ usage() {
     cat <<EOF
 Usage: $0
 
-Installs or updates Forkop packages:
-  - forkop
-  - luci-app-forkop
-  - luci-i18n-forkop-ru when requested or when LuCI language is Russian
+Installs or updates Topkop packages:
+  - topkop
+  - luci-app-topkop
+  - luci-i18n-topkop-ru when requested or when LuCI language is Russian
 
 Can also install or switch sing-box variant:
   - stable sing-box from OpenWrt feeds
@@ -116,7 +119,7 @@ detect_fetcher() {
         return 0
     fi
 
-    fail "wget or curl is required to download Forkop"
+    fail "wget or curl is required to download Topkop"
 }
 
 run_with_deadline() {
@@ -998,13 +1001,13 @@ function installer_deactivate_legacy_base() {
     }
 
     if (running.value) {
-        warn("Detected a running legacy service. Stopping it before installing Forkop.\n");
+        warn("Detected a running legacy service. Stopping it before installing Topkop.\n");
         if (!installer_service_action(INSTALLER_LEGACY_BASE_INIT, "stop"))
             return false;
     }
 
     if (enabled.value) {
-        warn("Detected an enabled legacy autostart. Disabling it before installing Forkop.\n");
+        warn("Detected an enabled legacy autostart. Disabling it before installing Topkop.\n");
         if (!installer_service_action(INSTALLER_LEGACY_BASE_INIT, "disable"))
             return false;
     }
@@ -1030,7 +1033,7 @@ function installer_cleanup_legacy() {
         { known: true, value: false } :
         installer_backend_status_running_state(active_bin);
     if (!enabled.known || (!running.known && !backend_running.known)) {
-        warn("Unable to determine the Forkop service state before installation.\n");
+        warn("Unable to determine the Topkop service state before installation.\n");
         return false;
     }
     let was_enabled = enabled.value;
@@ -1216,7 +1219,7 @@ function installer_post_install() {
     if (env("FORKOP_WAS_RUNNING", "0") == "1" && path_executable(INSTALLER_FORKOP_INIT)) {
         if (!run_args([ INSTALLER_FORKOP_INIT, "start" ]) &&
             !run_args([ INSTALLER_FORKOP_INIT, "restart" ]))
-            warn("Failed to start Forkop after upgrade.\n");
+            warn("Failed to start Topkop after upgrade.\n");
     }
 
     return true;
@@ -1358,11 +1361,11 @@ function asset_matches(name, kind, ext, version) {
         return false;
 
     if (kind == "backend")
-        return name == "forkop_" + version + "." + ext;
+        return name == "topkop_" + version + "." + ext;
     if (kind == "app")
-        return name == "luci-app-forkop_" + version + "." + ext;
+        return name == "luci-app-topkop_" + version + "." + ext;
     if (kind == "i18n")
-        return name == "luci-i18n-forkop-ru_" + version + "." + ext;
+        return name == "luci-i18n-topkop-ru_" + version + "." + ext;
     return false;
 }
 
@@ -1580,7 +1583,7 @@ check_system() {
     major="$(printf '%s' "$release" | sed 's/[^0-9].*$//' | cut -d. -f1)"
 
     if [ -n "$major" ] && [ "$major" -lt 24 ]; then
-        fail "Forkop requires OpenWrt 24.10 or newer"
+        fail "Topkop requires OpenWrt 24.10 or newer"
     fi
 
     available_space="$(df /overlay 2>/dev/null | awk 'NR==2 {print $4}')"
@@ -1638,7 +1641,7 @@ detect_installer_language() {
     luci_lang="$(get_luci_main_lang)"
 
     INSTALLER_LANG="en"
-    if pkg_is_installed "luci-i18n-forkop-ru"; then
+    if pkg_is_installed "luci-i18n-topkop-ru" || pkg_is_installed "luci-i18n-forkop-ru"; then
         INSTALLER_LANG="ru"
         return 0
     fi
@@ -1715,24 +1718,24 @@ resolve_forkop_release() {
 
     FORKOP_RELEASE_JSON="$(fetch_github_latest_release_json "$REPO_OWNER" "$REPO_NAME")"
     FORKOP_RELEASE_TAG="$(printf '%s' "$FORKOP_RELEASE_JSON" | install_json_ucode release-tag 2>/dev/null)"
-    [ -n "$FORKOP_RELEASE_TAG" ] || fail "Failed to detect the Forkop release tag"
+    [ -n "$FORKOP_RELEASE_TAG" ] || fail "Failed to detect the Topkop release tag"
 
     FORKOP_BACKEND_URL="$(printf '%s' "$FORKOP_RELEASE_JSON" | install_json_ucode release-asset-url backend "$asset_ext" 2>/dev/null)"
-    [ -n "$FORKOP_BACKEND_URL" ] || fail "The Forkop release does not contain a forkop .$asset_ext package"
+    [ -n "$FORKOP_BACKEND_URL" ] || fail "The Topkop release does not contain a topkop .$asset_ext package"
 
     FORKOP_APP_URL="$(printf '%s' "$FORKOP_RELEASE_JSON" | install_json_ucode release-asset-url app "$asset_ext" 2>/dev/null)"
-    [ -n "$FORKOP_APP_URL" ] || fail "The Forkop release does not contain a luci-app-forkop .$asset_ext package"
+    [ -n "$FORKOP_APP_URL" ] || fail "The Topkop release does not contain a luci-app-topkop .$asset_ext package"
 
     FORKOP_BACKEND_NAME="$(basename "$FORKOP_BACKEND_URL")"
     FORKOP_APP_NAME="$(basename "$FORKOP_APP_URL")"
-    FORKOP_PACKAGE_VERSION="$(printf '%s\n' "$FORKOP_BACKEND_NAME" | sed 's/^forkop_//;s/\.ipk$//;s/\.apk$//')"
+    FORKOP_PACKAGE_VERSION="$(printf '%s\n' "$FORKOP_BACKEND_NAME" | sed 's/^topkop_//;s/\.ipk$//;s/\.apk$//')"
 
     FORKOP_I18N_URL=""
     FORKOP_I18N_NAME=""
 
     if [ "$FORKOP_I18N_REQUESTED" -eq 1 ]; then
         FORKOP_I18N_URL="$(printf '%s' "$FORKOP_RELEASE_JSON" | install_json_ucode release-asset-url i18n "$asset_ext" 2>/dev/null)"
-        [ -n "$FORKOP_I18N_URL" ] || fail "The Forkop release does not contain a luci-i18n-forkop-ru .$asset_ext package"
+        [ -n "$FORKOP_I18N_URL" ] || fail "The Topkop release does not contain a luci-i18n-topkop-ru .$asset_ext package"
         FORKOP_I18N_NAME="$(basename "$FORKOP_I18N_URL")"
     fi
 }
@@ -1752,7 +1755,7 @@ select_sing_box_installation() {
         [ -r /etc/init.d/sing-box ] &&
         grep -Fq 'managed sing-box service for binary variants' /etc/init.d/sing-box; then
         SING_BOX_INSTALL_VARIANT="extended-compressed"
-        msg "The legacy binary-managed sing-box variant will be reinstalled for Forkop"
+        msg "The legacy binary-managed sing-box variant will be reinstalled for Topkop"
         return 0
     fi
 
@@ -1811,8 +1814,8 @@ install_selected_sing_box() {
             ;;
     esac
 
-    [ -x /usr/bin/forkop ] || fail "forkop backend must be installed before sing-box component action"
-    msg "Installing selected sing-box variant through Forkop ucode backend"
+    [ -x /usr/bin/forkop ] || fail "topkop backend must be installed before sing-box component action"
+    msg "Installing selected sing-box variant through Topkop ucode backend"
     if ! /usr/bin/forkop component_action sing_box "$action" >"$output_file" 2>&1; then
         cat "$output_file" >&2 2>/dev/null || true
         fail "Failed to install selected sing-box variant"
@@ -1823,7 +1826,7 @@ cleanup_legacy_installation() {
     state_file="$TMP_DIR/install-state.env"
 
     install_json_ucode installer-cleanup-legacy >"$state_file" ||
-        fail "Failed to prepare the system before Forkop package installation"
+        fail "Failed to prepare the system before Topkop package installation"
 
     # shellcheck disable=SC1090
     . "$state_file"
@@ -1861,12 +1864,53 @@ detect_legacy_installation() {
     msg "Legacy installation detected; its packages will be removed and its configuration will be upgraded"
 }
 
+detect_old_brand_packages() {
+    for old_pkg in $OLD_BRAND_PACKAGES; do
+        if pkg_is_installed "$old_pkg"; then
+            OLD_BRAND_FOUND=1
+            return 0
+        fi
+    done
+}
+
+backup_old_brand_config() {
+    OLD_CONFIG_BACKUP=""
+
+    if [ -f /etc/config/forkop ]; then
+        OLD_CONFIG_BACKUP="$TMP_DIR/old-brand-config.backup"
+        cp /etc/config/forkop "$OLD_CONFIG_BACKUP" ||
+            fail "Failed to back up the existing Topkop configuration"
+    fi
+}
+
+remove_old_brand_packages() {
+    [ "$OLD_BRAND_FOUND" -eq 1 ] || return 0
+
+    msg "Previous Forkop-named packages detected; migrating them to Topkop package names"
+    if [ "$PKG_IS_APK" -eq 1 ]; then
+        apk del luci-app-forkop luci-i18n-forkop-ru forkop </dev/null || true
+    else
+        opkg remove --force-depends luci-app-forkop </dev/null || true
+        opkg remove --force-depends luci-i18n-forkop-ru </dev/null || true
+        opkg remove --force-depends forkop </dev/null || true
+    fi
+}
+
+restore_old_brand_config() {
+    [ -n "$OLD_CONFIG_BACKUP" ] || return 0
+
+    cp "$OLD_CONFIG_BACKUP" /etc/config/forkop ||
+        fail "Failed to restore the existing Topkop configuration"
+    chmod 0644 /etc/config/forkop ||
+        fail "Failed to set permissions on the Topkop configuration"
+}
+
 decide_i18n_installation() {
     luci_lang="$(get_luci_main_lang)"
 
     detect_installer_language
 
-    if pkg_is_installed "luci-i18n-forkop-ru"; then
+    if pkg_is_installed "luci-i18n-topkop-ru" || pkg_is_installed "luci-i18n-forkop-ru"; then
         FORKOP_I18N_REQUESTED=1
         msg "$(installer_text i18n_installed)"
         return 0
@@ -1912,7 +1956,7 @@ download_forkop_packages() {
 }
 
 install_backend_package() {
-    pkg_install_files "$FORKOP_BACKEND_FILE" || fail "forkop installation failed"
+    pkg_install_files "$FORKOP_BACKEND_FILE" || fail "topkop installation failed"
 }
 
 migrate_legacy_configuration() {
@@ -1922,9 +1966,9 @@ migrate_legacy_configuration() {
         cp "$LEGACY_CONFIG_BACKUP" /etc/config/forkop ||
             fail "Failed to restore the legacy configuration for migration"
         chmod 0644 /etc/config/forkop ||
-            fail "Failed to set permissions on the Forkop configuration"
+            fail "Failed to set permissions on the Topkop configuration"
 
-        msg "Migrating the legacy configuration to Forkop"
+        msg "Migrating the legacy configuration to Topkop"
         if ! FORKOP_CONFIG_NAME="forkop" \
             FORKOP_LIB="/usr/lib/forkop" \
             ucode -L /usr/lib/forkop /usr/lib/forkop/config/migration.uc migrate-podkop; then
@@ -1932,7 +1976,7 @@ migrate_legacy_configuration() {
             fail "Legacy configuration migration failed; the original configuration was restored"
         fi
     else
-        warn "The legacy package had no readable configuration; Forkop defaults will be used"
+        warn "The legacy package had no readable configuration; Topkop defaults will be used"
     fi
 
     install_json_ucode installer-finalize-legacy ||
@@ -1940,17 +1984,17 @@ migrate_legacy_configuration() {
 }
 
 install_ui_packages() {
-    pkg_install_files "$FORKOP_APP_FILE" || fail "luci-app-forkop installation failed"
+    pkg_install_files "$FORKOP_APP_FILE" || fail "luci-app-topkop installation failed"
 
     if [ -n "$FORKOP_I18N_FILE" ]; then
-        pkg_install_files "$FORKOP_I18N_FILE" || fail "luci-i18n-forkop-ru installation failed"
+        pkg_install_files "$FORKOP_I18N_FILE" || fail "luci-i18n-topkop-ru installation failed"
     fi
 }
 
 post_install() {
     FORKOP_WAS_ENABLED="$FORKOP_WAS_ENABLED" FORKOP_WAS_RUNNING="$FORKOP_WAS_RUNNING" \
         install_json_ucode installer-post-install ||
-        fail "Failed to complete Forkop post-install actions"
+        fail "Failed to complete Topkop post-install actions"
 }
 
 main() {
@@ -1967,6 +2011,7 @@ main() {
     check_system
 
     detect_legacy_installation
+    detect_old_brand_packages
     decide_i18n_installation
     select_sing_box_installation
 
@@ -1976,16 +2021,19 @@ main() {
     resolve_forkop_release
     download_forkop_packages
 
+    backup_old_brand_config
     cleanup_legacy_installation
+    remove_old_brand_packages
     install_backend_package
+    restore_old_brand_config
     migrate_legacy_configuration
     install_ui_packages
     install_selected_sing_box
     post_install
 
-    msg "Forkop $FORKOP_PACKAGE_VERSION has been installed successfully"
+    msg "Topkop $FORKOP_PACKAGE_VERSION has been installed successfully"
     msg "Source release: ${REPO_OWNER}/${REPO_NAME}@${FORKOP_RELEASE_TAG}"
-    warn "Open LuCI and review your rules before enabling Forkop"
+    warn "Open LuCI and review your rules before enabling Topkop"
 }
 
 main "$@"

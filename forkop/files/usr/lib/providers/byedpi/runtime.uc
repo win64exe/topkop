@@ -320,20 +320,20 @@ function start_runtime() {
         return;
 
     if (standalone_service_enabled())
-        log_message("Standalone byedpi service is enabled. Forkop manages ciadpi itself for action 'byedpi'; disable standalone byedpi autostart to avoid boot-time port conflicts.", "warn");
+        log_message("Standalone byedpi service is enabled. Topkop manages ciadpi itself for action 'byedpi'; disable standalone byedpi autostart to avoid boot-time port conflicts.", "warn");
 
     if (standalone_service_running()) {
-        log_message("Stopping standalone byedpi service before starting Forkop-managed ciadpi runtime", "info");
+        log_message("Stopping standalone byedpi service before starting Topkop-managed ciadpi runtime", "info");
         command_success_from_args([ BYEDPI_SERVICE_INIT, "stop" ]);
         command_success_from_args([ "sleep", "1" ]);
         if (standalone_service_running()) {
-            log_message("Standalone byedpi service is still running and may conflict with Forkop-managed ciadpi runtime. Aborted.", "fatal");
+            log_message("Standalone byedpi service is still running and may conflict with Topkop-managed ciadpi runtime. Aborted.", "fatal");
             exit(1);
         }
     }
 
     if (!ensure_runtime_dirs()) {
-        log_message("Failed to prepare the Forkop ByeDPI state directory in " + BYEDPI_STATE_DIR + ". Aborted.", "fatal");
+        log_message("Failed to prepare the Topkop ByeDPI state directory in " + BYEDPI_STATE_DIR + ". Aborted.", "fatal");
         exit(1);
     }
 
@@ -482,15 +482,15 @@ function status_json() {
     if (configured && !provider)
         message = "action=byedpi is configured, but ciadpi is not available at " + BYEDPI_BIN;
     else if (configured && standalone_running)
-        message = "standalone byedpi service is active together with Forkop action=byedpi; port conflicts are possible";
+        message = "standalone byedpi service is active together with Topkop action=byedpi; port conflicts are possible";
     else if (configured && standalone_enabled)
-        message = "standalone byedpi service autostart is enabled; disable it to avoid boot-time port conflicts with Forkop action=byedpi";
+        message = "standalone byedpi service autostart is enabled; disable it to avoid boot-time port conflicts with Topkop action=byedpi";
     else if (running > expected || supervisors > expected)
-        message = "unexpected Forkop-managed ciadpi processes are running without matching action=byedpi rules";
+        message = "unexpected Topkop-managed ciadpi processes are running without matching action=byedpi rules";
     else if (configured && unstable)
-        message = "Forkop-managed ciadpi has restarted after exiting; the ByeDPI strategy or traffic load may be unstable";
+        message = "Topkop-managed ciadpi has restarted after exiting; the ByeDPI strategy or traffic load may be unstable";
     else if (configured && !ready)
-        message = "action=byedpi is configured, but the Forkop-managed ciadpi runtime is not ready";
+        message = "action=byedpi is configured, but the Topkop-managed ciadpi runtime is not ready";
     else if (!configured && !provider && pkg)
         message = "byedpi package is installed, but ciadpi is not available at " + BYEDPI_BIN;
     else if (!configured && !provider)

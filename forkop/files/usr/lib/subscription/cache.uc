@@ -2393,7 +2393,7 @@ function run_deferred_subscription_bootstrap(deferred_sections) {
 
     let result = subscription_bootstrap_retry_result(deferred_sections);
     if (result.recovered != "") {
-        log_message("Recovered deferred subscription rule(s): " + result.recovered + "; scheduling Forkop reload", "info");
+        log_message("Recovered deferred subscription rule(s): " + result.recovered + "; scheduling Topkop reload", "info");
         trigger_subscription_recovery_reload(false);
     }
 
@@ -2423,7 +2423,7 @@ function deferred_subscription_bootstrap_retry_worker(remaining_sections) {
         state_ucode_status([ "release-runtime-dir-lock", FORKOP_SUBSCRIPTION_UPDATE_LOCK_DIR ]);
 
         if (result.recovered != "") {
-            log_message("Recovered deferred subscription rule(s): " + result.recovered + "; reloading Forkop", "info");
+            log_message("Recovered deferred subscription rule(s): " + result.recovered + "; reloading Topkop", "info");
             trigger_subscription_recovery_reload(true);
         }
 

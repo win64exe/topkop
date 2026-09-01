@@ -299,7 +299,7 @@ function run_pending_reload_if_requested(path, init_script) {
     if (!consume_pending_reload(path))
         return;
 
-    command_success_from_args([ "logger", "-t", SERVICE_NAME, "[info] Applying pending Forkop reload" ]);
+    command_success_from_args([ "logger", "-t", SERVICE_NAME, "[info] Applying pending Topkop reload" ]);
     system(shell_quote(init_script) + " reload pending >/dev/null 2>&1 1000>&- &");
 }
 
@@ -476,7 +476,7 @@ function retry_start_on_wan_up(owner_pid) {
     if (action != "restart")
         return 0;
 
-    command_success_from_args([ "logger", "-t", SERVICE_NAME, "[info] Retrying failed Forkop start after WAN came up" ]);
+    command_success_from_args([ "logger", "-t", SERVICE_NAME, "[info] Retrying failed Topkop start after WAN came up" ]);
     return command_status_from_args([ SERVICE_INIT, "restart", "triggered" ]);
 }
 
@@ -511,7 +511,7 @@ function handle_wan_up(owner_pid) {
     if (action == "reload") {
         clear_start_retry(START_RETRY_FILE);
         cancel_scheduled_start_retry(START_RETRY_PID_FILE);
-        command_success_from_args([ "logger", "-t", SERVICE_NAME, "[info] Reloading Forkop after monitored WAN came up" ]);
+        command_success_from_args([ "logger", "-t", SERVICE_NAME, "[info] Reloading Topkop after monitored WAN came up" ]);
         return command_status_from_args([ SERVICE_INIT, "reload", "badwan_interface_up" ]);
     }
 
@@ -561,7 +561,7 @@ function start_plan(reason, owner_pid, settings, bin_ok) {
 }
 
 function start_service(reason, owner_pid) {
-    print("Start Forkop\n");
+    print("Start Topkop\n");
     let plan = start_plan_value(reason, owner_pid, uci_settings(), null);
     if (!plan.bin_ok)
         return 1;
@@ -574,7 +574,7 @@ function start_service(reason, owner_pid) {
     else {
         mark_start_retry(START_RETRY_FILE, as_string(reason) == "triggered" ? "wan_retry_failed" : "start_failed");
         schedule_start_retry(START_RETRY_PID_FILE, START_RETRY_DELAY_SECONDS);
-        command_success_from_args([ "logger", "-t", SERVICE_NAME, "[warn] Forkop start failed; scheduled an automatic retry" ]);
+        command_success_from_args([ "logger", "-t", SERVICE_NAME, "[warn] Topkop start failed; scheduled an automatic retry" ]);
     }
     finish_external_service_action("start", plan.job_id, status);
     return status;

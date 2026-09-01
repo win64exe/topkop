@@ -7,7 +7,7 @@ usage() {
   cat <<EOF
 Usage: $(basename "$0") <version> [output-directory]
 
-Build Forkop IPK and APK packages. The version must use x.y.z format.
+Build Topkop IPK and APK packages. The version must use x.y.z format.
 EOF
 }
 
@@ -36,16 +36,16 @@ SDK_DIR="${SDK_DIR:-$SDK_CACHE_DIR/extracted}"
 IPK_SDK_URL="${IPK_SDK_URL:-https://downloads.openwrt.org/releases/24.10.6/targets/x86/64/openwrt-sdk-24.10.6-x86-64_gcc-13.3.0_musl.Linux-x86_64.tar.zst}"
 APK_SDK_URL="${APK_SDK_URL:-https://downloads.openwrt.org/releases/25.12.3/targets/x86/64/openwrt-sdk-25.12.3-x86-64_gcc-14.3.0_musl.Linux-x86_64.tar.zst}"
 
-BACKEND_DESCRIPTION="Rule-based Forkop backend with hybrid sing-box + zapret orchestration"
-APP_DESCRIPTION="Rule-based Forkop LuCI app with hybrid sing-box + zapret orchestration"
-I18N_DESCRIPTION="Translation for luci-app-forkop - Русский (Russian)"
+BACKEND_DESCRIPTION="Rule-based Topkop backend with hybrid sing-box + zapret orchestration"
+APP_DESCRIPTION="Rule-based Topkop LuCI app with hybrid sing-box + zapret orchestration"
+I18N_DESCRIPTION="Translation for luci-app-topkop - Русский (Russian)"
 MAINTAINER="win64exe"
 PROJECT_URL="https://github.com/win64exe/topkop"
 BACKEND_DEPENDS_IPK="libc, ca-bundle, kmod-inet-diag, kmod-netlink-diag, kmod-tun, curl, ucode, ucode-mod-fs, ucode-mod-uci, kmod-nft-tproxy, coreutils-base64, bind-dig, nftables, kmod-nft-nat, ip-full"
 BACKEND_DEPENDS_APK="bind-dig ca-bundle coreutils-base64 curl ip-full kmod-inet-diag kmod-netlink-diag kmod-nft-nat kmod-nft-tproxy kmod-tun libc nftables ucode ucode-mod-fs ucode-mod-uci !https-dns-proxy !nextdns !luci-app-passwall !luci-app-passwall2"
 BACKEND_CONFLICTS_IPK="https-dns-proxy, nextdns, luci-app-passwall, luci-app-passwall2"
-APP_DEPENDS_IPK="libc, luci-base, forkop"
-APP_DEPENDS_APK="libc luci-base forkop"
+APP_DEPENDS_IPK="libc, luci-base, topkop"
+APP_DEPENDS_APK="libc luci-base topkop"
 
 ensure_host_deps() {
   local missing=()
@@ -205,7 +205,7 @@ build_i18n_root() {
   make_dir "$output_root/etc/uci-defaults"
   make_dir "$(dirname "$lmo_path")"
 
-  cat > "$output_root/etc/uci-defaults/luci-i18n-forkop-ru" <<'EOF'
+  cat > "$output_root/etc/uci-defaults/luci-i18n-topkop-ru" <<'EOF'
 uci set luci.languages.ru='Русский (Russian)'; uci commit luci
 EOF
 
@@ -250,7 +250,7 @@ write_backend_ipk_control() {
   make_dir "$control_dir"
 
   cat > "$control_dir/control" <<EOF
-Package: forkop
+Package: topkop
 Version: ${RELEASE_VERSION}
 Depends: ${BACKEND_DEPENDS_IPK}
 Conflicts: ${BACKEND_CONFLICTS_IPK}
@@ -294,7 +294,7 @@ write_app_ipk_control() {
   make_dir "$control_dir"
 
   cat > "$control_dir/control" <<EOF
-Package: luci-app-forkop
+Package: luci-app-topkop
 Version: ${RELEASE_VERSION}
 Depends: ${APP_DEPENDS_IPK}
 License: GPL-2.0-or-later
@@ -332,9 +332,9 @@ write_i18n_ipk_control() {
   make_dir "$control_dir"
 
   cat > "$control_dir/control" <<EOF
-Package: luci-i18n-forkop-ru
+Package: luci-i18n-topkop-ru
 Version: ${RELEASE_VERSION}
-Depends: libc, luci-app-forkop
+Depends: libc, luci-app-topkop
 License: GPL-2.0-or-later
 Section: luci
 URL: ${PROJECT_URL}
@@ -453,7 +453,7 @@ EOF
 [ -s ${IPKG_INSTROOT}/lib/functions.sh ] || exit 0
 . ${IPKG_INSTROOT}/lib/functions.sh
 export root="${IPKG_INSTROOT}"
-export pkgname="luci-app-forkop"
+export pkgname="luci-app-topkop"
 add_group_and_user
 default_postinst
 EOF
@@ -463,7 +463,7 @@ EOF
 [ -s ${IPKG_INSTROOT}/lib/functions.sh ] || exit 0
 . ${IPKG_INSTROOT}/lib/functions.sh
 export root="${IPKG_INSTROOT}"
-export pkgname="luci-app-forkop"
+export pkgname="luci-app-topkop"
 default_prerm
 exit 0
 EOF
@@ -480,7 +480,7 @@ export PKG_UPGRADE=1
 [ -s ${IPKG_INSTROOT}/lib/functions.sh ] || exit 0
 . ${IPKG_INSTROOT}/lib/functions.sh
 export root="${IPKG_INSTROOT}"
-export pkgname="luci-app-forkop"
+export pkgname="luci-app-topkop"
 add_group_and_user
 default_postinst
 EOF
@@ -504,7 +504,7 @@ EOF
 [ -s ${IPKG_INSTROOT}/lib/functions.sh ] || exit 0
 . ${IPKG_INSTROOT}/lib/functions.sh
 export root="${IPKG_INSTROOT}"
-export pkgname="luci-i18n-forkop-ru"
+export pkgname="luci-i18n-topkop-ru"
 add_group_and_user
 default_postinst
 EOF
@@ -514,7 +514,7 @@ EOF
 [ -s ${IPKG_INSTROOT}/lib/functions.sh ] || exit 0
 . ${IPKG_INSTROOT}/lib/functions.sh
 export root="${IPKG_INSTROOT}"
-export pkgname="luci-i18n-forkop-ru"
+export pkgname="luci-i18n-topkop-ru"
 default_prerm
 EOF
 
@@ -530,7 +530,7 @@ export PKG_UPGRADE=1
 [ -s ${IPKG_INSTROOT}/lib/functions.sh ] || exit 0
 . ${IPKG_INSTROOT}/lib/functions.sh
 export root="${IPKG_INSTROOT}"
-export pkgname="luci-i18n-forkop-ru"
+export pkgname="luci-i18n-topkop-ru"
 add_group_and_user
 default_postinst
 EOF
@@ -569,7 +569,7 @@ build_apk_package() {
     -I "description:${description}" \
     -I "arch:noarch" \
     -I "license:GPL-2.0-or-later" \
-    -I "origin:forkop" \
+    -I "origin:topkop" \
     -I "maintainer:${maintainer}" \
     -I "url:${PROJECT_URL}" \
     -I "depends:${depends}" \
@@ -591,7 +591,7 @@ verify_ipk_metadata() {
   tar -xzf "$tmp_dir/control.tar.gz" -C "$tmp_dir"
   grep -q "^Package: ${expected_package}$" "$tmp_dir/control"
   grep -q "^Version: ${expected_version}$" "$tmp_dir/control"
-  if [[ "$expected_package" == "forkop" ]]; then
+  if [[ "$expected_package" == "topkop" ]]; then
     grep -q "^Conflicts: ${BACKEND_CONFLICTS_IPK}$" "$tmp_dir/control"
   fi
   rm -rf "$tmp_dir"
@@ -608,7 +608,7 @@ verify_apk_metadata() {
   "$apk_bin" adbdump "$package_file" > "$dump_file"
   grep -q "^  name: ${expected_package}$" "$dump_file"
   grep -q "^  version: ${expected_version}$" "$dump_file"
-  if [[ "$expected_package" == "forkop" ]]; then
+  if [[ "$expected_package" == "topkop" ]]; then
     for conflict in https-dns-proxy nextdns luci-app-passwall luci-app-passwall2; do
       grep -q "^[[:space:]]*- '!${conflict}'$" "$dump_file"
     done
@@ -655,12 +655,12 @@ main() {
   mkdir -p "$BUILD_DIR" "$SDK_CACHE_DIR"
   exec 9>"$SDK_CACHE_DIR/.build.lock"
   if ! flock -n 9; then
-    echo "Another Forkop package build is already running" >&2
+    echo "Another Topkop package build is already running" >&2
     exit 1
   fi
   output_dir="$OUTPUT_DIR"
   mkdir -p "$output_dir"
-  rm -f "$output_dir"/forkop_* "$output_dir"/luci-app-forkop_* "$output_dir"/luci-i18n-forkop-ru_*
+  rm -f "$output_dir"/topkop_* "$output_dir"/luci-app-topkop_* "$output_dir"/luci-i18n-topkop-ru_*
 
   ipk_archive="$(download_sdk_archive "$IPK_SDK_URL")"
   apk_archive="$(download_sdk_archive "$APK_SDK_URL")"
@@ -687,74 +687,74 @@ main() {
 
   build_ipk_package \
     "$ipkg_build_bin" \
-    "forkop" \
+    "topkop" \
     "$backend_root" \
     "$backend_control" \
-    "$output_dir/forkop_${RELEASE_VERSION}.ipk"
+    "$output_dir/topkop_${RELEASE_VERSION}.ipk"
 
   build_ipk_package \
     "$ipkg_build_bin" \
-    "luci-app-forkop" \
+    "luci-app-topkop" \
     "$app_root" \
     "$app_control" \
-    "$output_dir/luci-app-forkop_${RELEASE_VERSION}.ipk"
+    "$output_dir/luci-app-topkop_${RELEASE_VERSION}.ipk"
 
   build_ipk_package \
     "$ipkg_build_bin" \
-    "luci-i18n-forkop-ru" \
+    "luci-i18n-topkop-ru" \
     "$i18n_root" \
     "$i18n_control" \
-    "$output_dir/luci-i18n-forkop-ru_${RELEASE_VERSION}.ipk"
+    "$output_dir/luci-i18n-topkop-ru_${RELEASE_VERSION}.ipk"
 
-  generate_apk_metadata_files "forkop" "$backend_root" "/etc/config/forkop"
-  generate_apk_metadata_files "luci-app-forkop" "$app_root"
-  generate_apk_metadata_files "luci-i18n-forkop-ru" "$i18n_root"
+  generate_apk_metadata_files "topkop" "$backend_root" "/etc/config/forkop"
+  generate_apk_metadata_files "luci-app-topkop" "$app_root"
+  generate_apk_metadata_files "luci-i18n-topkop-ru" "$i18n_root"
   write_backend_apk_scripts "$apk_scripts"
   write_app_apk_scripts "$apk_scripts"
   write_i18n_apk_scripts "$apk_scripts"
 
   build_apk_package \
     "$apk_bin" \
-    "forkop" \
+    "topkop" \
     "$APK_INTERNAL_VERSION" \
     "$BACKEND_DESCRIPTION" \
     "$BACKEND_DEPENDS_APK" \
     "$backend_root" \
     "$apk_scripts" \
     "backend" \
-    "$output_dir/forkop_${RELEASE_VERSION}.apk" \
+    "$output_dir/topkop_${RELEASE_VERSION}.apk" \
     "$MAINTAINER"
 
   build_apk_package \
     "$apk_bin" \
-    "luci-app-forkop" \
+    "luci-app-topkop" \
     "$APK_INTERNAL_VERSION" \
     "$APP_DESCRIPTION" \
     "$APP_DEPENDS_APK" \
     "$app_root" \
     "$apk_scripts" \
     "app" \
-    "$output_dir/luci-app-forkop_${RELEASE_VERSION}.apk" \
+    "$output_dir/luci-app-topkop_${RELEASE_VERSION}.apk" \
     "$MAINTAINER"
 
   build_apk_package \
     "$apk_bin" \
-    "luci-i18n-forkop-ru" \
+    "luci-i18n-topkop-ru" \
     "$APK_INTERNAL_VERSION" \
     "$I18N_DESCRIPTION" \
-    "libc luci-app-forkop" \
+    "libc luci-app-topkop" \
     "$i18n_root" \
     "$apk_scripts" \
     "i18n" \
-    "$output_dir/luci-i18n-forkop-ru_${RELEASE_VERSION}.apk" \
+    "$output_dir/luci-i18n-topkop-ru_${RELEASE_VERSION}.apk" \
     "$MAINTAINER"
 
-  verify_ipk_metadata "$output_dir/forkop_${RELEASE_VERSION}.ipk" "forkop" "$RELEASE_VERSION"
-  verify_ipk_metadata "$output_dir/luci-app-forkop_${RELEASE_VERSION}.ipk" "luci-app-forkop" "$RELEASE_VERSION"
-  verify_ipk_metadata "$output_dir/luci-i18n-forkop-ru_${RELEASE_VERSION}.ipk" "luci-i18n-forkop-ru" "$RELEASE_VERSION"
-  verify_apk_metadata "$apk_bin" "$output_dir/forkop_${RELEASE_VERSION}.apk" "forkop" "$APK_INTERNAL_VERSION"
-  verify_apk_metadata "$apk_bin" "$output_dir/luci-app-forkop_${RELEASE_VERSION}.apk" "luci-app-forkop" "$APK_INTERNAL_VERSION"
-  verify_apk_metadata "$apk_bin" "$output_dir/luci-i18n-forkop-ru_${RELEASE_VERSION}.apk" "luci-i18n-forkop-ru" "$APK_INTERNAL_VERSION"
+  verify_ipk_metadata "$output_dir/topkop_${RELEASE_VERSION}.ipk" "topkop" "$RELEASE_VERSION"
+  verify_ipk_metadata "$output_dir/luci-app-topkop_${RELEASE_VERSION}.ipk" "luci-app-topkop" "$RELEASE_VERSION"
+  verify_ipk_metadata "$output_dir/luci-i18n-topkop-ru_${RELEASE_VERSION}.ipk" "luci-i18n-topkop-ru" "$RELEASE_VERSION"
+  verify_apk_metadata "$apk_bin" "$output_dir/topkop_${RELEASE_VERSION}.apk" "topkop" "$APK_INTERNAL_VERSION"
+  verify_apk_metadata "$apk_bin" "$output_dir/luci-app-topkop_${RELEASE_VERSION}.apk" "luci-app-topkop" "$APK_INTERNAL_VERSION"
+  verify_apk_metadata "$apk_bin" "$output_dir/luci-i18n-topkop-ru_${RELEASE_VERSION}.apk" "luci-i18n-topkop-ru" "$APK_INTERNAL_VERSION"
 
   cleanup_work_dir
   print_summary "$output_dir"

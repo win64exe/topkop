@@ -136,6 +136,13 @@ function provider_available() {
     return fs.stat(OLCRTC_BIN) != null;
 }
 
+function package_version() {
+    if (!provider_available())
+        return "";
+    let version = trim(command_output_from_args([ "cat", "/etc/olcrtc/.version" ]));
+    return version;
+}
+
 function service_init_exists() {
     return fs.stat(OLCRTC_SERVICE_INIT) != null;
 }
@@ -398,9 +405,11 @@ else if (mode == "check")
     check_json();
 else if (mode == "installed" || mode == "provider-available")
     exit(provider_available() ? 0 : 1);
+else if (mode == "package-version")
+    print(package_version(), "\n");
 else if (mode == "enabled-rule-count")
     print(enabled_rule_count(), "\n");
 else {
-    warn("Usage: providers/olcrtc/runtime.uc <start-runtime|stop-runtime|status|check|installed|enabled-rule-count>\n");
+    warn("Usage: providers/olcrtc/runtime.uc <start-runtime|stop-runtime|status|check|installed|package-version|enabled-rule-count>\n");
     exit(1);
 }

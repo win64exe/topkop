@@ -665,7 +665,7 @@ export const ForkopShellMethods = {
                   success: true,
                   component,
                   action,
-                  message: translate('Forkop has been installed'),
+                  message: translate('Topkop has been installed'),
                   current_version: installedVersion,
                   latest_version: expectedLatestVersion,
                   changed: true,

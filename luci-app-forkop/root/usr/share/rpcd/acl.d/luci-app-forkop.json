@@ -1,6 +1,6 @@
 {
   "luci-app-forkop": {
-    "description": "Grant UCI and RPC access to LuCI app Forkop",
+    "description": "Grant UCI and RPC access to LuCI app Topkop",
     "read": {
       "file": {
         "/etc/init.d/forkop": [

@@ -1383,7 +1383,7 @@ function render_global_system_info() {
     let sing_box_core = sing_box_core_label(value) || "regular";
     print_line("Sing-box core: " + sing_box_core);
 
-    print_line("\ud83d\udd73\ufe0f Forkop:   " + forkop_version);
+    print_line("\ud83d\udd73\ufe0f Topkop:   " + forkop_version);
     print_line("\ud83d\udd73\ufe0f LuCI App:      " + luci_app_version);
     print_line("\ud83d\udce6 Sing-box:      " + format_sing_box_version(value, sing_box_version));
     if (flag_is_one(value.zapret_installed))
@@ -1523,7 +1523,7 @@ function render_matching_log_tail(needle, max_lines) {
         {
             if (needle == "sing-box" && is_udp_unsupported_outbound_log(line)) {
                 if (!udp_http_notice_emitted) {
-                    push(filtered, "UDP traffic through HTTP outbounds is not supported by sing-box; repeated UDP warnings for HTTP outbounds are hidden by Forkop.");
+                    push(filtered, "UDP traffic through HTTP outbounds is not supported by sing-box; repeated UDP warnings for HTTP outbounds are hidden by Topkop.");
                     udp_http_notice_emitted = true;
                 }
                 continue;
@@ -1555,13 +1555,13 @@ function render_forkop_logs() {
 
         if (line_contains(line, "sing-box") && is_udp_unsupported_outbound_log(line)) {
             if (!udp_http_notice_emitted) {
-                push(filtered, "UDP traffic through HTTP outbounds is not supported by sing-box; repeated UDP warnings for HTTP outbounds are hidden by Forkop.");
+                push(filtered, "UDP traffic through HTTP outbounds is not supported by sing-box; repeated UDP warnings for HTTP outbounds are hidden by Topkop.");
                 udp_http_notice_emitted = true;
             }
             continue;
         }
 
-        if (line_contains(line, "forkop") && line_contains(line, "Starting Forkop"))
+        if (line_contains(line, "forkop") && line_contains(line, "Starting Topkop"))
             start = length(filtered);
 
         push(filtered, line);
@@ -1575,7 +1575,7 @@ function render_forkop_logs() {
         return;
     }
 
-    print_line("No 'Starting Forkop' message found, showing last 100 lines");
+    print_line("No 'Starting Topkop' message found, showing last 100 lines");
     start = length(filtered) > 100 ? length(filtered) - 100 : 0;
     print_lines(filtered, start, length(filtered));
 }

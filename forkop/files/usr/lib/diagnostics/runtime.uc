@@ -1143,7 +1143,7 @@ function get_server_capabilities() {
 }
 
 function neutralize_zapret_defaults() {
-    log_message("Standalone zapret is not neutralized automatically; Forkop uses /opt/zapret/nfq/nfqws as an external provider and manages only its own NFQUEUE range.", "info");
+    log_message("Standalone zapret is not neutralized automatically; Topkop uses /opt/zapret/nfq/nfqws as an external provider and manages only its own NFQUEUE range.", "info");
     return 0;
 }
 
@@ -1843,7 +1843,7 @@ function global_check(arg1, arg2) {
         print_global("❌ Failed to get NFT rules info");
 
     print_global("━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-    print_global("📄 Forkop config");
+    print_global("📄 Topkop config");
     show_config(visibility);
 
     print_global("━━━━━━━━━━━━━━━━━━━━━━━━━━━");
@@ -1885,20 +1885,20 @@ function global_check(arg1, arg2) {
 
     if (file_executable("/etc/init.d/zapret") && command_success_from_args([ "/etc/init.d/zapret", "status" ])) {
         print_global("━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-        print_global("⚠️ Standalone zapret service is active. Forkop uses separate queues, but packet-level policy overlap is possible.");
+        print_global("⚠️ Standalone zapret service is active. Topkop uses separate queues, but packet-level policy overlap is possible.");
     }
     else if (file_executable("/etc/init.d/zapret") && command_success_from_args([ "/etc/init.d/zapret", "enabled" ])) {
         print_global("━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-        print_global("⚠️ Standalone zapret autostart is enabled. Forkop will not modify /etc/config/zapret.");
+        print_global("⚠️ Standalone zapret autostart is enabled. Topkop will not modify /etc/config/zapret.");
     }
 
     if (file_executable("/etc/init.d/zapret2") && command_success_from_args([ "/etc/init.d/zapret2", "status" ])) {
         print_global("━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-        print_global("⚠️ Standalone zapret2 service is active. Forkop uses separate queues, but packet-level policy overlap is possible.");
+        print_global("⚠️ Standalone zapret2 service is active. Topkop uses separate queues, but packet-level policy overlap is possible.");
     }
     else if (file_executable("/etc/init.d/zapret2") && command_success_from_args([ "/etc/init.d/zapret2", "enabled" ])) {
         print_global("━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-        print_global("⚠️ Standalone zapret2 autostart is enabled. Forkop will not modify /etc/config/zapret2.");
+        print_global("⚠️ Standalone zapret2 autostart is enabled. Topkop will not modify /etc/config/zapret2.");
     }
 
     print_global("━━━━━━━━━━━━━━━━━━━━━━━━━━━");

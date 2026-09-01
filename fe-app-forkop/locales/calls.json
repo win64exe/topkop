@@ -468,8 +468,8 @@
     ]
   },
   {
-    "call": "ByeDPI listen address and port are assigned by Forkop and must not be set in the strategy.",
-    "key": "ByeDPI listen address and port are assigned by Forkop and must not be set in the strategy.",
+    "call": "ByeDPI listen address and port are assigned by Topkop and must not be set in the strategy.",
+    "key": "ByeDPI listen address and port are assigned by Topkop and must not be set in the strategy.",
     "places": [
       "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:6303"
     ]
@@ -818,8 +818,8 @@
     ]
   },
   {
-    "call": "Configuration for Forkop service",
-    "key": "Configuration for Forkop service",
+    "call": "Configuration for Topkop service",
+    "key": "Configuration for Topkop service",
     "places": [
       "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/forkop.js:343"
     ]
@@ -942,8 +942,8 @@
     ]
   },
   {
-    "call": "Delay in milliseconds before reloading Forkop after interface UP",
-    "key": "Delay in milliseconds before reloading Forkop after interface UP",
+    "call": "Delay in milliseconds before reloading Topkop after interface UP",
+    "key": "Delay in milliseconds before reloading Topkop after interface UP",
     "places": [
       "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/settings.js:398"
     ]
@@ -1049,8 +1049,8 @@
     ]
   },
   {
-    "call": "Disabling interception is incompatible with action=zapret2 because Forkop sends matched traffic through NFQUEUE.",
-    "key": "Disabling interception is incompatible with action=zapret2 because Forkop sends matched traffic through NFQUEUE.",
+    "call": "Disabling interception is incompatible with action=zapret2 because Topkop sends matched traffic through NFQUEUE.",
+    "key": "Disabling interception is incompatible with action=zapret2 because Topkop sends matched traffic through NFQUEUE.",
     "places": [
       "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:5904"
     ]
@@ -1643,15 +1643,15 @@
     ]
   },
   {
-    "call": "External nfqws config files bypass Forkop queue management and explicit validation.",
-    "key": "External nfqws config files bypass Forkop queue management and explicit validation.",
+    "call": "External nfqws config files bypass Topkop queue management and explicit validation.",
+    "key": "External nfqws config files bypass Topkop queue management and explicit validation.",
     "places": [
       "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:5438"
     ]
   },
   {
-    "call": "External nfqws2 config files bypass Forkop queue management and explicit validation.",
-    "key": "External nfqws2 config files bypass Forkop queue management and explicit validation.",
+    "call": "External nfqws2 config files bypass Topkop queue management and explicit validation.",
+    "key": "External nfqws2 config files bypass Topkop queue management and explicit validation.",
     "places": [
       "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:5883"
     ]
@@ -1785,134 +1785,134 @@
     ]
   },
   {
-    "call": "Forkop Error",
-    "key": "Forkop Error",
+    "call": "Topkop Error",
+    "key": "Topkop Error",
     "places": [
       "src/forkop/services/core.service.ts:52"
     ]
   },
   {
-    "call": "Forkop manages ciadpi pid files itself, so pidfile options are not allowed here.",
-    "key": "Forkop manages ciadpi pid files itself, so pidfile options are not allowed here.",
+    "call": "Topkop manages ciadpi pid files itself, so pidfile options are not allowed here.",
+    "key": "Topkop manages ciadpi pid files itself, so pidfile options are not allowed here.",
     "places": [
       "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:6312"
     ]
   },
   {
-    "call": "Forkop manages the ciadpi process lifecycle itself, so daemon mode is not allowed here.",
-    "key": "Forkop manages the ciadpi process lifecycle itself, so daemon mode is not allowed here.",
+    "call": "Topkop manages the ciadpi process lifecycle itself, so daemon mode is not allowed here.",
+    "key": "Topkop manages the ciadpi process lifecycle itself, so daemon mode is not allowed here.",
     "places": [
       "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:6309"
     ]
   },
   {
-    "call": "Forkop manages the nfqws process lifecycle itself, so daemon mode is not allowed here.",
-    "key": "Forkop manages the nfqws process lifecycle itself, so daemon mode is not allowed here.",
+    "call": "Topkop manages the nfqws process lifecycle itself, so daemon mode is not allowed here.",
+    "key": "Topkop manages the nfqws process lifecycle itself, so daemon mode is not allowed here.",
     "places": [
       "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:5456"
     ]
   },
   {
-    "call": "Forkop manages the nfqws2 process lifecycle itself, so daemon mode is not allowed here.",
-    "key": "Forkop manages the nfqws2 process lifecycle itself, so daemon mode is not allowed here.",
+    "call": "Topkop manages the nfqws2 process lifecycle itself, so daemon mode is not allowed here.",
+    "key": "Topkop manages the nfqws2 process lifecycle itself, so daemon mode is not allowed here.",
     "places": [
       "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:5907"
     ]
   },
   {
-    "call": "Forkop service is stopped. Start the service to display connections.",
-    "key": "Forkop service is stopped. Start the service to display connections.",
+    "call": "Topkop service is stopped. Start the service to display connections.",
+    "key": "Topkop service is stopped. Start the service to display connections.",
     "places": [
       "src/forkop/tabs/monitoring/initController.ts:925"
     ]
   },
   {
-    "call": "Forkop service is stopped. Start the service to display the dashboard.",
-    "key": "Forkop service is stopped. Start the service to display the dashboard.",
+    "call": "Topkop service is stopped. Start the service to display the dashboard.",
+    "key": "Topkop service is stopped. Start the service to display the dashboard.",
     "places": [
       "src/forkop/tabs/dashboard/render.ts:17"
     ]
   },
   {
-    "call": "Forkop Settings",
-    "key": "Forkop Settings",
+    "call": "Topkop Settings",
+    "key": "Topkop Settings",
     "places": [
       "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/forkop.js:342"
     ]
   },
   {
-    "call": "Forkop will not modify your DHCP configuration",
-    "key": "Forkop will not modify your DHCP configuration",
+    "call": "Topkop will not modify your DHCP configuration",
+    "key": "Topkop will not modify your DHCP configuration",
     "places": [
       "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/settings.js:602"
     ]
   },
   {
-    "call": "Forkop-managed ciadpi runtime has restarted",
-    "key": "Forkop-managed ciadpi runtime has restarted",
+    "call": "Topkop-managed ciadpi runtime has restarted",
+    "key": "Topkop-managed ciadpi runtime has restarted",
     "places": [
       "src/forkop/tabs/diagnostic/checks/runByedpiCheck.ts:91"
     ]
   },
   {
-    "call": "Forkop-managed ciadpi runtime is not ready",
-    "key": "Forkop-managed ciadpi runtime is not ready",
+    "call": "Topkop-managed ciadpi runtime is not ready",
+    "key": "Topkop-managed ciadpi runtime is not ready",
     "places": [
       "src/forkop/tabs/diagnostic/checks/runByedpiCheck.ts:94"
     ]
   },
   {
-    "call": "Forkop-managed ciadpi runtime is not running",
-    "key": "Forkop-managed ciadpi runtime is not running",
+    "call": "Topkop-managed ciadpi runtime is not running",
+    "key": "Topkop-managed ciadpi runtime is not running",
     "places": [
       "src/forkop/tabs/diagnostic/checks/runByedpiCheck.ts:97"
     ]
   },
   {
-    "call": "Forkop-managed ciadpi runtime is ready",
-    "key": "Forkop-managed ciadpi runtime is ready",
+    "call": "Topkop-managed ciadpi runtime is ready",
+    "key": "Topkop-managed ciadpi runtime is ready",
     "places": [
       "src/forkop/tabs/diagnostic/checks/runByedpiCheck.ts:93"
     ]
   },
   {
-    "call": "Forkop-managed nfqws runtime is not ready",
-    "key": "Forkop-managed nfqws runtime is not ready",
+    "call": "Topkop-managed nfqws runtime is not ready",
+    "key": "Topkop-managed nfqws runtime is not ready",
     "places": [
       "src/forkop/tabs/diagnostic/checks/runZapretCheck.ts:87"
     ]
   },
   {
-    "call": "Forkop-managed nfqws runtime is not running",
-    "key": "Forkop-managed nfqws runtime is not running",
+    "call": "Topkop-managed nfqws runtime is not running",
+    "key": "Topkop-managed nfqws runtime is not running",
     "places": [
       "src/forkop/tabs/diagnostic/checks/runZapretCheck.ts:90"
     ]
   },
   {
-    "call": "Forkop-managed nfqws runtime is ready",
-    "key": "Forkop-managed nfqws runtime is ready",
+    "call": "Topkop-managed nfqws runtime is ready",
+    "key": "Topkop-managed nfqws runtime is ready",
     "places": [
       "src/forkop/tabs/diagnostic/checks/runZapretCheck.ts:86"
     ]
   },
   {
-    "call": "Forkop-managed nfqws2 runtime is not ready",
-    "key": "Forkop-managed nfqws2 runtime is not ready",
+    "call": "Topkop-managed nfqws2 runtime is not ready",
+    "key": "Topkop-managed nfqws2 runtime is not ready",
     "places": [
       "src/forkop/tabs/diagnostic/checks/runZapret2Check.ts:90"
     ]
   },
   {
-    "call": "Forkop-managed nfqws2 runtime is not running",
-    "key": "Forkop-managed nfqws2 runtime is not running",
+    "call": "Topkop-managed nfqws2 runtime is not running",
+    "key": "Topkop-managed nfqws2 runtime is not running",
     "places": [
       "src/forkop/tabs/diagnostic/checks/runZapret2Check.ts:93"
     ]
   },
   {
-    "call": "Forkop-managed nfqws2 runtime is ready",
-    "key": "Forkop-managed nfqws2 runtime is ready",
+    "call": "Topkop-managed nfqws2 runtime is ready",
+    "key": "Topkop-managed nfqws2 runtime is ready",
     "places": [
       "src/forkop/tabs/diagnostic/checks/runZapret2Check.ts:89"
     ]
@@ -1939,8 +1939,8 @@
     ]
   },
   {
-    "call": "Fuzzing is not supported here because Forkop needs deterministic runtime validation.",
-    "key": "Fuzzing is not supported here because Forkop needs deterministic runtime validation.",
+    "call": "Fuzzing is not supported here because Topkop needs deterministic runtime validation.",
+    "key": "Fuzzing is not supported here because Topkop needs deterministic runtime validation.",
     "places": [
       "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:5901"
     ]
@@ -3755,8 +3755,8 @@
     ]
   },
   {
-    "call": "Restart Forkop",
-    "key": "Restart Forkop",
+    "call": "Restart Topkop",
+    "key": "Restart Topkop",
     "places": [
       "src/forkop/tabs/diagnostic/partials/renderAvailableActions.ts:49"
     ]
@@ -4402,8 +4402,8 @@
     ]
   },
   {
-    "call": "Standalone ByeDPI is active together with Forkop ByeDPI rules",
-    "key": "Standalone ByeDPI is active together with Forkop ByeDPI rules",
+    "call": "Standalone ByeDPI is active together with Topkop ByeDPI rules",
+    "key": "Standalone ByeDPI is active together with Topkop ByeDPI rules",
     "places": [
       "src/forkop/tabs/diagnostic/checks/runByedpiCheck.ts:119"
     ]
@@ -4423,8 +4423,8 @@
     ]
   },
   {
-    "call": "Standalone Zapret is active together with Forkop Zapret rules",
-    "key": "Standalone Zapret is active together with Forkop Zapret rules",
+    "call": "Standalone Zapret is active together with Topkop Zapret rules",
+    "key": "Standalone Zapret is active together with Topkop Zapret rules",
     "places": [
       "src/forkop/tabs/diagnostic/checks/runZapretCheck.ts:111"
     ]
@@ -4451,8 +4451,8 @@
     ]
   },
   {
-    "call": "Standalone Zapret2 is active together with Forkop Zapret2 rules",
-    "key": "Standalone Zapret2 is active together with Forkop Zapret2 rules",
+    "call": "Standalone Zapret2 is active together with Topkop Zapret2 rules",
+    "key": "Standalone Zapret2 is active together with Topkop Zapret2 rules",
     "places": [
       "src/forkop/tabs/diagnostic/checks/runZapret2Check.ts:118"
     ]
@@ -4472,8 +4472,8 @@
     ]
   },
   {
-    "call": "Start Forkop",
-    "key": "Start Forkop",
+    "call": "Start Topkop",
+    "key": "Start Topkop",
     "places": [
       "src/forkop/tabs/diagnostic/partials/renderAvailableActions.ts:69"
     ]
@@ -4486,8 +4486,8 @@
     ]
   },
   {
-    "call": "Stop Forkop",
-    "key": "Stop Forkop",
+    "call": "Stop Topkop",
+    "key": "Stop Topkop",
     "places": [
       "src/forkop/tabs/diagnostic/partials/renderAvailableActions.ts:59"
     ]
@@ -4664,16 +4664,16 @@
     ]
   },
   {
-    "call": "The desync fwmark is managed by Forkop for loop prevention and must not be overridden here.",
-    "key": "The desync fwmark is managed by Forkop for loop prevention and must not be overridden here.",
+    "call": "The desync fwmark is managed by Topkop for loop prevention and must not be overridden here.",
+    "key": "The desync fwmark is managed by Topkop for loop prevention and must not be overridden here.",
     "places": [
       "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:5453",
       "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:5898"
     ]
   },
   {
-    "call": "The NFQUEUE number is assigned by Forkop for each rule and must not be overridden here.",
-    "key": "The NFQUEUE number is assigned by Forkop for each rule and must not be overridden here.",
+    "call": "The NFQUEUE number is assigned by Topkop for each rule and must not be overridden here.",
+    "key": "The NFQUEUE number is assigned by Topkop for each rule and must not be overridden here.",
     "places": [
       "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:5450",
       "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:5895"
@@ -4836,8 +4836,8 @@
     ]
   },
   {
-    "call": "Transparent proxy mode is incompatible with action=byedpi because Forkop connects to ciadpi through SOCKS.",
-    "key": "Transparent proxy mode is incompatible with action=byedpi because Forkop connects to ciadpi through SOCKS.",
+    "call": "Transparent proxy mode is incompatible with action=byedpi because Topkop connects to ciadpi through SOCKS.",
+    "key": "Transparent proxy mode is incompatible with action=byedpi because Topkop connects to ciadpi through SOCKS.",
     "places": [
       "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:6306"
     ]
@@ -4956,22 +4956,22 @@
     ]
   },
   {
-    "call": "Unexpected Forkop-managed ciadpi runtime is running",
-    "key": "Unexpected Forkop-managed ciadpi runtime is running",
+    "call": "Unexpected Topkop-managed ciadpi runtime is running",
+    "key": "Unexpected Topkop-managed ciadpi runtime is running",
     "places": [
       "src/forkop/tabs/diagnostic/checks/runByedpiCheck.ts:96"
     ]
   },
   {
-    "call": "Unexpected Forkop-managed nfqws runtime is running",
-    "key": "Unexpected Forkop-managed nfqws runtime is running",
+    "call": "Unexpected Topkop-managed nfqws runtime is running",
+    "key": "Unexpected Topkop-managed nfqws runtime is running",
     "places": [
       "src/forkop/tabs/diagnostic/checks/runZapretCheck.ts:89"
     ]
   },
   {
-    "call": "Unexpected Forkop-managed nfqws2 runtime is running",
-    "key": "Unexpected Forkop-managed nfqws2 runtime is running",
+    "call": "Unexpected Topkop-managed nfqws2 runtime is running",
+    "key": "Unexpected Topkop-managed nfqws2 runtime is running",
     "places": [
       "src/forkop/tabs/diagnostic/checks/runZapret2Check.ts:92"
     ]
@@ -5411,8 +5411,8 @@
     ]
   },
   {
-    "call": "What Forkop should do when this section matches",
-    "key": "What Forkop should do when this section matches",
+    "call": "What Topkop should do when this section matches",
+    "key": "What Topkop should do when this section matches",
     "places": [
       "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:7043"
     ]
@@ -5453,8 +5453,8 @@
     ]
   },
   {
-    "call": "Zapret hostlist templates are not supported here because Forkop does not expand them for per-rule NFQWS strategies.",
-    "key": "Zapret hostlist templates are not supported here because Forkop does not expand them for per-rule NFQWS strategies.",
+    "call": "Zapret hostlist templates are not supported here because Topkop does not expand them for per-rule NFQWS strategies.",
+    "key": "Zapret hostlist templates are not supported here because Topkop does not expand them for per-rule NFQWS strategies.",
     "places": [
       "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:5447"
     ]
@@ -5502,8 +5502,8 @@
     ]
   },
   {
-    "call": "Zapret2 hostlist templates are not supported here because Forkop does not expand them for per-rule NFQWS2 strategies.",
-    "key": "Zapret2 hostlist templates are not supported here because Forkop does not expand them for per-rule NFQWS2 strategies.",
+    "call": "Zapret2 hostlist templates are not supported here because Topkop does not expand them for per-rule NFQWS2 strategies.",
+    "key": "Zapret2 hostlist templates are not supported here because Topkop does not expand them for per-rule NFQWS2 strategies.",
     "places": [
       "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:5892"
     ]

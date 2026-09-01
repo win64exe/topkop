@@ -559,7 +559,7 @@ function migrate_proxy_rule(ctx, section, proxy_config_type) {
     delete_option(ctx, section, "proxy_config_type");
 }
 
-// Podkop Plus -> Forkop source migration.
+// Podkop Plus -> Topkop source migration.
 function migrated_rule_action(section) {
     let action = option(section, "action", "");
     let proxy_config_type = option(section, "proxy_config_type", "");

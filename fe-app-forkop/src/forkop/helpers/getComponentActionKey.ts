@@ -24,6 +24,9 @@ const componentActionKeyMap: Record<string, UpdatesActionKey> = {
   'qwdtt:check_update': 'qwdttCheck',
   'qwdtt:install': 'qwdttInstall',
   'qwdtt:remove': 'qwdttRemove',
+  'olcrtc:check_update': 'olcrtcCheck',
+  'olcrtc:install': 'olcrtcInstall',
+  'olcrtc:remove': 'olcrtcRemove',
 };
 
 export function getComponentActionKey(

@@ -88,13 +88,13 @@ export async function runByedpiCheck() {
             : 'success',
       key: hasByedpiRules
         ? runtimeUnstable
-          ? _('Forkop-managed ciadpi runtime has restarted')
+          ? _('Topkop-managed ciadpi runtime has restarted')
           : forkopRuntimeReady
-            ? _('Forkop-managed ciadpi runtime is ready')
-            : _('Forkop-managed ciadpi runtime is not ready')
+            ? _('Topkop-managed ciadpi runtime is ready')
+            : _('Topkop-managed ciadpi runtime is not ready')
         : unexpectedRuntime
-          ? _('Unexpected Forkop-managed ciadpi runtime is running')
-          : _('Forkop-managed ciadpi runtime is not running'),
+          ? _('Unexpected Topkop-managed ciadpi runtime is running')
+          : _('Topkop-managed ciadpi runtime is not running'),
       value: hasByedpiRules
         ? runtimeUnstable
           ? `${restartCount}`
@@ -116,7 +116,7 @@ export async function runByedpiCheck() {
           : 'success',
       key: standaloneServiceRunning
         ? hasByedpiRules
-          ? _('Standalone ByeDPI is active together with Forkop ByeDPI rules')
+          ? _('Standalone ByeDPI is active together with Topkop ByeDPI rules')
           : _('Standalone ByeDPI service is active')
         : standaloneAutostartRisk
           ? _('Standalone ByeDPI autostart is enabled')

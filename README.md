@@ -15,7 +15,7 @@ sh <(wget -O - https://raw.githubusercontent.com/win64exe/topkop/main/install.sh
 <summary><sub>Альтернативный способ установки</sub></summary>
 
 ```sh
-sh <(wget -O - https://forkop.sourceforge.io/install.sh)
+sh <(wget -O - https://raw.githubusercontent.com/win64exe/topkop/main/install.sh)
 ```
 
 </details>

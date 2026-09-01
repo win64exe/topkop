@@ -83,11 +83,11 @@ export async function runZapretCheck() {
       state: unexpectedRuntime || !forkopRuntimeReady ? 'error' : 'success',
       key: hasZapretRules
         ? forkopRuntimeReady
-          ? _('Forkop-managed nfqws runtime is ready')
-          : _('Forkop-managed nfqws runtime is not ready')
+          ? _('Topkop-managed nfqws runtime is ready')
+          : _('Topkop-managed nfqws runtime is not ready')
         : unexpectedRuntime
-          ? _('Unexpected Forkop-managed nfqws runtime is running')
-          : _('Forkop-managed nfqws runtime is not running'),
+          ? _('Unexpected Topkop-managed nfqws runtime is running')
+          : _('Topkop-managed nfqws runtime is not running'),
       value: hasZapretRules ? `${runningProcesses}/${expectedProcesses}` : '',
     },
     {
@@ -108,7 +108,7 @@ export async function runZapretCheck() {
       state: standaloneConflict ? 'warning' : 'success',
       key: standaloneServiceRunning
         ? hasZapretRules
-          ? _('Standalone Zapret is active together with Forkop Zapret rules')
+          ? _('Standalone Zapret is active together with Topkop Zapret rules')
           : _('Standalone Zapret service is active')
         : _('Standalone Zapret service is inactive'),
       value: '',

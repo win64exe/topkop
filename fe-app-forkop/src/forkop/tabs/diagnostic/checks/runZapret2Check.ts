@@ -86,11 +86,11 @@ export async function runZapret2Check() {
       state: unexpectedRuntime || !forkopRuntimeReady ? 'error' : 'success',
       key: hasZapret2Rules
         ? forkopRuntimeReady
-          ? _('Forkop-managed nfqws2 runtime is ready')
-          : _('Forkop-managed nfqws2 runtime is not ready')
+          ? _('Topkop-managed nfqws2 runtime is ready')
+          : _('Topkop-managed nfqws2 runtime is not ready')
         : unexpectedRuntime
-          ? _('Unexpected Forkop-managed nfqws2 runtime is running')
-          : _('Forkop-managed nfqws2 runtime is not running'),
+          ? _('Unexpected Topkop-managed nfqws2 runtime is running')
+          : _('Topkop-managed nfqws2 runtime is not running'),
       value: hasZapret2Rules ? `${runningProcesses}/${expectedProcesses}` : '',
     },
     {
@@ -115,7 +115,7 @@ export async function runZapret2Check() {
           : 'success',
       key: standaloneServiceRunning
         ? hasZapret2Rules
-          ? _('Standalone Zapret2 is active together with Forkop Zapret2 rules')
+          ? _('Standalone Zapret2 is active together with Topkop Zapret2 rules')
           : _('Standalone Zapret2 service is active')
         : standaloneAutostartRisk
           ? _('Standalone Zapret2 autostart is enabled')

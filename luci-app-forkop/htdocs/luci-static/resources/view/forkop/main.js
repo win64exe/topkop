@@ -2227,7 +2227,7 @@ function render() {
           role: "status"
         },
         _(
-          "Forkop service is stopped. Start the service to display the dashboard."
+          "Topkop service is stopped. Start the service to display the dashboard."
         )
       ),
       E("div", { class: "fkp_dashboard-page__content" }, [
@@ -2979,7 +2979,7 @@ var ForkopShellMethods = {
                   success: true,
                   component,
                   action,
-                  message: translate("Forkop has been installed"),
+                  message: translate("Topkop has been installed"),
                   current_version: installedVersion,
                   latest_version: expectedLatestVersion,
                   changed: true,
@@ -4348,7 +4348,10 @@ var initialDiagnosticStore = {
     byedpiRemove: { loading: false },
     qwdttCheck: { loading: false },
     qwdttInstall: { loading: false },
-    qwdttRemove: { loading: false }
+    qwdttRemove: { loading: false },
+    olcrtcCheck: { loading: false },
+    olcrtcInstall: { loading: false },
+    olcrtcRemove: { loading: false }
   },
   updatesChecks: {
     forkop: { status: null, latest_version: "", release_url: "" },
@@ -4356,7 +4359,8 @@ var initialDiagnosticStore = {
     zapret: { status: null, latest_version: "", release_url: "" },
     zapret2: { status: null, latest_version: "", release_url: "" },
     byedpi: { status: null, latest_version: "", release_url: "" },
-    qwdtt: { status: null, latest_version: "", release_url: "" }
+    qwdtt: { status: null, latest_version: "", release_url: "" },
+    olcrtc: { status: null, latest_version: "", release_url: "" }
   }
 };
 
@@ -4705,7 +4709,10 @@ var componentActionKeyMap = {
   "byedpi:remove": "byedpiRemove",
   "qwdtt:check_update": "qwdttCheck",
   "qwdtt:install": "qwdttInstall",
-  "qwdtt:remove": "qwdttRemove"
+  "qwdtt:remove": "qwdttRemove",
+  "olcrtc:check_update": "olcrtcCheck",
+  "olcrtc:install": "olcrtcInstall",
+  "olcrtc:remove": "olcrtcRemove"
 };
 function getComponentActionKey(component, action) {
   return componentActionKeyMap[`${component}:${action}`];
@@ -4815,7 +4822,10 @@ function getEmptyUpdatesActions() {
     byedpiRemove: { loading: false },
     qwdttCheck: { loading: false },
     qwdttInstall: { loading: false },
-    qwdttRemove: { loading: false }
+    qwdttRemove: { loading: false },
+    olcrtcCheck: { loading: false },
+    olcrtcInstall: { loading: false },
+    olcrtcRemove: { loading: false }
   };
 }
 function getEmptyDiagnosticsActions() {
@@ -5071,7 +5081,7 @@ var LOG_WATCHER_INTERVAL_MS = 1e4;
 var LOG_WATCHER_START_DELAY_MS = 5e3;
 function componentDisplayName(component) {
   const names = {
-    forkop: "Forkop",
+    forkop: "Topkop",
     sing_box: "sing-box",
     zapret: "Zapret",
     zapret2: "Zapret2",
@@ -5091,7 +5101,7 @@ function showLogNotification(notification) {
     return;
   }
   ui.addNotification(
-    _("Forkop Error"),
+    _("Topkop Error"),
     E("div", {}, notification.line),
     "error",
     "fkp-log-error-notification"
@@ -6736,7 +6746,7 @@ async function renderServicesInfoWidget() {
     title: _("Services info"),
     items: [
       {
-        key: "Forkop",
+        key: "Topkop",
         value: servicesInfoWidget.data.forkopRunning ? _("\u2714 Running") : _("\u2718 Stopped"),
         attributes: {
           class: servicesInfoWidget.data.forkopRunning ? "fkp_dashboard-page__widgets-section__item__row--success" : "fkp_dashboard-page__widgets-section__item__row--error"
@@ -8157,7 +8167,7 @@ async function runZapretCheck() {
     },
     {
       state: unexpectedRuntime || !forkopRuntimeReady ? "error" : "success",
-      key: hasZapretRules ? forkopRuntimeReady ? _("Forkop-managed nfqws runtime is ready") : _("Forkop-managed nfqws runtime is not ready") : unexpectedRuntime ? _("Unexpected Forkop-managed nfqws runtime is running") : _("Forkop-managed nfqws runtime is not running"),
+      key: hasZapretRules ? forkopRuntimeReady ? _("Topkop-managed nfqws runtime is ready") : _("Topkop-managed nfqws runtime is not ready") : unexpectedRuntime ? _("Unexpected Topkop-managed nfqws runtime is running") : _("Topkop-managed nfqws runtime is not running"),
       value: hasZapretRules ? `${runningProcesses}/${expectedProcesses}` : ""
     },
     {
@@ -8172,7 +8182,7 @@ async function runZapretCheck() {
     },
     {
       state: standaloneConflict ? "warning" : "success",
-      key: standaloneServiceRunning ? hasZapretRules ? _("Standalone Zapret is active together with Forkop Zapret rules") : _("Standalone Zapret service is active") : _("Standalone Zapret service is inactive"),
+      key: standaloneServiceRunning ? hasZapretRules ? _("Standalone Zapret is active together with Topkop Zapret rules") : _("Standalone Zapret service is active") : _("Standalone Zapret service is inactive"),
       value: ""
     }
   ];
@@ -8243,7 +8253,7 @@ async function runZapret2Check() {
     },
     {
       state: unexpectedRuntime || !forkopRuntimeReady ? "error" : "success",
-      key: hasZapret2Rules ? forkopRuntimeReady ? _("Forkop-managed nfqws2 runtime is ready") : _("Forkop-managed nfqws2 runtime is not ready") : unexpectedRuntime ? _("Unexpected Forkop-managed nfqws2 runtime is running") : _("Forkop-managed nfqws2 runtime is not running"),
+      key: hasZapret2Rules ? forkopRuntimeReady ? _("Topkop-managed nfqws2 runtime is ready") : _("Topkop-managed nfqws2 runtime is not ready") : unexpectedRuntime ? _("Unexpected Topkop-managed nfqws2 runtime is running") : _("Topkop-managed nfqws2 runtime is not running"),
       value: hasZapret2Rules ? `${runningProcesses}/${expectedProcesses}` : ""
     },
     {
@@ -8258,7 +8268,7 @@ async function runZapret2Check() {
     },
     {
       state: standaloneConflict ? "error" : standaloneAutostartRisk ? "warning" : "success",
-      key: standaloneServiceRunning ? hasZapret2Rules ? _("Standalone Zapret2 is active together with Forkop Zapret2 rules") : _("Standalone Zapret2 service is active") : standaloneAutostartRisk ? _("Standalone Zapret2 autostart is enabled") : _("Standalone Zapret2 service is inactive"),
+      key: standaloneServiceRunning ? hasZapret2Rules ? _("Standalone Zapret2 is active together with Topkop Zapret2 rules") : _("Standalone Zapret2 service is active") : standaloneAutostartRisk ? _("Standalone Zapret2 autostart is enabled") : _("Standalone Zapret2 service is inactive"),
       value: ""
     }
   ];
@@ -8330,7 +8340,7 @@ async function runByedpiCheck() {
     },
     {
       state: unexpectedRuntime || !forkopRuntimeReady ? "error" : runtimeUnstable ? "warning" : "success",
-      key: hasByedpiRules ? runtimeUnstable ? _("Forkop-managed ciadpi runtime has restarted") : forkopRuntimeReady ? _("Forkop-managed ciadpi runtime is ready") : _("Forkop-managed ciadpi runtime is not ready") : unexpectedRuntime ? _("Unexpected Forkop-managed ciadpi runtime is running") : _("Forkop-managed ciadpi runtime is not running"),
+      key: hasByedpiRules ? runtimeUnstable ? _("Topkop-managed ciadpi runtime has restarted") : forkopRuntimeReady ? _("Topkop-managed ciadpi runtime is ready") : _("Topkop-managed ciadpi runtime is not ready") : unexpectedRuntime ? _("Unexpected Topkop-managed ciadpi runtime is running") : _("Topkop-managed ciadpi runtime is not running"),
       value: hasByedpiRules ? runtimeUnstable ? `${restartCount}` : `${runningProcesses}/${expectedProcesses}` : ""
     },
     {
@@ -8340,7 +8350,7 @@ async function runByedpiCheck() {
     },
     {
       state: standaloneConflict ? "error" : standaloneAutostartRisk ? "warning" : "success",
-      key: standaloneServiceRunning ? hasByedpiRules ? _("Standalone ByeDPI is active together with Forkop ByeDPI rules") : _("Standalone ByeDPI service is active") : standaloneAutostartRisk ? _("Standalone ByeDPI autostart is enabled") : _("Standalone ByeDPI service is inactive"),
+      key: standaloneServiceRunning ? hasByedpiRules ? _("Standalone ByeDPI is active together with Topkop ByeDPI rules") : _("Standalone ByeDPI service is active") : standaloneAutostartRisk ? _("Standalone ByeDPI autostart is enabled") : _("Standalone ByeDPI service is inactive"),
       value: ""
     }
   ];
@@ -8869,7 +8879,7 @@ function renderAvailableActions({
         classNames: ["cbi-button-apply"],
         onClick: restart.onClick,
         icon: renderRotateCcwIcon24,
-        text: _("Restart Forkop"),
+        text: _("Restart Topkop"),
         loading: restart.loading,
         disabled: restart.disabled
       })
@@ -8879,7 +8889,7 @@ function renderAvailableActions({
         classNames: ["cbi-button-remove"],
         onClick: stop.onClick,
         icon: renderCircleStopIcon24,
-        text: _("Stop Forkop"),
+        text: _("Stop Topkop"),
         loading: stop.loading,
         disabled: stop.disabled
       })
@@ -8889,7 +8899,7 @@ function renderAvailableActions({
         classNames: ["cbi-button-save"],
         onClick: start.onClick,
         icon: renderCirclePlayIcon24,
-        text: _("Start Forkop"),
+        text: _("Start Topkop"),
         loading: start.loading,
         disabled: start.disabled
       })
@@ -10367,7 +10377,7 @@ function renderDiagnosticSystemInfoWidget() {
   const container = document.getElementById("fkp_diagnostic-page-system-info");
   const items = [
     {
-      key: "Forkop",
+      key: "Topkop",
       value: normalizeCompiledVersion(diagnosticsSystemInfo.forkop_version)
     },
     {
@@ -11627,7 +11637,7 @@ function renderConnections(options = {}) {
     container.replaceChildren(
       renderConnectionsTable([], {
         text: _(
-          "Forkop service is stopped. Start the service to display connections."
+          "Topkop service is stopped. Start the service to display connections."
         )
       })
     );
@@ -13046,7 +13056,8 @@ function notifyActionProvidersAvailabilityChanged(systemInfo) {
         zapretInstalled: Boolean(systemInfo.zapret_installed),
         zapret2Installed: Boolean(systemInfo.zapret2_installed),
         byedpiInstalled: Boolean(systemInfo.byedpi_installed),
-        wdttInstalled: Boolean(systemInfo.wdtt_installed)
+        wdttInstalled: Boolean(systemInfo.wdtt_installed),
+        olcrtcInstalled: Boolean(systemInfo.olcrtc_installed)
       }
     })
   );
@@ -13130,11 +13141,21 @@ function patchSystemInfoAfterMutation(result) {
       nextSystemInfo.wdtt_version = version;
     }
   }
+  if (result.component === "olcrtc") {
+    nextSystemInfo.providerInfoLoaded = true;
+    if (result.action === "remove") {
+      nextSystemInfo.olcrtc_installed = 0;
+      nextSystemInfo.olcrtc_version = "not installed";
+    } else {
+      nextSystemInfo.olcrtc_installed = 1;
+      nextSystemInfo.olcrtc_version = version;
+    }
+  }
   const normalizedSystemInfo = normalizeSingBoxVariantFields(nextSystemInfo);
   store.set({
     diagnosticsSystemInfo: normalizedSystemInfo
   });
-  if (result.component === "zapret" || result.component === "zapret2" || result.component === "byedpi" || result.component === "qwdtt") {
+  if (result.component === "zapret" || result.component === "zapret2" || result.component === "byedpi" || result.component === "qwdtt" || result.component === "olcrtc") {
     notifyActionProvidersAvailabilityChanged(normalizedSystemInfo);
   }
 }
@@ -13438,6 +13459,7 @@ function getComponentCards() {
   const zapret2Installed = Boolean(systemInfo.zapret2_installed);
   const byedpiInstalled = Boolean(systemInfo.byedpi_installed);
   const wdttInstalled = Boolean(systemInfo.wdtt_installed);
+  const olcrtcInstalled = Boolean(systemInfo.olcrtc_installed);
   const singBoxInstalled = !isNotInstalled(systemInfo.sing_box_version);
   const singBoxStable = singBoxInstalled && !systemInfo.sing_box_extended && !systemInfo.sing_box_tiny;
   const singBoxExtended = Boolean(systemInfo.sing_box_extended) && !systemInfo.sing_box_compressed;
@@ -13518,11 +13540,18 @@ function getComponentCards() {
     installKey: "qwdttInstall",
     removeKey: "qwdttRemove"
   });
+  const olcrtcActions = getOptionalComponentActions({
+    component: "olcrtc",
+    installed: olcrtcInstalled,
+    checkKey: "olcrtcCheck",
+    installKey: "olcrtcInstall",
+    removeKey: "olcrtcRemove"
+  });
   return [
     {
       component: "forkop",
       column: 0,
-      title: "Forkop",
+      title: "Topkop",
       version: systemInfoLoading ? _("Loading...") : normalizeCompiledVersion(systemInfo.forkop_version),
       latestVersion: getLatestVersion("forkop"),
       releaseUrl: getGitHubReleaseUrl("forkop"),
@@ -13572,6 +13601,15 @@ function getComponentCards() {
       latestVersion: getLatestVersion("qwdtt"),
       releaseUrl: getGitHubReleaseUrl("qwdtt"),
       actions: qwdttActions
+    },
+    {
+      component: "olcrtc",
+      column: 1,
+      title: "Olcrtc",
+      version: systemInfoLoading ? _("Loading...") : olcrtcInstalled ? systemInfo.olcrtc_version : _("Not installed"),
+      latestVersion: getLatestVersion("olcrtc"),
+      releaseUrl: getGitHubReleaseUrl("olcrtc"),
+      actions: olcrtcActions
     }
   ];
 }

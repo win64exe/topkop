@@ -673,7 +673,7 @@ function prepare_subscription_caches(mode) {
 function start_main() {
     let status;
 
-    log_message("Starting Forkop", "info");
+    log_message("Starting Topkop", "info");
 
     status = validate_start_config();
     if (status != 0)
@@ -801,7 +801,7 @@ function start_impl() {
 function stop_main() {
     let status = 0;
 
-    log_message("Stopping Forkop", "info");
+    log_message("Stopping Topkop", "info");
     module_success(DNS_FAILOVER_UC, [ "stop-runtime" ]);
     module_success(PRIORITY_UC, [ "stop-runtime" ]);
     module_success(SUBSCRIPTION_CACHE_UC, [ "stop-deferred-bootstrap-worker" ]);
@@ -838,7 +838,7 @@ function stop_main() {
 function cleanup_failed_runtime() {
     let status = 0;
 
-    log_message("Cleaning up Forkop runtime after failed start/reload", "info");
+    log_message("Cleaning up Topkop runtime after failed start/reload", "info");
 
     let stop_status = stop_main();
     if (stop_status != 0)
@@ -853,7 +853,7 @@ function cleanup_failed_runtime() {
         status = mark_status;
 
     if (status != 0)
-        log_message("Failed to fully clean up Forkop runtime after start/reload failure", "warn");
+        log_message("Failed to fully clean up Topkop runtime after start/reload failure", "warn");
 
     return status;
 }
@@ -891,7 +891,7 @@ function start() {
         "8"
     ]);
     if (status != 0) {
-        log_message("Startup verification failed after Forkop was started; rolling back DNS changes", "warn");
+        log_message("Startup verification failed after Topkop was started; rolling back DNS changes", "warn");
         cleanup_failed_runtime();
         return status;
     }
@@ -941,7 +941,7 @@ function restart_runtime_for_reload() {
     let status;
     let selector_state = capture_selector_state();
 
-    log_message("Reload requires a full Forkop runtime restart", "info");
+    log_message("Reload requires a full Topkop runtime restart", "info");
 
     status = stop_main();
     if (status != 0)
@@ -962,7 +962,7 @@ function restart_runtime_for_reload() {
         "8"
     ]);
     if (status != 0) {
-        log_message("Reload runtime restart verification failed after Forkop was started; rolling back DNS changes", "fatal");
+        log_message("Reload runtime restart verification failed after Topkop was started; rolling back DNS changes", "fatal");
         cleanup_failed_runtime();
         return status;
     }
@@ -1119,7 +1119,7 @@ function reload(reason) {
     let reload_config_fingerprint = external_config_fingerprint();
     rule_condition_cache_enabled = force_runtime_reload;
 
-    log_message("Reloading Forkop", "info");
+    log_message("Reloading Topkop", "info");
 
     status = validate_start_config();
     if (status != 0)
@@ -1130,7 +1130,7 @@ function reload(reason) {
         return status;
 
     if (!module_success(STATE_UC, [ "forkop-running", RT_TABLE_NAME, NFT_TABLE_NAME, NFT_FAKEIP_MARK ])) {
-        log_message("Runtime state is incomplete; restarting Forkop runtime", "info");
+        log_message("Runtime state is incomplete; restarting Topkop runtime", "info");
         return finish_reload_status(restart_runtime_for_reload(), reload_config_fingerprint);
     }
 
@@ -1183,7 +1183,7 @@ function reload(reason) {
 
     if (plan_result.status != 0) {
         if (plan_result.status == 2) {
-            log_message("Reload state is unavailable; restarting Forkop runtime", "info");
+            log_message("Reload state is unavailable; restarting Topkop runtime", "info");
             return finish_reload_status(restart_runtime_for_reload(), reload_config_fingerprint);
         }
         return abort_reload(plan_result.status, false);
@@ -1262,7 +1262,7 @@ function reload(reason) {
             as_string(SING_BOX_START_VERIFY_TIMEOUT)
         ]);
         if (status != 0) {
-            log_message("Reload verification failed after sing-box was reloaded; stopping Forkop runtime", "fatal");
+            log_message("Reload verification failed after sing-box was reloaded; stopping Topkop runtime", "fatal");
             cleanup_failed_runtime();
             return status;
         }
@@ -1345,7 +1345,7 @@ function reload_tracked(reason) {
 }
 
 function restart() {
-    log_message("Restarting Forkop", "info");
+    log_message("Restarting Topkop", "info");
 
     let selector_state = capture_selector_state();
     let status = stop_impl();
@@ -1369,7 +1369,7 @@ function restart() {
         return 0;
     }
 
-    log_message("Restart verification failed after Forkop was started; stopping Forkop runtime", "fatal");
+    log_message("Restart verification failed after Topkop was started; stopping Topkop runtime", "fatal");
     cleanup_failed_runtime();
     return 1;
 }
@@ -1387,7 +1387,7 @@ function package_manager_remove_if_installed(package_name) {
 }
 
 function uninstall() {
-    log_message("Uninstalling Forkop", "info");
+    log_message("Uninstalling Topkop", "info");
 
     if (fs.stat(SERVICE_INIT) != null) {
         stop();

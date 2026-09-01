@@ -33,6 +33,9 @@ function getEmptyUpdatesActions(): StoreType['updatesActions'] {
     qwdttCheck: { loading: false },
     qwdttInstall: { loading: false },
     qwdttRemove: { loading: false },
+    olcrtcCheck: { loading: false },
+    olcrtcInstall: { loading: false },
+    olcrtcRemove: { loading: false },
   };
 }
 

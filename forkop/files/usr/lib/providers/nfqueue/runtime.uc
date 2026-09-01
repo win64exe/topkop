@@ -466,7 +466,7 @@ function start_runtime(cfg) {
 
     cleanup_legacy_runtime(cfg);
     if (!ensure_runtime_dirs(cfg)) {
-        log_message("Failed to prepare the Forkop " + cfg.status_label + " state directory in " + cfg.state_dir + ". Aborted.", "fatal");
+        log_message("Failed to prepare the Topkop " + cfg.status_label + " state directory in " + cfg.state_dir + ". Aborted.", "fatal");
         exit(1);
     }
 
@@ -594,15 +594,15 @@ function status_json(cfg) {
     if (configured && !provider)
         message = "action=" + cfg.action + " is configured, but " + cfg.status_label + " provider is not available at " + cfg.provider_bin;
     else if (queue_overlap)
-        message = "external NFQUEUE rules overlap with the Forkop " + cfg.status_label + " range " + cfg.queue_base + "-" + queue_range_end(cfg);
+        message = "external NFQUEUE rules overlap with the Topkop " + cfg.status_label + " range " + cfg.queue_base + "-" + queue_range_end(cfg);
     else if (legacy_runtime)
         message = "legacy zapret runtime paths are still present and should be migrated";
     else if (running > expected || supervisors > expected)
-        message = "unexpected Forkop-managed " + cfg.binary_name + " processes are running without matching action=" + cfg.action + " rules";
+        message = "unexpected Topkop-managed " + cfg.binary_name + " processes are running without matching action=" + cfg.action + " rules";
     else if (configured && !ready)
-        message = "action=" + cfg.action + " is configured, but the Forkop-managed " + cfg.binary_name + " runtime is not ready";
+        message = "action=" + cfg.action + " is configured, but the Topkop-managed " + cfg.binary_name + " runtime is not ready";
     else if (standalone_conflict)
-        message = "standalone " + cfg.status_label + " is active together with Forkop action=" + cfg.action + "; queues are separate, but packet-level policy overlap is possible";
+        message = "standalone " + cfg.status_label + " is active together with Topkop action=" + cfg.action + "; queues are separate, but packet-level policy overlap is possible";
     else if (!configured && !provider && pkg)
         message = cfg.status_label + " package is installed, but the provider binary is not available at " + cfg.provider_bin;
     else if (!configured && !provider)

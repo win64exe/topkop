@@ -395,7 +395,7 @@ function createSettingsContent(section, capabilities) {
     form.Value,
     "badwan_reload_delay",
     _("Interface Monitoring Delay"),
-    _("Delay in milliseconds before reloading Forkop after interface UP"),
+    _("Delay in milliseconds before reloading Topkop after interface UP"),
   );
   o.depends("enable_badwan_interface_monitoring", "1");
   o.default = "2000";
@@ -599,7 +599,7 @@ function createSettingsContent(section, capabilities) {
     form.Flag,
     "dont_touch_dhcp",
     _("Dont Touch My DHCP!"),
-    _("Forkop will not modify your DHCP configuration"),
+    _("Topkop will not modify your DHCP configuration"),
   );
   o.default = "0";
   o.rmempty = false;

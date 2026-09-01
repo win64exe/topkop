@@ -2739,7 +2739,7 @@ function subscription_update_common(force, target_section, target_source_index) 
 
     if (!acquire_runtime_lock(RELOAD_LOCK_DIR, force)) {
         release_runtime_lock(SUBSCRIPTION_UPDATE_LOCK_DIR);
-        log_message("Forkop reload is already running; skipping subscription update", "info");
+        log_message("Topkop reload is already running; skipping subscription update", "info");
         if (force)
             mark_pending_reload("reload_busy");
         return force ? 1 : 0;

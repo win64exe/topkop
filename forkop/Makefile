@@ -1,6 +1,6 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=forkop
+PKG_NAME:=topkop
 
 FORKOP_SOURCE_VERSION:=$(or $(FORKOP_PACKAGE_VERSION),$(FORKOP_VERSION))
 FORKOP_HAS_RELEASE_VERSION:=$(if $(filter dev,$(FORKOP_SOURCE_VERSION)),,$(FORKOP_SOURCE_VERSION))
@@ -14,23 +14,23 @@ endif
 PKG_VERSION:=$(or $(FORKOP_HAS_RELEASE_VERSION),0.0.0)
 PKG_RELEASE:=
 
-PKG_MAINTAINER:=ushan0v <ushan0v@users.noreply.github.com>
+PKG_MAINTAINER:=win64exe <win64exe@users.noreply.github.com>
 PKG_LICENSE:=GPL-2.0-or-later
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/forkop
+define Package/topkop
 	SECTION:=net
 	CATEGORY:=Network
 	DEPENDS:=+ca-bundle +kmod-inet-diag +kmod-netlink-diag +kmod-tun +curl +ucode +ucode-mod-fs +ucode-mod-uci +kmod-nft-tproxy +coreutils-base64 +bind-dig +nftables +kmod-nft-nat +ip-full
 	CONFLICTS:=https-dns-proxy nextdns luci-app-passwall luci-app-passwall2
-	TITLE:=Forkop backend service
-	URL:=https://github.com/ushan0v/forkop
+	TITLE:=Topkop backend service
+	URL:=https://github.com/win64exe/topkop
 	PKGARCH:=all
 endef
 
-define Package/forkop/description
-	Rule-based Forkop backend with hybrid sing-box + zapret orchestration
+define Package/topkop/description
+	Rule-based Topkop backend with hybrid sing-box + zapret orchestration
 endef
 
 define Build/Configure
@@ -39,7 +39,7 @@ endef
 define Build/Compile
 endef
 
-define Package/forkop/prerm
+define Package/topkop/prerm
 #!/usr/bin/ucode
 
 if (getenv("IPKG_INSTROOT") == null || getenv("IPKG_INSTROOT") == "")
@@ -48,7 +48,7 @@ if (getenv("IPKG_INSTROOT") == null || getenv("IPKG_INSTROOT") == "")
 exit(0);
 endef
 
-define Package/forkop/postinst
+define Package/topkop/postinst
 #!/bin/sh
 
 [ -n "$${IPKG_INSTROOT}" ] && exit 0
@@ -56,7 +56,7 @@ FORKOP_LIB=/usr/lib/forkop ucode -L /usr/lib/forkop /usr/lib/forkop/config/migra
 /usr/bin/forkop package_postinst
 endef
 
-define Package/forkop/conffiles
+define Package/topkop/conffiles
 /etc/config/forkop
 endef
 

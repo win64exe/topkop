@@ -233,6 +233,9 @@ export interface StoreType {
     qwdttCheck: { loading: boolean };
     qwdttInstall: { loading: boolean };
     qwdttRemove: { loading: boolean };
+    olcrtcCheck: { loading: boolean };
+    olcrtcInstall: { loading: boolean };
+    olcrtcRemove: { loading: boolean };
   };
   updatesChecks: Record<
     Forkop.ComponentName,

@@ -123,7 +123,7 @@ if (value.status !== "running but disabled" || value.dns_configured !== 1) {
 NODE
 
 {
-  printf 'Tue Jun 30 11:00:00 2026 user.notice forkop: [info] Starting Forkop\n'
+  printf 'Tue Jun 30 11:00:00 2026 user.notice forkop: [info] Starting Topkop\n'
   for i in $(seq 1 4500); do
     printf 'Tue Jun 30 11:00:%02d 2026 daemon.info unrelated[%04d]: filler filler filler filler filler filler filler filler filler filler\n' "$((i % 60))" "$i"
   done

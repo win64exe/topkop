@@ -1650,7 +1650,7 @@ async function renderServicesInfoWidget() {
     title: _('Services info'),
     items: [
       {
-        key: 'Forkop',
+        key: 'Topkop',
         value: servicesInfoWidget.data.forkopRunning
           ? _('✔ Running')
           : _('✘ Stopped'),

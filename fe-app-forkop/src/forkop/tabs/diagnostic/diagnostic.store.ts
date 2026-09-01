@@ -150,6 +150,9 @@ export const initialDiagnosticStore: Pick<
     qwdttCheck: { loading: false },
     qwdttInstall: { loading: false },
     qwdttRemove: { loading: false },
+    olcrtcCheck: { loading: false },
+    olcrtcInstall: { loading: false },
+    olcrtcRemove: { loading: false },
   },
   updatesChecks: {
     forkop: { status: null, latest_version: '', release_url: '' },
@@ -158,5 +161,6 @@ export const initialDiagnosticStore: Pick<
     zapret2: { status: null, latest_version: '', release_url: '' },
     byedpi: { status: null, latest_version: '', release_url: '' },
     qwdtt: { status: null, latest_version: '', release_url: '' },
+    olcrtc: { status: null, latest_version: '', release_url: '' },
   },
 };

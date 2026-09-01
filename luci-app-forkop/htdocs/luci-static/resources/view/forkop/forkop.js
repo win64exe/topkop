@@ -316,7 +316,7 @@ const EntryPoint = {
           return updateUiCapabilities(response.data);
         })
         .catch((error) => {
-          console.warn("Failed to load Forkop UI capabilities", error);
+          console.warn("Failed to load Topkop UI capabilities", error);
           return main.ForkopShellMethods.getUiState()
             .then((response) => {
               if (!response?.success) {
@@ -326,7 +326,7 @@ const EntryPoint = {
               return applyUiState(response.data);
             })
             .catch((fallbackError) => {
-              console.warn("Failed to load Forkop UI state", fallbackError);
+              console.warn("Failed to load Topkop UI state", fallbackError);
               return loadFallbackUiCapabilities();
             });
         })
@@ -338,8 +338,8 @@ const EntryPoint = {
     };
     const forkopMap = new form.Map(
       UCI_PACKAGE,
-      _("Forkop Settings"),
-      _("Configuration for Forkop service"),
+      _("Topkop Settings"),
+      _("Configuration for Topkop service"),
     );
     forkopMap.tabbed = true;
     const originalHandleSaveApply = forkopMap.handleSaveApply;

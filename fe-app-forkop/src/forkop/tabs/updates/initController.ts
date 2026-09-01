@@ -312,6 +312,7 @@ function notifyActionProvidersAvailabilityChanged(
         zapret2Installed: Boolean(systemInfo.zapret2_installed),
         byedpiInstalled: Boolean(systemInfo.byedpi_installed),
         wdttInstalled: Boolean(systemInfo.wdtt_installed),
+        olcrtcInstalled: Boolean(systemInfo.olcrtc_installed),
       },
     }),
   );
@@ -413,6 +414,18 @@ function patchSystemInfoAfterMutation(result: Forkop.ComponentActionResult) {
     }
   }
 
+  if (result.component === 'olcrtc') {
+    nextSystemInfo.providerInfoLoaded = true;
+
+    if (result.action === 'remove') {
+      nextSystemInfo.olcrtc_installed = 0;
+      nextSystemInfo.olcrtc_version = 'not installed';
+    } else {
+      nextSystemInfo.olcrtc_installed = 1;
+      nextSystemInfo.olcrtc_version = version;
+    }
+  }
+
   const normalizedSystemInfo = normalizeSingBoxVariantFields(nextSystemInfo);
 
   store.set({
@@ -423,7 +436,8 @@ function patchSystemInfoAfterMutation(result: Forkop.ComponentActionResult) {
     result.component === 'zapret' ||
     result.component === 'zapret2' ||
     result.component === 'byedpi' ||
-    result.component === 'qwdtt'
+    result.component === 'qwdtt' ||
+    result.component === 'olcrtc'
   ) {
     notifyActionProvidersAvailabilityChanged(normalizedSystemInfo);
   }
@@ -796,7 +810,7 @@ function getOptionalComponentActions({
   installKey,
   removeKey,
 }: {
-  component: 'zapret' | 'zapret2' | 'byedpi' | 'qwdtt';
+  component: 'zapret' | 'zapret2' | 'byedpi' | 'qwdtt' | 'olcrtc';
   installed: boolean;
   checkKey: UpdatesActionKey;
   installKey: UpdatesActionKey;
@@ -827,6 +841,7 @@ function getComponentCards(): ComponentCard[] {
   const zapret2Installed = Boolean(systemInfo.zapret2_installed);
   const byedpiInstalled = Boolean(systemInfo.byedpi_installed);
   const wdttInstalled = Boolean(systemInfo.wdtt_installed);
+  const olcrtcInstalled = Boolean(systemInfo.olcrtc_installed);
   const singBoxInstalled = !isNotInstalled(systemInfo.sing_box_version);
   const singBoxStable =
     singBoxInstalled &&
@@ -917,12 +932,19 @@ function getComponentCards(): ComponentCard[] {
     installKey: 'qwdttInstall',
     removeKey: 'qwdttRemove',
   });
+  const olcrtcActions = getOptionalComponentActions({
+    component: 'olcrtc',
+    installed: olcrtcInstalled,
+    checkKey: 'olcrtcCheck',
+    installKey: 'olcrtcInstall',
+    removeKey: 'olcrtcRemove',
+  });
 
   return [
     {
       component: 'forkop',
       column: 0,
-      title: 'Forkop',
+      title: 'Topkop',
       version: systemInfoLoading
         ? _('Loading...')
         : normalizeCompiledVersion(systemInfo.forkop_version),
@@ -992,6 +1014,19 @@ function getComponentCards(): ComponentCard[] {
       latestVersion: getLatestVersion('qwdtt'),
       releaseUrl: getGitHubReleaseUrl('qwdtt'),
       actions: qwdttActions,
+    },
+    {
+      component: 'olcrtc',
+      column: 1,
+      title: 'Olcrtc',
+      version: systemInfoLoading
+        ? _('Loading...')
+        : olcrtcInstalled
+          ? systemInfo.olcrtc_version
+          : _('Not installed'),
+      latestVersion: getLatestVersion('olcrtc'),
+      releaseUrl: getGitHubReleaseUrl('olcrtc'),
+      actions: olcrtcActions,
     },
   ];
 }

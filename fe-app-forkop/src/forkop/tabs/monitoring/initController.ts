@@ -923,7 +923,7 @@ function renderConnections(options: { force?: boolean } = {}) {
     container.replaceChildren(
       renderConnectionsTable([], {
         text: _(
-          'Forkop service is stopped. Start the service to display connections.',
+          'Topkop service is stopped. Start the service to display connections.',
         ),
       }),
     );
