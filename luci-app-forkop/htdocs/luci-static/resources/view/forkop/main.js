@@ -1773,6 +1773,18 @@ function prettyBytes(n) {
 function isProviderSection(section) {
   return Boolean(section.action && ["wdtt", "olcrtc"].includes(section.action));
 }
+function getProviderLatencyClass(latencyMs) {
+  if (typeof latencyMs !== "number" || !Number.isFinite(latencyMs)) {
+    return "fkp_dashboard-page__outbound-grid__item__latency--empty";
+  }
+  if (latencyMs < 800) {
+    return "fkp_dashboard-page__outbound-grid__item__latency--green";
+  }
+  if (latencyMs < 1500) {
+    return "fkp_dashboard-page__outbound-grid__item__latency--yellow";
+  }
+  return "fkp_dashboard-page__outbound-grid__item__latency--red";
+}
 function renderFailedState() {
   return E(
     "div",
@@ -1946,6 +1958,10 @@ function renderDefaultState({
   onShowUrlTestInfo,
   onShowPriorityInfo,
   onTestLatency,
+  onTestProviderLatency,
+  providerLatencyMs,
+  providerLatencyError,
+  providerLatencyFetching,
   onUpdateSubscription,
   latencyFetching,
   latencyProgress,
@@ -2095,13 +2111,57 @@ function renderDefaultState({
               class: "fkp_dashboard-page__outbound-section__title-section__title"
             },
             section.displayName
+          ),
+          E(
+            "div",
+            {
+              class: "fkp_dashboard-page__outbound-section__title-section__actions"
+            },
+            [
+              E(
+                "button",
+                {
+                  type: "button",
+                  class: "btn dashboard-sections-grid-item-test-latency",
+                  disabled: providerLatencyFetching ? true : void 0,
+                  click: (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    if (providerLatencyFetching) {
+                      return;
+                    }
+                    onTestProviderLatency(section.sectionName);
+                  }
+                },
+                providerLatencyFetching ? [
+                  renderLoaderCircleIcon24(),
+                  E(
+                    "span",
+                    {
+                      class: "dashboard-sections-grid-item-test-latency__label"
+                    },
+                    _("Checking\u2026")
+                  )
+                ] : E(
+                  "span",
+                  {
+                    class: "dashboard-sections-grid-item-test-latency__label"
+                  },
+                  _("Test latency")
+                )
+              )
+            ]
           )
         ]
       ),
       E(
         "div",
         { class: "fkp_dashboard-page__provider-status" },
-        renderProviderStatus(section.providerStatus)
+        renderProviderStatus(
+          section.providerStatus,
+          providerLatencyMs,
+          providerLatencyError
+        )
       )
     ]);
   }
@@ -2164,22 +2224,30 @@ function renderDefaultState({
     ])
   ]);
 }
-function renderProviderStatus(status) {
+function renderProviderStatus(status, latencyMs, latencyError) {
   const installed = Number(status?.installed ?? 0);
   const running = Number(status?.running ?? 0);
   const ready = Number(status?.ready ?? 0);
   const statusLabel = !installed ? _("\u2718 Not installed") : running ? ready ? _("\u2714 Running") : _("\u26A0 Running") : _("\u2718 Stopped");
   const statusClass = !installed ? "fkp_dashboard-page__provider-status__item--error" : running ? "fkp_dashboard-page__provider-status__item--success" : "fkp_dashboard-page__provider-status__item--error";
+  const hasLatency = typeof latencyMs === "number" && Number.isFinite(latencyMs);
+  const latencyLabel = hasLatency ? `${_("Ping")}: ${Math.round(latencyMs)}ms` : latencyError ? _("Ping unavailable") : `${_("Ping")}: ${_("N/A")}`;
+  const latencyClass = hasLatency ? getProviderLatencyClass(latencyMs) : "fkp_dashboard-page__outbound-grid__item__latency--empty";
   return E("div", { class: "fkp_dashboard-page__provider-status__row" }, [
     E(
       "span",
-      { class: [statusClass].join(" ") },
+      { class: statusClass },
       statusLabel
     ),
     E(
       "span",
       { class: "fkp_dashboard-page__provider-status__item" },
       `${_("Status")}: ${installed && running && ready ? _("ready") : _("not ready")}`
+    ),
+    E(
+      "span",
+      { class: ["fkp_dashboard-page__outbound-grid__item__latency", latencyClass].join(" ") },
+      latencyLabel
     )
   ]);
 }
@@ -2334,6 +2402,11 @@ function render() {
             },
             onTestLatency: () => {
             },
+            onTestProviderLatency: () => {
+            },
+            providerLatencyMs: void 0,
+            providerLatencyError: false,
+            providerLatencyFetching: false,
             onChooseOutbound: () => {
             },
             onCopyOutbound: () => {
@@ -2501,6 +2574,7 @@ var Forkop;
     AvailableMethods2["SERVICE_ACTION_STATUS"] = "service_action_status";
     AvailableMethods2["LATENCY_TEST_ASYNC"] = "latency_test_async";
     AvailableMethods2["LATENCY_TEST_STATUS"] = "latency_test_status";
+    AvailableMethods2["PROVIDER_LATENCY"] = "provider_latency";
     AvailableMethods2["UI_ACTION_ACK"] = "ui_action_ack";
     AvailableMethods2["COMPONENT_ACTION_ASYNC"] = "component_action_async";
     AvailableMethods2["COMPONENT_ACTION_STATUS"] = "component_action_status";
@@ -2876,6 +2950,26 @@ var ForkopShellMethods = {
     return {
       success: true,
       data: parsedResponse
+    };
+  },
+  providerLatency: async (sectionName) => {
+    const response = await executeShellCommand({
+      command: "/usr/bin/forkop",
+      args: [Forkop.AvailableMethods.PROVIDER_LATENCY, sectionName],
+      timeout: LATENCY_TEST_TIMEOUT_MS
+    });
+    const parsed = parseJsonObjectOutput(
+      response.stdout
+    );
+    if ((response.code ?? 0) !== 0 || !parsed) {
+      return {
+        success: false,
+        error: response.stderr || _("Latency probe failed")
+      };
+    }
+    return {
+      success: true,
+      data: parsed
     };
   },
   latencyTestStatus: async (jobId) => {
@@ -4554,6 +4648,8 @@ var initialStore = {
     failed: false,
     latencyFetchingSections: {},
     latencyProgressSections: {},
+    providerLatencySections: {},
+    providerLatencyErrorSections: {},
     selectorSwitchingSections: {},
     subscriptionUpdatingSections: {},
     data: []
@@ -6042,6 +6138,51 @@ function getInitialLatencyProgress(latencyType, tag) {
     return void 0;
   }
 }
+async function handleTestProviderLatency(sectionName) {
+  if (store.get().sectionsWidget.latencyFetchingSections[sectionName]) {
+    return;
+  }
+  setLatencyFetching(sectionName, true, true);
+  try {
+    const response = await ForkopShellMethods.providerLatency(sectionName);
+    const sectionsWidget = store.get().sectionsWidget;
+    const providerLatencySections = {
+      ...sectionsWidget.providerLatencySections
+    };
+    const providerLatencyErrorSections = {
+      ...sectionsWidget.providerLatencyErrorSections
+    };
+    const failed2 = !response.success || response.data?.success === false;
+    const latencyMs = failed2 ? null : response.data?.latency_ms ?? null;
+    providerLatencySections[sectionName] = latencyMs;
+    providerLatencyErrorSections[sectionName] = Boolean(failed2);
+    store.set({
+      sectionsWidget: {
+        ...sectionsWidget,
+        providerLatencySections,
+        providerLatencyErrorSections
+      }
+    });
+  } catch (error) {
+    logger.error("[DASHBOARD]", "handleTestProviderLatency: failed", error);
+    const sectionsWidget = store.get().sectionsWidget;
+    store.set({
+      sectionsWidget: {
+        ...sectionsWidget,
+        providerLatencySections: {
+          ...sectionsWidget.providerLatencySections,
+          [sectionName]: null
+        },
+        providerLatencyErrorSections: {
+          ...sectionsWidget.providerLatencyErrorSections,
+          [sectionName]: true
+        }
+      }
+    });
+  } finally {
+    setLatencyFetching(sectionName, false);
+  }
+}
 async function handleTestLatency(latencyType, sectionName, tag, timeout) {
   if (store.get().sectionsWidget.latencyFetchingSections[sectionName]) {
     return;
@@ -6645,6 +6786,11 @@ async function renderSectionsWidget() {
       },
       onTestLatency: () => {
       },
+      onTestProviderLatency: () => {
+      },
+      providerLatencyMs: void 0,
+      providerLatencyError: false,
+      providerLatencyFetching: false,
       onChooseOutbound: () => {
       },
       onCopyOutbound: () => {
@@ -6674,10 +6820,20 @@ async function renderSectionsWidget() {
         sectionsWidget.latencyFetchingSections[section.sectionName]
       ),
       latencyProgress: sectionsWidget.latencyProgressSections[section.sectionName],
+      providerLatencyMs: sectionsWidget.providerLatencySections[section.sectionName],
+      providerLatencyError: Boolean(
+        sectionsWidget.providerLatencyErrorSections[section.sectionName]
+      ),
+      providerLatencyFetching: Boolean(
+        sectionsWidget.latencyFetchingSections[section.sectionName]
+      ),
       subscriptionUpdating: Boolean(
         sectionsWidget.subscriptionUpdatingSections[section.sectionName]
       ),
       selectorSwitchingTag: sectionsWidget.selectorSwitchingSections[section.sectionName],
+      onTestProviderLatency: (targetSection) => {
+        void handleTestProviderLatency(targetSection);
+      },
       onTestLatency: (tag) => {
         if (section.withTagSelect) {
           if (Array.isArray(tag)) {

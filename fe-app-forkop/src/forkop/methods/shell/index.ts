@@ -466,6 +466,32 @@ export const ForkopShellMethods = {
       data: parsedResponse,
     } as Forkop.MethodSuccessResponse<Forkop.UiActionStartResult>;
   },
+  providerLatency: async (
+    sectionName: string,
+  ): Promise<
+    Forkop.MethodResponse<Forkop.ProviderLatencyResult>
+  > => {
+    const response = await executeShellCommand({
+      command: '/usr/bin/forkop',
+      args: [Forkop.AvailableMethods.PROVIDER_LATENCY, sectionName],
+      timeout: LATENCY_TEST_TIMEOUT_MS,
+    });
+    const parsed = parseJsonObjectOutput<Forkop.ProviderLatencyResult>(
+      response.stdout,
+    );
+
+    if ((response.code ?? 0) !== 0 || !parsed) {
+      return {
+        success: false,
+        error: response.stderr || _('Latency probe failed'),
+      } as Forkop.MethodFailureResponse;
+    }
+
+    return {
+      success: true,
+      data: parsed,
+    } as Forkop.MethodSuccessResponse<Forkop.ProviderLatencyResult>;
+  },
   latencyTestStatus: async (jobId: string) => {
     const response = await executeShellCommand({
       command: '/usr/bin/forkop',

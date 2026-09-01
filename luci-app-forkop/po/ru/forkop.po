@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FORKOP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-01 23:24+0300\n"
-"PO-Revision-Date: 2026-09-01 23:24+0300\n"
+"POT-Creation-Date: 2026-09-01 00:23+0300\n"
+"PO-Revision-Date: 2026-09-01 00:23+0300\n"
 "Last-Translator: win64exe\n"
 "Language-Team: none\n"
 "Language: ru\n"
@@ -304,6 +304,9 @@ msgstr "URL проверки"
 
 msgid "Checking, please wait"
 msgstr "Проверяем, пожалуйста подождите"
+
+msgid "Checking…"
+msgstr ""
 
 msgid "checks"
 msgstr "проверки"
@@ -1169,6 +1172,9 @@ msgstr "Путь к ключу"
 msgid "Keyword must not contain spaces or commas"
 msgstr "Ключевое слово не должно содержать пробелы или запятые"
 
+msgid "Latency probe failed"
+msgstr ""
+
 msgid "Latency test failed"
 msgstr "Проверка задержки не удалась"
 
@@ -1261,6 +1267,9 @@ msgstr "Мониторинг"
 
 msgid "Must be a number in the range of 0 - 10000"
 msgstr "Должно быть числом в диапазоне 0 - 10000"
+
+msgid "N/A"
+msgstr ""
 
 msgid "Name displayed on the dashboard"
 msgstr "Имя, которое отображается в дашборде"
@@ -1486,6 +1495,12 @@ msgstr "Периодически проверять текущий уровен�
 
 msgid "Pin on dashboard"
 msgstr "Закрепить в дашборде"
+
+msgid "Ping"
+msgstr ""
+
+msgid "Ping unavailable"
+msgstr ""
 
 msgid "Port cannot be empty"
 msgstr "Порт не может быть пустым"

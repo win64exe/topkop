@@ -1444,6 +1444,73 @@ function service_action_status(job_id_value) {
     print(as_string(fs.readfile(path)));
 }
 
+// Парсит строку секунд с плавающей точкой ("0.123") и возвращает
+// целое число миллисекунд; для нечисла возвращает null.
+function latency_milliseconds(value) {
+    value = trim(as_string(value));
+    if (match(value, /^[0-9]+(\.[0-9]+)?$/) == null)
+        return null;
+    let dot = index(value, ".");
+    if (dot < 0)
+        return int(value, 10) * 1000;
+    let whole = substr(value, 0, dot);
+    let frac = substr(value, dot + 1);
+    let whole_ms = (whole == "" ? 0 : int(whole, 10)) * 1000;
+    let frac_ms = int(substr(frac + "000", 0, 3), 10);
+    return whole_ms + frac_ms;
+}
+
+// Опция секции через core.uci (get принимает один путь вида pkg.section.option).
+function uci_option(section_id, key) {
+    return as_string(uci_core.get(CONFIG_NAME + "." + as_string(section_id) + "." + as_string(key)));
+}
+
+// SOCKS5-адрес standalone-туннеля секции (action=wdtt/olcrtc):
+// читаем из config.json клиента qwdtt или из uci olcrtc.
+function provider_socks_address(section_id) {
+    let action = uci_option(section_id, "action");
+    if (action == "wdtt") {
+        let data = read_json_file("/etc/qwdtt/config.json");
+        if (type(data) == "object" && type(data.socks) == "string" && data.socks != "")
+            return as_string(data.socks);
+        return "127.0.0.1:1080";
+    }
+    if (action == "olcrtc") {
+        let host = as_string(uci_core.get("olcrtc.config.socks_host"));
+        if (host == "")
+            host = "127.0.0.1";
+        let port = as_string(uci_core.get("olcrtc.config.socks_port"));
+        if (match(port, /^[0-9]+$/) == null || int(port, 10) < 1 || int(port, 10) > 65535)
+            port = "1080";
+        return host + ":" + port;
+    }
+    return "";
+}
+
+// Измеряет латентность туннельной секции через её SOCKS5-порт
+// (curl -x socks5h://… + time_total к тестовому URL). Возвращает JSON.
+function provider_latency_json(section_id) {
+    let address = provider_socks_address(section_id);
+    if (address == "") {
+        write_json({ success: false, error: "Unsupported tunnel section action" });
+        return;
+    }
+
+    let probe_url = "http://www.gstatic.com/generate_204";
+    let output = command_output_from_args([
+        "curl", "-sS", "-o", "/dev/null", "-w", "%{time_total}",
+        "-x", "socks5h://" + address,
+        "--max-time", "10",
+        probe_url
+    ]);
+    let latency_ms = latency_milliseconds(as_string(output));
+    if (latency_ms == null || latency_ms <= 0) {
+        write_json({ success: false, error: "Latency probe failed", latency_ms: null });
+        return;
+    }
+    write_json({ success: true, latency_ms: latency_ms, address: address });
+}
+
 function latency_clash_method(latency_type) {
     latency_type = as_string(latency_type);
     if (latency_type == "group")
@@ -1621,6 +1688,8 @@ else if (mode == "latency-test-async")
     latency_test_async(ARGV[1], ARGV[2], ARGV[3], ARGV[4]);
 else if (mode == "latency-test-status")
     latency_test_status(ARGV[1]);
+else if (mode == "provider-latency")
+    provider_latency_json(ARGV[1]);
 else if (mode == "action-ack")
     action_ack(ARGV[1], ARGV[2]);
 else if (mode == "cleanup-action-dir-fixture")

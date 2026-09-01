@@ -85,6 +85,7 @@ export namespace Forkop {
     SERVICE_ACTION_STATUS = 'service_action_status',
     LATENCY_TEST_ASYNC = 'latency_test_async',
     LATENCY_TEST_STATUS = 'latency_test_status',
+    PROVIDER_LATENCY = 'provider_latency',
     UI_ACTION_ACK = 'ui_action_ack',
     COMPONENT_ACTION_ASYNC = 'component_action_async',
     COMPONENT_ACTION_STATUS = 'component_action_status',
@@ -180,8 +181,16 @@ export namespace Forkop {
       installed: number;
       running: number;
       ready: number;
+      latencyMs?: number | null;
     };
     outbounds: Outbound[];
+  }
+
+  export interface ProviderLatencyResult {
+    success: boolean;
+    latency_ms?: number | null;
+    error?: string;
+    address?: string;
   }
 
   export interface LatencyActionProgress {

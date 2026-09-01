@@ -14,6 +14,10 @@ interface IRenderSectionsProps {
   failed: boolean;
   section: Forkop.OutboundGroup;
   onTestLatency: (tag: string | string[]) => void;
+  onTestProviderLatency: (sectionName: string) => void;
+  providerLatencyMs?: number | null;
+  providerLatencyError?: boolean;
+  providerLatencyFetching?: boolean;
   onChooseOutbound: (
     sectionName: string,
     selector: string,
@@ -34,6 +38,22 @@ interface IRenderSectionsProps {
 
 function isProviderSection(section: Forkop.OutboundGroup) {
   return Boolean(section.action && ['wdtt', 'olcrtc'].includes(section.action));
+}
+
+function getProviderLatencyClass(latencyMs?: number | null) {
+  if (typeof latencyMs !== 'number' || !Number.isFinite(latencyMs)) {
+    return 'fkp_dashboard-page__outbound-grid__item__latency--empty';
+  }
+
+  if (latencyMs < 800) {
+    return 'fkp_dashboard-page__outbound-grid__item__latency--green';
+  }
+
+  if (latencyMs < 1500) {
+    return 'fkp_dashboard-page__outbound-grid__item__latency--yellow';
+  }
+
+  return 'fkp_dashboard-page__outbound-grid__item__latency--red';
 }
 
 function renderFailedState() {
@@ -259,6 +279,10 @@ function renderDefaultState({
   onShowUrlTestInfo,
   onShowPriorityInfo,
   onTestLatency,
+  onTestProviderLatency,
+  providerLatencyMs,
+  providerLatencyError,
+  providerLatencyFetching,
   onUpdateSubscription,
   latencyFetching,
   latencyProgress,
@@ -450,12 +474,62 @@ function renderDefaultState({
             },
             section.displayName,
           ),
+          E(
+            'div',
+            {
+              class: 'fkp_dashboard-page__outbound-section__title-section__actions',
+            },
+            [
+              E(
+                'button',
+                {
+                  type: 'button',
+                  class: 'btn dashboard-sections-grid-item-test-latency',
+                  disabled: providerLatencyFetching
+                    ? true
+                    : undefined,
+                  click: (event: MouseEvent) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    if (providerLatencyFetching) {
+                      return;
+                    }
+                    onTestProviderLatency(section.sectionName);
+                  },
+                },
+                providerLatencyFetching
+                  ? [
+                      renderLoaderCircleIcon24(),
+                      E(
+                        'span',
+                        {
+                          class:
+                            'dashboard-sections-grid-item-test-latency__label',
+                        },
+                        _('Checking…'),
+                      ),
+                    ]
+                  : E(
+                      'span',
+                      {
+                        class:
+                          'dashboard-sections-grid-item-test-latency__label',
+                      },
+                      _('Test latency'),
+                    ),
+              ),
+            ],
+          ),
         ],
       ),
       E(
         'div',
         { class: 'fkp_dashboard-page__provider-status' },
-        renderProviderStatus(section.providerStatus),
+        renderProviderStatus(
+          section.providerStatus,
+          providerLatencyMs,
+          providerLatencyError,
+        ),
       ),
     ]);
   }
@@ -525,6 +599,8 @@ function renderDefaultState({
 
 function renderProviderStatus(
   status?: Forkop.OutboundGroup['providerStatus'],
+  latencyMs?: number | null,
+  latencyError?: boolean,
 ) {
   const installed = Number(status?.installed ?? 0);
   const running = Number(status?.running ?? 0);
@@ -543,10 +619,20 @@ function renderProviderStatus(
       ? 'fkp_dashboard-page__provider-status__item--success'
       : 'fkp_dashboard-page__provider-status__item--error';
 
+  const hasLatency = typeof latencyMs === 'number' && Number.isFinite(latencyMs);
+  const latencyLabel = hasLatency
+    ? `${_('Ping')}: ${Math.round(latencyMs)}ms`
+    : latencyError
+      ? _('Ping unavailable')
+      : `${_('Ping')}: ${_('N/A')}`;
+  const latencyClass = hasLatency
+    ? getProviderLatencyClass(latencyMs)
+    : 'fkp_dashboard-page__outbound-grid__item__latency--empty';
+
   return E('div', { class: 'fkp_dashboard-page__provider-status__row' }, [
     E(
       'span',
-      { class: [statusClass].join(' ') },
+      { class: statusClass },
       statusLabel,
     ),
     E(
@@ -557,6 +643,11 @@ function renderProviderStatus(
           ? _('ready')
           : _('not ready')
       }`,
+    ),
+    E(
+      'span',
+      { class: ['fkp_dashboard-page__outbound-grid__item__latency', latencyClass].join(' ') },
+      latencyLabel,
     ),
   ]);
 }

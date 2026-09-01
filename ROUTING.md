@@ -183,7 +183,7 @@ Topkop TPROXY (nft) ──► sing-box
    ```
 
 2. **Секция-проброс в sing-box** — создайте секцию `action=connection`
-   (например, с именем `vk-via-olcrtc`) и добавьте JSON outbound:
+   (например, с именем `vk_via_olcrtc`) и добавьте JSON outbound:
    ```json
    {"type":"socks","tag":"olcrtc","server":"127.0.0.1","server_port":1080,"version":"5"}
    ```
@@ -193,6 +193,12 @@ Topkop TPROXY (nft) ──► sing-box
    ```
    (в LuCI: вкладка «Settings» секции → «JSON outbound» → «+ Add JSON
    outbound»; тег `tag` внутри JSON станет именем outbound в sing-box).
+
+   > ⚠️ **Имя секции — только латиница, цифры и подчёркивание**
+   > (`A-Za-z0-9_`). Дефисы, точки, пробелы и кириллица в имени секции
+   > приводят к ошибке `Section name is not safe for sing-box config
+   > generation` — секция не попадёт в конфиг. Например, имя
+   > `vk-via-olcrtc` **не сработает**, а `vk_via_olcrtc` — работает.
 
    > ⚠️ Порт SOCKS5 qwdtt/olcrtc по умолчанию мог быть изменён в настройках
    > тунельной секции (`socks_addr` для qwdtt, `socks_port` для olcrtc).

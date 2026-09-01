@@ -682,6 +682,54 @@ function getInitialLatencyProgress(
   }
 }
 
+async function handleTestProviderLatency(sectionName: string) {
+  if (store.get().sectionsWidget.latencyFetchingSections[sectionName]) {
+    return;
+  }
+
+  setLatencyFetching(sectionName, true, true);
+
+  try {
+    const response = await ForkopShellMethods.providerLatency(sectionName);
+    const sectionsWidget = store.get().sectionsWidget;
+    const providerLatencySections = {
+      ...sectionsWidget.providerLatencySections,
+    };
+    const providerLatencyErrorSections = {
+      ...sectionsWidget.providerLatencyErrorSections,
+    };
+    const failed = !response.success || response.data?.success === false;
+    const latencyMs = failed ? null : (response.data?.latency_ms ?? null);
+    providerLatencySections[sectionName] = latencyMs;
+    providerLatencyErrorSections[sectionName] = Boolean(failed);
+    store.set({
+      sectionsWidget: {
+        ...sectionsWidget,
+        providerLatencySections,
+        providerLatencyErrorSections,
+      },
+    });
+  } catch (error) {
+    logger.error('[DASHBOARD]', 'handleTestProviderLatency: failed', error);
+    const sectionsWidget = store.get().sectionsWidget;
+    store.set({
+      sectionsWidget: {
+        ...sectionsWidget,
+        providerLatencySections: {
+          ...sectionsWidget.providerLatencySections,
+          [sectionName]: null,
+        },
+        providerLatencyErrorSections: {
+          ...sectionsWidget.providerLatencyErrorSections,
+          [sectionName]: true,
+        },
+      },
+    });
+  } finally {
+    setLatencyFetching(sectionName, false);
+  }
+}
+
 async function handleTestLatency(
   latencyType: Forkop.LatencyActionState['latency_type'],
   sectionName: string,
@@ -1435,6 +1483,10 @@ async function renderSectionsWidget() {
         withTagSelect: false,
       },
       onTestLatency: () => {},
+      onTestProviderLatency: () => {},
+      providerLatencyMs: undefined,
+      providerLatencyError: false,
+      providerLatencyFetching: false,
       onChooseOutbound: () => {},
       onCopyOutbound: () => {},
       onShowUrlTestInfo: () => {},
@@ -1463,11 +1515,22 @@ async function renderSectionsWidget() {
       ),
       latencyProgress:
         sectionsWidget.latencyProgressSections[section.sectionName],
+      providerLatencyMs:
+        sectionsWidget.providerLatencySections[section.sectionName],
+      providerLatencyError: Boolean(
+        sectionsWidget.providerLatencyErrorSections[section.sectionName],
+      ),
+      providerLatencyFetching: Boolean(
+        sectionsWidget.latencyFetchingSections[section.sectionName],
+      ),
       subscriptionUpdating: Boolean(
         sectionsWidget.subscriptionUpdatingSections[section.sectionName],
       ),
       selectorSwitchingTag:
         sectionsWidget.selectorSwitchingSections[section.sectionName],
+      onTestProviderLatency: (targetSection) => {
+        void handleTestProviderLatency(targetSection);
+      },
       onTestLatency: (tag) => {
         if (section.withTagSelect) {
           if (Array.isArray(tag)) {
