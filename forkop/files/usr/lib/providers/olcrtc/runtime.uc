@@ -236,10 +236,48 @@ function resolve_connection(section) {
         room_id: option(section, "room_id", parsed.room_id),
         crypto_key: option(section, "crypto_key", parsed.crypto_key),
         mimo: parsed.mimo,
+        payload: parsed.payload,
         used_link: used_link,
         subscription_name: subscription_name,
         subscription_refresh: subscription_refresh
     };
+}
+
+// Маппинг payload-ключей из docs/uri.md на UCI-опции OlcRTC-OpenWRT.
+function payload_option_mapping() {
+    return {
+        "vp8-fps": "vp8_fps",
+        "vp8-batch": "vp8_batch",
+        "fps": "sei_fps",
+        "batch": "sei_batch",
+        "video-w": "video_w",
+        "video-h": "video_h",
+        "video-fps": "video_fps",
+        "video-codec": "video_codec",
+        "video-qr-size": "video_qr_size",
+        "video-qr-recovery": "video_qr_recovery",
+        "video-tile-module": "video_tile_module",
+        "video-tile-rs": "video_tile_rs"
+    };
+}
+
+// Превращает transport payload `<key=value&...>` в uci set-команды.
+function payload_uci_commands(payload) {
+    let commands = [];
+    let mapping = payload_option_mapping();
+    for (let pair in split(as_string(payload), "&")) {
+        pair = as_string(pair);
+        let eq = index(pair, "=");
+        if (eq < 0)
+            continue;
+        let key = substr(pair, 0, eq);
+        let value = substr(pair, eq + 1);
+        let uci_key = mapping[key];
+        if (uci_key == null || value == "")
+            continue;
+        push(commands, "uci set olcrtc.config." + uci_key + "=" + uci_set_quote(value));
+    }
+    return commands;
 }
 
 function write_olcrtc_config(section, connection) {
@@ -260,6 +298,10 @@ function write_olcrtc_config(section, connection) {
         "uci set olcrtc.config.socks_user=" + uci_set_quote(option(section, "socks_user", "")),
         "uci set olcrtc.config.socks_pass=" + uci_set_quote(option(section, "socks_pass", ""))
     ];
+
+    // Transport payload `<key=value&...>` из URI → UCI-опции (vp8_fps, vp8_batch, ...).
+    for (let command in payload_uci_commands(connection.payload))
+        push(commands, command);
 
     for (let command in commands)
         command_success_from_args([ "sh", "-c", command ]);
