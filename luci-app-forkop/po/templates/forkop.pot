@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FORKOP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-01 19:28+0300\n"
-"PO-Revision-Date: 2026-09-01 19:28+0300\n"
+"POT-Creation-Date: 2026-09-01 20:24+0300\n"
+"PO-Revision-Date: 2026-09-01 20:24+0300\n"
 "Last-Translator: win64exe <win64exe@users.noreply.github.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -44,13 +44,27 @@ msgstr ""
 msgid "+ Add URLTest"
 msgstr ""
 
-#: src/forkop/tabs/dashboard/initController.ts:1655
-#: src/forkop/tabs/dashboard/initController.ts:1666
+#: src/forkop/tabs/dashboard/initController.ts:1743
+#: src/forkop/tabs/dashboard/partials/renderSections.ts:538
+msgid "⚠ Running"
+msgstr ""
+
+#: src/forkop/tabs/dashboard/initController.ts:1681
+#: src/forkop/tabs/dashboard/initController.ts:1692
+#: src/forkop/tabs/dashboard/initController.ts:1743
+#: src/forkop/tabs/dashboard/partials/renderSections.ts:537
 msgid "✔ Running"
 msgstr ""
 
-#: src/forkop/tabs/dashboard/initController.ts:1656
-#: src/forkop/tabs/dashboard/initController.ts:1667
+#: src/forkop/tabs/dashboard/initController.ts:1740
+#: src/forkop/tabs/dashboard/partials/renderSections.ts:534
+msgid "✘ Not installed"
+msgstr ""
+
+#: src/forkop/tabs/dashboard/initController.ts:1682
+#: src/forkop/tabs/dashboard/initController.ts:1693
+#: src/forkop/tabs/dashboard/initController.ts:1745
+#: src/forkop/tabs/dashboard/partials/renderSections.ts:539
 msgid "✘ Stopped"
 msgstr ""
 
@@ -76,7 +90,7 @@ msgstr ""
 msgid "Active Bootstrap DNS"
 msgstr ""
 
-#: src/forkop/tabs/dashboard/initController.ts:1613
+#: src/forkop/tabs/dashboard/initController.ts:1615
 msgid "Active Connections"
 msgstr ""
 
@@ -566,8 +580,8 @@ msgstr ""
 
 #: src/forkop/tabs/dashboard/initController.ts:986
 #: src/forkop/tabs/dashboard/initController.ts:1236
-#: src/forkop/tabs/dashboard/partials/renderSections.ts:361
-#: src/forkop/tabs/dashboard/partials/renderSections.ts:362
+#: src/forkop/tabs/dashboard/partials/renderSections.ts:365
+#: src/forkop/tabs/dashboard/partials/renderSections.ts:366
 msgid "Copy proxy link"
 msgstr ""
 
@@ -603,7 +617,7 @@ msgstr ""
 msgid "Dashboard"
 msgstr ""
 
-#: src/forkop/tabs/dashboard/partials/renderSections.ts:42
+#: src/forkop/tabs/dashboard/partials/renderSections.ts:46
 msgid "Dashboard currently unavailable"
 msgstr ""
 
@@ -822,8 +836,8 @@ msgstr ""
 msgid "Dont Touch My DHCP!"
 msgstr ""
 
-#: src/forkop/tabs/dashboard/initController.ts:1539
-#: src/forkop/tabs/dashboard/initController.ts:1577
+#: src/forkop/tabs/dashboard/initController.ts:1541
+#: src/forkop/tabs/dashboard/initController.ts:1579
 msgid "Downlink"
 msgstr ""
 
@@ -1054,7 +1068,7 @@ msgstr ""
 msgid "Expecting: %s"
 msgstr ""
 
-#: src/forkop/tabs/dashboard/partials/renderSections.ts:129
+#: src/forkop/tabs/dashboard/partials/renderSections.ts:133
 msgid "Expires"
 msgstr ""
 
@@ -1129,7 +1143,7 @@ msgstr ""
 msgid "Faster server search interval"
 msgstr ""
 
-#: src/forkop/methods/custom/getDashboardSections.ts:647
+#: src/forkop/methods/custom/getDashboardSections.ts:651
 msgid "Fastest"
 msgstr ""
 
@@ -1350,12 +1364,12 @@ msgstr ""
 msgid "Install"
 msgstr ""
 
-#: src/forkop/tabs/updates/initController.ts:1229
+#: src/forkop/tabs/updates/initController.ts:1230
 msgid "Install another build:"
 msgstr ""
 
 #: src/forkop/tabs/updates/initController.ts:291
-#: src/forkop/tabs/updates/initController.ts:1087
+#: src/forkop/tabs/updates/initController.ts:1088
 msgid "Installed version is newer than release"
 msgstr ""
 
@@ -1683,11 +1697,11 @@ msgid "Latency test URL"
 msgstr ""
 
 #: src/forkop/tabs/updates/initController.ts:294
-#: src/forkop/tabs/updates/initController.ts:1085
+#: src/forkop/tabs/updates/initController.ts:1086
 msgid "Latest version is installed"
 msgstr ""
 
-#: src/forkop/tabs/updates/initController.ts:1087
+#: src/forkop/tabs/updates/initController.ts:1088
 msgid "Latest version:"
 msgstr ""
 
@@ -1728,13 +1742,13 @@ msgstr ""
 msgid "Loading connections"
 msgstr ""
 
-#: src/forkop/tabs/updates/initController.ts:949
-#: src/forkop/tabs/updates/initController.ts:960
-#: src/forkop/tabs/updates/initController.ts:971
-#: src/forkop/tabs/updates/initController.ts:984
-#: src/forkop/tabs/updates/initController.ts:997
-#: src/forkop/tabs/updates/initController.ts:1010
-#: src/forkop/tabs/updates/initController.ts:1023
+#: src/forkop/tabs/updates/initController.ts:950
+#: src/forkop/tabs/updates/initController.ts:961
+#: src/forkop/tabs/updates/initController.ts:972
+#: src/forkop/tabs/updates/initController.ts:985
+#: src/forkop/tabs/updates/initController.ts:998
+#: src/forkop/tabs/updates/initController.ts:1011
+#: src/forkop/tabs/updates/initController.ts:1024
 msgid "Loading..."
 msgstr ""
 
@@ -1770,7 +1784,7 @@ msgstr ""
 msgid "Maximum time to wait for example.com to resolve during a DNS health check."
 msgstr ""
 
-#: src/forkop/tabs/dashboard/initController.ts:1617
+#: src/forkop/tabs/dashboard/initController.ts:1619
 msgid "Memory Usage"
 msgstr ""
 
@@ -1930,16 +1944,20 @@ msgstr ""
 
 #: src/forkop/helpers/singBoxVariant.ts:29
 #: src/forkop/helpers/singBoxVariant.ts:37
-#: src/forkop/tabs/updates/initController.ts:974
-#: src/forkop/tabs/updates/initController.ts:987
-#: src/forkop/tabs/updates/initController.ts:1000
-#: src/forkop/tabs/updates/initController.ts:1013
-#: src/forkop/tabs/updates/initController.ts:1026
+#: src/forkop/tabs/updates/initController.ts:975
+#: src/forkop/tabs/updates/initController.ts:988
+#: src/forkop/tabs/updates/initController.ts:1001
+#: src/forkop/tabs/updates/initController.ts:1014
+#: src/forkop/tabs/updates/initController.ts:1027
 msgid "Not installed"
 msgstr ""
 
 #: src/forkop/tabs/diagnostic/checks/runInboundsCheck.ts:62
 msgid "Not public"
+msgstr ""
+
+#: src/forkop/tabs/dashboard/partials/renderSections.ts:558
+msgid "not ready"
 msgstr ""
 
 #: src/forkop/tabs/diagnostic/checks/runInboundsCheck.ts:139
@@ -1953,7 +1971,7 @@ msgstr ""
 msgid "Not responding"
 msgstr ""
 
-#: src/forkop/tabs/diagnostic/diagnostic.store.ts:131
+#: src/forkop/tabs/diagnostic/diagnostic.store.ts:133
 #: src/forkop/tabs/diagnostic/initController.ts:120
 #: src/forkop/tabs/diagnostic/initController.ts:350
 #: src/forkop/tabs/diagnostic/initController.ts:417
@@ -2039,8 +2057,8 @@ msgstr ""
 msgid "Only the specified servers."
 msgstr ""
 
-#: src/forkop/tabs/updates/initController.ts:1078
-#: src/forkop/tabs/updates/initController.ts:1100
+#: src/forkop/tabs/updates/initController.ts:1079
+#: src/forkop/tabs/updates/initController.ts:1101
 msgid "Open"
 msgstr ""
 
@@ -2188,8 +2206,8 @@ msgid "Priority"
 msgstr ""
 
 #: src/forkop/tabs/dashboard/initController.ts:1278
-#: src/forkop/tabs/dashboard/partials/renderSections.ts:399
-#: src/forkop/tabs/dashboard/partials/renderSections.ts:400
+#: src/forkop/tabs/dashboard/partials/renderSections.ts:403
+#: src/forkop/tabs/dashboard/partials/renderSections.ts:404
 msgid "Priority details"
 msgstr ""
 
@@ -2303,6 +2321,10 @@ msgstr ""
 msgid "rawtun = RAW-IP tunnel (default, works with the OpenWrt build); vpn = userspace WireGuard; socks = local SOCKS5 proxy. vpn/socks require the full qwdtt build."
 msgstr ""
 
+#: src/forkop/tabs/dashboard/partials/renderSections.ts:557
+msgid "ready"
+msgstr ""
+
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/server.js:2684
 msgid "Reality fake site"
 msgstr ""
@@ -2331,7 +2353,7 @@ msgstr ""
 msgid "Reality short ID must contain 1-8 hex digits"
 msgstr ""
 
-#: src/forkop/tabs/dashboard/partials/renderSections.ts:130
+#: src/forkop/tabs/dashboard/partials/renderSections.ts:134
 msgid "Refill"
 msgstr ""
 
@@ -2663,7 +2685,7 @@ msgstr ""
 msgid "Service list"
 msgstr ""
 
-#: src/forkop/tabs/dashboard/initController.ts:1650
+#: src/forkop/tabs/dashboard/initController.ts:1676
 msgid "Services info"
 msgstr ""
 
@@ -2824,6 +2846,10 @@ msgstr ""
 msgid "Start Topkop"
 msgstr ""
 
+#: src/forkop/tabs/dashboard/partials/renderSections.ts:555
+msgid "Status"
+msgstr ""
+
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:2704
 msgid "Stop checking when URLTest group is not used. Use sing-box duration format like 1d, 12h or 30m."
 msgstr ""
@@ -2840,7 +2866,7 @@ msgstr ""
 msgid "Subscription auto update"
 msgstr ""
 
-#: src/forkop/tabs/dashboard/partials/renderSections.ts:144
+#: src/forkop/tabs/dashboard/partials/renderSections.ts:148
 msgid "Subscription info:"
 msgstr ""
 
@@ -2869,7 +2895,7 @@ msgstr ""
 msgid "Subscriptions updated"
 msgstr ""
 
-#: src/forkop/tabs/dashboard/initController.ts:1610
+#: src/forkop/tabs/dashboard/initController.ts:1612
 msgid "System info"
 msgstr ""
 
@@ -2897,9 +2923,9 @@ msgstr ""
 msgid "Tailscale hostname"
 msgstr ""
 
-#: src/forkop/tabs/dashboard/partials/renderSections.ts:237
-#: src/forkop/tabs/dashboard/partials/renderSections.ts:245
-#: src/forkop/tabs/dashboard/partials/renderSections.ts:486
+#: src/forkop/tabs/dashboard/partials/renderSections.ts:241
+#: src/forkop/tabs/dashboard/partials/renderSections.ts:249
+#: src/forkop/tabs/dashboard/partials/renderSections.ts:513
 msgid "Test latency"
 msgstr ""
 
@@ -3101,8 +3127,8 @@ msgstr ""
 msgid "Topkop-managed nfqws2 runtime is ready"
 msgstr ""
 
-#: src/forkop/tabs/dashboard/initController.ts:1536
-#: src/forkop/tabs/dashboard/partials/renderSections.ts:125
+#: src/forkop/tabs/dashboard/initController.ts:1538
+#: src/forkop/tabs/dashboard/partials/renderSections.ts:129
 msgid "Traffic"
 msgstr ""
 
@@ -3110,7 +3136,7 @@ msgstr ""
 msgid "Traffic for this level goes directly."
 msgstr ""
 
-#: src/forkop/tabs/dashboard/initController.ts:1570
+#: src/forkop/tabs/dashboard/initController.ts:1572
 msgid "Traffic Total"
 msgstr ""
 
@@ -3225,8 +3251,9 @@ msgstr ""
 #: src/forkop/services/systemInfo.service.ts:22
 #: src/forkop/services/systemInfo.service.ts:24
 #: src/forkop/services/systemInfo.service.ts:26
-#: src/forkop/services/systemInfo.service.ts:29
-#: src/forkop/services/systemInfo.service.ts:30
+#: src/forkop/services/systemInfo.service.ts:28
+#: src/forkop/services/systemInfo.service.ts:31
+#: src/forkop/services/systemInfo.service.ts:32
 #: src/forkop/tabs/updates/initController.ts:331
 #: src/forkop/tabs/diagnostic/checks/runInboundsCheck.ts:25
 msgid "unknown"
@@ -3270,13 +3297,13 @@ msgstr ""
 msgid "Update is available"
 msgstr ""
 
-#: src/forkop/tabs/updates/initController.ts:1064
+#: src/forkop/tabs/updates/initController.ts:1065
 msgid "Update is available:"
 msgstr ""
 
-#: src/forkop/tabs/dashboard/partials/renderSections.ts:214
-#: src/forkop/tabs/dashboard/partials/renderSections.ts:227
-#: src/forkop/tabs/dashboard/partials/renderSections.ts:228
+#: src/forkop/tabs/dashboard/partials/renderSections.ts:218
+#: src/forkop/tabs/dashboard/partials/renderSections.ts:231
+#: src/forkop/tabs/dashboard/partials/renderSections.ts:232
 msgid "Update subscriptions"
 msgstr ""
 
@@ -3284,8 +3311,8 @@ msgstr ""
 msgid "Update this subscription automatically"
 msgstr ""
 
-#: src/forkop/tabs/dashboard/initController.ts:1538
-#: src/forkop/tabs/dashboard/initController.ts:1573
+#: src/forkop/tabs/dashboard/initController.ts:1540
+#: src/forkop/tabs/dashboard/initController.ts:1575
 msgid "Uplink"
 msgstr ""
 
@@ -3315,8 +3342,8 @@ msgid "URLTest"
 msgstr ""
 
 #: src/forkop/tabs/dashboard/initController.ts:1028
-#: src/forkop/tabs/dashboard/partials/renderSections.ts:380
-#: src/forkop/tabs/dashboard/partials/renderSections.ts:381
+#: src/forkop/tabs/dashboard/partials/renderSections.ts:384
+#: src/forkop/tabs/dashboard/partials/renderSections.ts:385
 msgid "URLTest details"
 msgstr ""
 

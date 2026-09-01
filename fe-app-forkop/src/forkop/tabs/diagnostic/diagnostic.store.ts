@@ -95,6 +95,8 @@ export const initialDiagnosticStore: Pick<
     byedpi_installed: 0,
     wdtt_version: 'loading',
     wdtt_installed: 0,
+    qwdtt_version: 'loading',
+    qwdtt_installed: 0,
     olcrtc_version: 'loading',
     olcrtc_installed: 0,
     server_inbounds_enabled_count: -1,

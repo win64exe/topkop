@@ -176,6 +176,11 @@ export namespace Forkop {
     proxyConfigType?: ProxyConfigType;
     subscriptionSourceCount?: number;
     subscriptionMetadata?: SubscriptionMetadata[];
+    providerStatus?: {
+      installed: number;
+      running: number;
+      ready: number;
+    };
     outbounds: Outbound[];
   }
 
@@ -218,7 +223,9 @@ export namespace Forkop {
     | 'block'
     | 'zapret'
     | 'zapret2'
-    | 'byedpi';
+    | 'byedpi'
+    | 'wdtt'
+    | 'olcrtc';
   type LegacyConnectionType = 'proxy' | 'vpn' | 'block' | 'exclusion';
   type ProxyConfigType =
     | 'urltest'
@@ -482,6 +489,8 @@ export namespace Forkop {
     byedpi_installed: 0 | 1;
     wdtt_version: string;
     wdtt_installed: 0 | 1;
+    qwdtt_version: string;
+    qwdtt_installed: 0 | 1;
     olcrtc_version: string;
     olcrtc_installed: 0 | 1;
     openwrt_version: string;
@@ -542,12 +551,23 @@ export namespace Forkop {
     progress?: LatencyActionProgress;
   }
 
+  export interface ProviderStatus {
+    installed: 0 | 1;
+    running: 0 | 1;
+    ready: 0 | 1;
+    enabled_rule_count: number;
+  }
+
   export interface UiState {
     service: {
       forkop: GetStatus;
       sing_box: GetSingBoxStatus;
     };
     capabilities: GetUiCapabilities;
+    providers?: {
+      wdtt?: ProviderStatus;
+      olcrtc?: ProviderStatus;
+    };
     actions: {
       service: ServiceActionState[];
       latency: LatencyActionState[];

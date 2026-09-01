@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FORKOP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-01 22:28+0300\n"
-"PO-Revision-Date: 2026-09-01 22:28+0300\n"
+"POT-Creation-Date: 2026-09-01 23:24+0300\n"
+"PO-Revision-Date: 2026-09-01 23:24+0300\n"
 "Last-Translator: win64exe\n"
 "Language-Team: none\n"
 "Language: ru\n"
@@ -32,8 +32,14 @@ msgstr "+ Добавить приоритет"
 msgid "+ Add URLTest"
 msgstr "+ Добавить URLTest"
 
+msgid "⚠ Running"
+msgstr ""
+
 msgid "✔ Running"
 msgstr "✔ Работает"
+
+msgid "✘ Not installed"
+msgstr ""
 
 msgid "✘ Stopped"
 msgstr "✘ Остановлен"
@@ -147,7 +153,7 @@ msgid "Alter ID"
 msgstr "Идентификатор Alter"
 
 msgid "Anonymous VK TURN path: vkcalls or legacy."
-msgstr "Анонимный путь VK TURN: vkcalls или legacy."
+msgstr ""
 
 msgid "Apply section rules only to the specified local IP addresses"
 msgstr "Применять правила секции только к указанным локальным IP-адресам"
@@ -273,7 +279,7 @@ msgid "Cannot save settings"
 msgstr "Не удалось сохранить настройки"
 
 msgid "Captcha bypass mode: auto, wv, or rjs."
-msgstr "Режим обхода капчи: auto, wv или rjs."
+msgstr ""
 
 msgid "Cascade connection"
 msgstr "Каскадное подключение"
@@ -369,7 +375,7 @@ msgid "Connect through"
 msgstr "Подключаться через"
 
 msgid "Connect to the TURN relay over TCP instead of UDP (bypasses UDP throttling on some ISPs)."
-msgstr "Подключаться к TURN-relay по TCP вместо UDP (обходит UDP-душение у некоторых провайдеров)."
+msgstr ""
 
 msgid "Connection URL"
 msgstr "URL подключения"
@@ -474,7 +480,7 @@ msgid "DNS Check Interval"
 msgstr "Период проверки DNS"
 
 msgid "DNS for VK: yandex, cloudflare, google, doh-yandex/doh-cloudflare/doh-google, custom:IP or doh:URL."
-msgstr "DNS для VK: yandex, cloudflare, google, doh-yandex/doh-cloudflare/doh-google, custom:IP или doh:URL."
+msgstr ""
 
 msgid "DNS inside the tunnel in HOST:PORT form, e.g. 8.8.8.8:53."
 msgstr "DNS внутри туннеля в формате HOST:PORT, например 8.8.8.8:53."
@@ -1206,7 +1212,7 @@ msgid "Loading..."
 msgstr "Загрузка..."
 
 msgid "Local SOCKS5 listen address for qwdtt mode socks (default 127.0.0.1:1080)."
-msgstr "Локальный адрес прослушивания SOCKS5 для режима qwdtt socks (по умолчанию 127.0.0.1:1080)."
+msgstr ""
 
 msgid "Log Level"
 msgstr "Уровень логов"
@@ -1343,6 +1349,9 @@ msgstr "Не установлено"
 msgid "Not public"
 msgstr "Не публичный"
 
+msgid "not ready"
+msgstr ""
+
 msgid "Not required for this listen address"
 msgstr "Не требуется для этого адреса прослушивания"
 
@@ -1419,7 +1428,7 @@ msgid "Open Project Page"
 msgstr "Открыть страницу проекта"
 
 msgid "OpenWrt LAN interface routed through the RAW TUN (default br-lan)."
-msgstr "LAN-интерфейс OpenWrt, маршрутизируемый через RAW TUN (по умолчанию br-lan)."
+msgstr ""
 
 msgid "Operation timed out"
 msgstr "Время ожидания истекло"
@@ -1542,40 +1551,40 @@ msgid "QR code is too large"
 msgstr "QR-код слишком большой"
 
 msgid "qwdtt captcha mode"
-msgstr "Режим капчи qwdtt"
+msgstr ""
 
 msgid "qwdtt client mode"
-msgstr "Режим клиента qwdtt"
+msgstr ""
 
 msgid "qwdtt device ID"
-msgstr "Идентификатор устройства qwdtt"
+msgstr ""
 
 msgid "qwdtt direct mode (no DTLS)"
-msgstr "Прямой режим qwdtt (без DTLS)"
+msgstr ""
 
 msgid "qwdtt DNS"
-msgstr "DNS qwdtt"
+msgstr ""
 
 msgid "qwdtt LAN interface"
-msgstr "LAN-интерфейс qwdtt"
+msgstr ""
 
 msgid "qwdtt obfuscation"
-msgstr "Обфускация qwdtt"
+msgstr ""
 
 msgid "qwdtt SOCKS5 listen address"
-msgstr "Адрес прослушивания SOCKS5 qwdtt"
+msgstr ""
 
 msgid "qwdtt TUN interface name"
-msgstr "Имя TUN-интерфейса qwdtt"
+msgstr ""
 
 msgid "qwdtt TURN over TCP"
-msgstr "TURN по TCP для qwdtt"
+msgstr ""
 
 msgid "qwdtt VK anon path"
-msgstr "Анонимный путь VK qwdtt"
+msgstr ""
 
 msgid "qwdtt VK auth mode"
-msgstr "Режим авторизации VK qwdtt"
+msgstr ""
 
 msgid "qwdtt:// peer must be HOST:PORT (e.g. server:56000)"
 msgstr "peer в qwdtt:// должен быть HOST:PORT (например server:56000)"
@@ -1590,10 +1599,13 @@ msgid "qwdtt:// workers must be a number"
 msgstr "workers в qwdtt:// должны быть числом"
 
 msgid "RAW TUN interface name (default qwdtt0)."
-msgstr "Имя RAW TUN-интерфейса (по умолчанию qwdtt0)."
+msgstr ""
 
 msgid "rawtun = RAW-IP tunnel (default, works with the OpenWrt build); vpn = userspace WireGuard; socks = local SOCKS5 proxy. vpn/socks require the full qwdtt build."
-msgstr "rawtun = туннель RAW-IP (по умолчанию, работает со сборкой OpenWrt); vpn = userspace WireGuard; socks = локальный SOCKS5-прокси. vpn/socks требуют полной сборки qwdtt."
+msgstr ""
+
+msgid "ready"
+msgstr ""
 
 msgid "Reality fake site"
 msgstr "Fake-сайт Reality"
@@ -1683,10 +1695,10 @@ msgid "Routing section"
 msgstr "Секция маршрутизации"
 
 msgid "RTP masking mode: audio or video."
-msgstr "Режим маскировки RTP: audio или video."
+msgstr ""
 
 msgid "RTP-obfs AEAD without DTLS over TURN; requires a server with -listen-direct."
-msgstr "RTP-obfs AEAD без DTLS поверх TURN; требует сервер с -listen-direct."
+msgstr ""
 
 msgid "Rule set must be an HTTP(S) URL or a local .srs / .json path"
 msgstr "Набор правил должен быть HTTP(S) URL или локальным путём .srs / .json"
@@ -1973,6 +1985,9 @@ msgstr "Отдельная служба Zapret2 неактивна"
 msgid "Start Topkop"
 msgstr "Запустить Topkop"
 
+msgid "Status"
+msgstr ""
+
 msgid "Stop checking when URLTest group is not used. Use sing-box duration format like 1d, 12h or 30m."
 msgstr "Останавливать проверку если URLTest группа не используется. Используйте формат длительности sing-box, например 1d, 12h или 30m."
 
@@ -2244,7 +2259,7 @@ msgid "Unexpected Topkop-managed nfqws2 runtime is running"
 msgstr "Обнаружен лишний NFQWS2 Topkop"
 
 msgid "Unique device ID sent to the server. Empty = auto-generated from the LAN MAC address."
-msgstr "Уникальный идентификатор устройства, отправляемый серверу. Пусто = автоматически из MAC-адреса LAN."
+msgstr ""
 
 msgid "unique UCI identifier"
 msgstr "уникальный идентификатор UCI"
@@ -2394,7 +2409,7 @@ msgid "Visible name of this section"
 msgstr "Видимое имя этой секции"
 
 msgid "VK authorization: anonymous or account."
-msgstr "Авторизация VK: anonymous или account."
+msgstr ""
 
 msgid "VLESS flow"
 msgstr "VLESS flow"
@@ -2491,12 +2506,3 @@ msgstr "sing-box outbound для Zapret2 настроен"
 
 msgid "Zapret2 sing-box outbound is not configured"
 msgstr "sing-box outbound для Zapret2 не настроен"
-
-msgid "rawtun (RAW-IP)"
-msgstr "rawtun (RAW-IP)"
-
-msgid "vpn (WireGuard)"
-msgstr "vpn (WireGuard)"
-
-msgid "socks (SOCKS5)"
-msgstr "socks (SOCKS5)"

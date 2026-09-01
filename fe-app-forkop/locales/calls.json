@@ -43,19 +43,39 @@
     ]
   },
   {
+    "call": "⚠ Running",
+    "key": "⚠ Running",
+    "places": [
+      "src/forkop/tabs/dashboard/initController.ts:1743",
+      "src/forkop/tabs/dashboard/partials/renderSections.ts:538"
+    ]
+  },
+  {
     "call": "✔ Running",
     "key": "✔ Running",
     "places": [
-      "src/forkop/tabs/dashboard/initController.ts:1655",
-      "src/forkop/tabs/dashboard/initController.ts:1666"
+      "src/forkop/tabs/dashboard/initController.ts:1681",
+      "src/forkop/tabs/dashboard/initController.ts:1692",
+      "src/forkop/tabs/dashboard/initController.ts:1743",
+      "src/forkop/tabs/dashboard/partials/renderSections.ts:537"
+    ]
+  },
+  {
+    "call": "✘ Not installed",
+    "key": "✘ Not installed",
+    "places": [
+      "src/forkop/tabs/dashboard/initController.ts:1740",
+      "src/forkop/tabs/dashboard/partials/renderSections.ts:534"
     ]
   },
   {
     "call": "✘ Stopped",
     "key": "✘ Stopped",
     "places": [
-      "src/forkop/tabs/dashboard/initController.ts:1656",
-      "src/forkop/tabs/dashboard/initController.ts:1667"
+      "src/forkop/tabs/dashboard/initController.ts:1682",
+      "src/forkop/tabs/dashboard/initController.ts:1693",
+      "src/forkop/tabs/dashboard/initController.ts:1745",
+      "src/forkop/tabs/dashboard/partials/renderSections.ts:539"
     ]
   },
   {
@@ -99,7 +119,7 @@
     "call": "Active Connections",
     "key": "Active Connections",
     "places": [
-      "src/forkop/tabs/dashboard/initController.ts:1613"
+      "src/forkop/tabs/dashboard/initController.ts:1615"
     ]
   },
   {
@@ -922,8 +942,8 @@
     "places": [
       "src/forkop/tabs/dashboard/initController.ts:986",
       "src/forkop/tabs/dashboard/initController.ts:1236",
-      "src/forkop/tabs/dashboard/partials/renderSections.ts:361",
-      "src/forkop/tabs/dashboard/partials/renderSections.ts:362"
+      "src/forkop/tabs/dashboard/partials/renderSections.ts:365",
+      "src/forkop/tabs/dashboard/partials/renderSections.ts:366"
     ]
   },
   {
@@ -986,7 +1006,7 @@
     "call": "Dashboard currently unavailable",
     "key": "Dashboard currently unavailable",
     "places": [
-      "src/forkop/tabs/dashboard/partials/renderSections.ts:42"
+      "src/forkop/tabs/dashboard/partials/renderSections.ts:46"
     ]
   },
   {
@@ -1361,8 +1381,8 @@
     "call": "Downlink",
     "key": "Downlink",
     "places": [
-      "src/forkop/tabs/dashboard/initController.ts:1539",
-      "src/forkop/tabs/dashboard/initController.ts:1577"
+      "src/forkop/tabs/dashboard/initController.ts:1541",
+      "src/forkop/tabs/dashboard/initController.ts:1579"
     ]
   },
   {
@@ -1755,7 +1775,7 @@
     "call": "Expires",
     "key": "Expires",
     "places": [
-      "src/forkop/tabs/dashboard/partials/renderSections.ts:129"
+      "src/forkop/tabs/dashboard/partials/renderSections.ts:133"
     ]
   },
   {
@@ -1875,7 +1895,7 @@
     "call": "Fastest",
     "key": "Fastest",
     "places": [
-      "src/forkop/methods/custom/getDashboardSections.ts:647"
+      "src/forkop/methods/custom/getDashboardSections.ts:651"
     ]
   },
   {
@@ -2252,7 +2272,7 @@
     "call": "Install another build:",
     "key": "Install another build:",
     "places": [
-      "src/forkop/tabs/updates/initController.ts:1229"
+      "src/forkop/tabs/updates/initController.ts:1230"
     ]
   },
   {
@@ -2260,7 +2280,7 @@
     "key": "Installed version is newer than release",
     "places": [
       "src/forkop/tabs/updates/initController.ts:291",
-      "src/forkop/tabs/updates/initController.ts:1087"
+      "src/forkop/tabs/updates/initController.ts:1088"
     ]
   },
   {
@@ -2822,14 +2842,14 @@
     "key": "Latest version is installed",
     "places": [
       "src/forkop/tabs/updates/initController.ts:294",
-      "src/forkop/tabs/updates/initController.ts:1085"
+      "src/forkop/tabs/updates/initController.ts:1086"
     ]
   },
   {
     "call": "Latest version:",
     "key": "Latest version:",
     "places": [
-      "src/forkop/tabs/updates/initController.ts:1087"
+      "src/forkop/tabs/updates/initController.ts:1088"
     ]
   },
   {
@@ -2900,13 +2920,13 @@
     "call": "Loading...",
     "key": "Loading...",
     "places": [
-      "src/forkop/tabs/updates/initController.ts:949",
-      "src/forkop/tabs/updates/initController.ts:960",
-      "src/forkop/tabs/updates/initController.ts:971",
-      "src/forkop/tabs/updates/initController.ts:984",
-      "src/forkop/tabs/updates/initController.ts:997",
-      "src/forkop/tabs/updates/initController.ts:1010",
-      "src/forkop/tabs/updates/initController.ts:1023"
+      "src/forkop/tabs/updates/initController.ts:950",
+      "src/forkop/tabs/updates/initController.ts:961",
+      "src/forkop/tabs/updates/initController.ts:972",
+      "src/forkop/tabs/updates/initController.ts:985",
+      "src/forkop/tabs/updates/initController.ts:998",
+      "src/forkop/tabs/updates/initController.ts:1011",
+      "src/forkop/tabs/updates/initController.ts:1024"
     ]
   },
   {
@@ -2969,7 +2989,7 @@
     "call": "Memory Usage",
     "key": "Memory Usage",
     "places": [
-      "src/forkop/tabs/dashboard/initController.ts:1617"
+      "src/forkop/tabs/dashboard/initController.ts:1619"
     ]
   },
   {
@@ -3237,11 +3257,11 @@
     "places": [
       "src/forkop/helpers/singBoxVariant.ts:29",
       "src/forkop/helpers/singBoxVariant.ts:37",
-      "src/forkop/tabs/updates/initController.ts:974",
-      "src/forkop/tabs/updates/initController.ts:987",
-      "src/forkop/tabs/updates/initController.ts:1000",
-      "src/forkop/tabs/updates/initController.ts:1013",
-      "src/forkop/tabs/updates/initController.ts:1026"
+      "src/forkop/tabs/updates/initController.ts:975",
+      "src/forkop/tabs/updates/initController.ts:988",
+      "src/forkop/tabs/updates/initController.ts:1001",
+      "src/forkop/tabs/updates/initController.ts:1014",
+      "src/forkop/tabs/updates/initController.ts:1027"
     ]
   },
   {
@@ -3249,6 +3269,13 @@
     "key": "Not public",
     "places": [
       "src/forkop/tabs/diagnostic/checks/runInboundsCheck.ts:62"
+    ]
+  },
+  {
+    "call": "not ready",
+    "key": "not ready",
+    "places": [
+      "src/forkop/tabs/dashboard/partials/renderSections.ts:558"
     ]
   },
   {
@@ -3272,7 +3299,7 @@
     "call": "Not running",
     "key": "Not running",
     "places": [
-      "src/forkop/tabs/diagnostic/diagnostic.store.ts:131",
+      "src/forkop/tabs/diagnostic/diagnostic.store.ts:133",
       "src/forkop/tabs/diagnostic/initController.ts:120",
       "src/forkop/tabs/diagnostic/initController.ts:350",
       "src/forkop/tabs/diagnostic/initController.ts:417",
@@ -3418,8 +3445,8 @@
     "call": "Open",
     "key": "Open",
     "places": [
-      "src/forkop/tabs/updates/initController.ts:1078",
-      "src/forkop/tabs/updates/initController.ts:1100"
+      "src/forkop/tabs/updates/initController.ts:1079",
+      "src/forkop/tabs/updates/initController.ts:1101"
     ]
   },
   {
@@ -3672,8 +3699,8 @@
     "key": "Priority details",
     "places": [
       "src/forkop/tabs/dashboard/initController.ts:1278",
-      "src/forkop/tabs/dashboard/partials/renderSections.ts:399",
-      "src/forkop/tabs/dashboard/partials/renderSections.ts:400"
+      "src/forkop/tabs/dashboard/partials/renderSections.ts:403",
+      "src/forkop/tabs/dashboard/partials/renderSections.ts:404"
     ]
   },
   {
@@ -3865,6 +3892,13 @@
     ]
   },
   {
+    "call": "ready",
+    "key": "ready",
+    "places": [
+      "src/forkop/tabs/dashboard/partials/renderSections.ts:557"
+    ]
+  },
+  {
     "call": "Reality fake site",
     "key": "Reality fake site",
     "places": [
@@ -3917,7 +3951,7 @@
     "call": "Refill",
     "key": "Refill",
     "places": [
-      "src/forkop/tabs/dashboard/partials/renderSections.ts:130"
+      "src/forkop/tabs/dashboard/partials/renderSections.ts:134"
     ]
   },
   {
@@ -4489,7 +4523,7 @@
     "call": "Services info",
     "key": "Services info",
     "places": [
-      "src/forkop/tabs/dashboard/initController.ts:1650"
+      "src/forkop/tabs/dashboard/initController.ts:1676"
     ]
   },
   {
@@ -4764,6 +4798,13 @@
     ]
   },
   {
+    "call": "Status",
+    "key": "Status",
+    "places": [
+      "src/forkop/tabs/dashboard/partials/renderSections.ts:555"
+    ]
+  },
+  {
     "call": "Stop checking when URLTest group is not used. Use sing-box duration format like 1d, 12h or 30m.",
     "key": "Stop checking when URLTest group is not used. Use sing-box duration format like 1d, 12h or 30m.",
     "places": [
@@ -4795,7 +4836,7 @@
     "call": "Subscription info:",
     "key": "Subscription info:",
     "places": [
-      "src/forkop/tabs/dashboard/partials/renderSections.ts:144"
+      "src/forkop/tabs/dashboard/partials/renderSections.ts:148"
     ]
   },
   {
@@ -4845,7 +4886,7 @@
     "call": "System info",
     "key": "System info",
     "places": [
-      "src/forkop/tabs/dashboard/initController.ts:1610"
+      "src/forkop/tabs/dashboard/initController.ts:1612"
     ]
   },
   {
@@ -4894,9 +4935,9 @@
     "call": "Test latency",
     "key": "Test latency",
     "places": [
-      "src/forkop/tabs/dashboard/partials/renderSections.ts:237",
-      "src/forkop/tabs/dashboard/partials/renderSections.ts:245",
-      "src/forkop/tabs/dashboard/partials/renderSections.ts:486"
+      "src/forkop/tabs/dashboard/partials/renderSections.ts:241",
+      "src/forkop/tabs/dashboard/partials/renderSections.ts:249",
+      "src/forkop/tabs/dashboard/partials/renderSections.ts:513"
     ]
   },
   {
@@ -5242,8 +5283,8 @@
     "call": "Traffic",
     "key": "Traffic",
     "places": [
-      "src/forkop/tabs/dashboard/initController.ts:1536",
-      "src/forkop/tabs/dashboard/partials/renderSections.ts:125"
+      "src/forkop/tabs/dashboard/initController.ts:1538",
+      "src/forkop/tabs/dashboard/partials/renderSections.ts:129"
     ]
   },
   {
@@ -5257,7 +5298,7 @@
     "call": "Traffic Total",
     "key": "Traffic Total",
     "places": [
-      "src/forkop/tabs/dashboard/initController.ts:1570"
+      "src/forkop/tabs/dashboard/initController.ts:1572"
     ]
   },
   {
@@ -5444,8 +5485,9 @@
       "src/forkop/services/systemInfo.service.ts:22",
       "src/forkop/services/systemInfo.service.ts:24",
       "src/forkop/services/systemInfo.service.ts:26",
-      "src/forkop/services/systemInfo.service.ts:29",
-      "src/forkop/services/systemInfo.service.ts:30",
+      "src/forkop/services/systemInfo.service.ts:28",
+      "src/forkop/services/systemInfo.service.ts:31",
+      "src/forkop/services/systemInfo.service.ts:32",
       "src/forkop/tabs/updates/initController.ts:331",
       "src/forkop/tabs/diagnostic/checks/runInboundsCheck.ts:25"
     ]
@@ -5519,16 +5561,16 @@
     "call": "Update is available:",
     "key": "Update is available:",
     "places": [
-      "src/forkop/tabs/updates/initController.ts:1064"
+      "src/forkop/tabs/updates/initController.ts:1065"
     ]
   },
   {
     "call": "Update subscriptions",
     "key": "Update subscriptions",
     "places": [
-      "src/forkop/tabs/dashboard/partials/renderSections.ts:214",
-      "src/forkop/tabs/dashboard/partials/renderSections.ts:227",
-      "src/forkop/tabs/dashboard/partials/renderSections.ts:228"
+      "src/forkop/tabs/dashboard/partials/renderSections.ts:218",
+      "src/forkop/tabs/dashboard/partials/renderSections.ts:231",
+      "src/forkop/tabs/dashboard/partials/renderSections.ts:232"
     ]
   },
   {
@@ -5542,8 +5584,8 @@
     "call": "Uplink",
     "key": "Uplink",
     "places": [
-      "src/forkop/tabs/dashboard/initController.ts:1538",
-      "src/forkop/tabs/dashboard/initController.ts:1573"
+      "src/forkop/tabs/dashboard/initController.ts:1540",
+      "src/forkop/tabs/dashboard/initController.ts:1575"
     ]
   },
   {
@@ -5594,8 +5636,8 @@
     "key": "URLTest details",
     "places": [
       "src/forkop/tabs/dashboard/initController.ts:1028",
-      "src/forkop/tabs/dashboard/partials/renderSections.ts:380",
-      "src/forkop/tabs/dashboard/partials/renderSections.ts:381"
+      "src/forkop/tabs/dashboard/partials/renderSections.ts:384",
+      "src/forkop/tabs/dashboard/partials/renderSections.ts:385"
     ]
   },
   {

@@ -62,6 +62,14 @@ export async function fetchServicesInfo() {
         forkopStatus: forkop.success
           ? forkop.data.status
           : previousData.forkopStatus,
+        wdttRunning: previousData.wdttRunning,
+        wdttReady: previousData.wdttReady,
+        wdttInstalled: previousData.wdttInstalled,
+        wdttRuleCount: previousData.wdttRuleCount,
+        olcrtcRunning: previousData.olcrtcRunning,
+        olcrtcReady: previousData.olcrtcReady,
+        olcrtcInstalled: previousData.olcrtcInstalled,
+        olcrtcRuleCount: previousData.olcrtcRuleCount,
       },
     },
   });

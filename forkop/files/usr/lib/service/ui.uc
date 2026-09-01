@@ -1039,7 +1039,11 @@ function capability_flags() {
         zapret_installed: file_executable(ZAPRET_PROVIDER_NFQWS_BIN) ? 1 : 0,
         zapret2_installed: file_executable(ZAPRET2_PROVIDER_NFQWS2_BIN) ? 1 : 0,
         byedpi_installed: file_executable(BYEDPI_BIN) ? 1 : 0,
-        wdtt_installed: file_exists(WDTT_CONFIG) ? 1 : 0,
+        // wdtt: qwdtt-клиент (RAW-IP/WG, /usr/bin/qwdtt-client) или
+        // классический wdtt-openwrt (/etc/config/wdtt). Файл конфига /etc/config/wdtt
+        // может отсутствовать — тогда проверяем бинарник qwdtt.
+        wdtt_installed: (file_exists(WDTT_CONFIG) || file_executable("/usr/bin/qwdtt-client")) ? 1 : 0,
+        qwdtt_installed: file_executable("/usr/bin/qwdtt-client") ? 1 : 0,
         olcrtc_installed: file_executable(OLCRTC_BIN) ? 1 : 0,
         server_inbounds_enabled_count: 0
     };
@@ -1083,6 +1087,34 @@ function ui_capabilities_json() {
     write_json(capability_flags());
 }
 
+// Статус туннельного провайдера (qwdtt/wdtt, olcrtc) из его runtime-модуля.
+// Каждый runtime поддерживает режим "status" и возвращает JSON с полями
+// installed/ready/service_running/service_enabled/enabled_rule_count.
+function provider_status(runtime_uc) {
+    let output = command_output_from_args([ "ucode", "-L", LIB_DIR, runtime_uc, "status" ]);
+    if (output == "")
+        return null;
+    try {
+        let parsed = json(output);
+        return type(parsed) == "object" ? parsed : null;
+    }
+    catch (error) {
+        return null;
+    }
+}
+
+function provider_status_brief(runtime_uc) {
+    let status = provider_status(runtime_uc);
+    if (status == null)
+        return { installed: 0, running: 0, ready: 0, enabled_rule_count: 0 };
+    return {
+        installed: status.installed === true || arg_number(status.installed) ? 1 : 0,
+        running: status.service_running === true || arg_number(status.service_running) ? 1 : 0,
+        ready: status.ready === true || arg_number(status.ready) ? 1 : 0,
+        enabled_rule_count: arg_number(status.enabled_rule_count)
+    };
+}
+
 function current_ui_state_json() {
     refresh_action_dirs();
 
@@ -1119,6 +1151,10 @@ function current_ui_state_json() {
             }
         },
         capabilities,
+        providers: {
+            wdtt: provider_status_brief(LIB_DIR + "/providers/wdtt/runtime.uc"),
+            olcrtc: provider_status_brief(LIB_DIR + "/providers/olcrtc/runtime.uc")
+        },
         actions: action_state_from_dirs()
     });
 }

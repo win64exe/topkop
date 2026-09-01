@@ -81,6 +81,14 @@ describe('fetchServicesInfo', () => {
           forkopRunning: 1,
           forkopEnabled: 1,
           forkopStatus: 'running & enabled',
+          wdttRunning: 0,
+          wdttReady: 0,
+          wdttInstalled: 0,
+          wdttRuleCount: 0,
+          olcrtcRunning: 0,
+          olcrtcReady: 0,
+          olcrtcInstalled: 0,
+          olcrtcRuleCount: 0,
         },
       },
     });
@@ -116,6 +124,14 @@ describe('fetchServicesInfo', () => {
       forkopRunning: 1,
       forkopEnabled: 1,
       forkopStatus: 'running & enabled',
+      wdttRunning: 0,
+      wdttReady: 0,
+      wdttInstalled: 0,
+      wdttRuleCount: 0,
+      olcrtcRunning: 0,
+      olcrtcReady: 0,
+      olcrtcInstalled: 0,
+      olcrtcRuleCount: 0,
     });
   });
 });

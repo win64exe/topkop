@@ -1451,11 +1451,13 @@ async function renderSectionsWidget() {
     });
   }
 
-  const renderedWidgets = sectionsWidget.data.map((section) =>
-    renderSections({
+  const renderedWidgets = sectionsWidget.data.map((section) => {
+    const providerStatus = getProviderStatusForSection(section);
+
+    return renderSections({
       loading: sectionsWidget.loading,
       failed: sectionsWidget.failed,
-      section,
+      section: providerStatus ? { ...section, providerStatus } : section,
       latencyFetching: Boolean(
         sectionsWidget.latencyFetchingSections[section.sectionName],
       ),
@@ -1498,11 +1500,11 @@ async function renderSectionsWidget() {
       onShowPriorityInfo: (outbound) => {
         handleShowPriorityInfo(outbound);
       },
-      onUpdateSubscription: (section) => {
-        void handleUpdateSubscription(section);
+      onUpdateSubscription: (targetSection) => {
+        void handleUpdateSubscription(targetSection);
       },
-    }),
-  );
+    });
+  });
 
   return preserveScrollForPage(() => {
     container.replaceChildren(...renderedWidgets);
@@ -1623,6 +1625,30 @@ async function renderSystemInfoWidget() {
   container.replaceChildren(renderedWidget);
 }
 
+function getProviderStatusForSection(
+  section: Forkop.OutboundGroup,
+): Forkop.OutboundGroup['providerStatus'] | undefined {
+  const servicesInfoWidget = store.get().servicesInfoWidget;
+
+  if (section.action === 'wdtt') {
+    return {
+      installed: Number(servicesInfoWidget.data.wdttInstalled ?? 0),
+      running: Number(servicesInfoWidget.data.wdttRunning ?? 0),
+      ready: Number(servicesInfoWidget.data.wdttReady ?? 0),
+    };
+  }
+
+  if (section.action === 'olcrtc') {
+    return {
+      installed: Number(servicesInfoWidget.data.olcrtcInstalled ?? 0),
+      running: Number(servicesInfoWidget.data.olcrtcRunning ?? 0),
+      ready: Number(servicesInfoWidget.data.olcrtcReady ?? 0),
+    };
+  }
+
+  return undefined;
+}
+
 async function renderServicesInfoWidget() {
   logger.debug('[DASHBOARD]', 'renderServicesInfoWidget');
   const servicesInfoWidget = store.get().servicesInfoWidget;
@@ -1671,10 +1697,59 @@ async function renderServicesInfoWidget() {
             : 'fkp_dashboard-page__widgets-section__item__row--error',
         },
       },
+      {
+        key: 'Qwdtt',
+        value: providerStatusLabel(
+          servicesInfoWidget.data.wdttInstalled,
+          servicesInfoWidget.data.wdttRunning,
+          servicesInfoWidget.data.wdttReady,
+        ),
+        attributes: {
+          class: providerStatusClass(
+            servicesInfoWidget.data.wdttInstalled,
+            servicesInfoWidget.data.wdttRunning,
+          ),
+        },
+      },
+      {
+        key: 'Olcrtc',
+        value: providerStatusLabel(
+          servicesInfoWidget.data.olcrtcInstalled,
+          servicesInfoWidget.data.olcrtcRunning,
+          servicesInfoWidget.data.olcrtcReady,
+        ),
+        attributes: {
+          class: providerStatusClass(
+            servicesInfoWidget.data.olcrtcInstalled,
+            servicesInfoWidget.data.olcrtcRunning,
+          ),
+        },
+      },
     ],
   });
 
   container.replaceChildren(renderedWidget);
+}
+
+function providerStatusLabel(
+  installed: number,
+  running: number,
+  ready: number,
+) {
+  if (!installed) {
+    return _('✘ Not installed');
+  }
+  if (running) {
+    return ready ? _('✔ Running') : _('⚠ Running');
+  }
+  return _('✘ Stopped');
+}
+
+function providerStatusClass(installed: number, running: number) {
+  if (!installed || !running) {
+    return 'fkp_dashboard-page__widgets-section__item__row--error';
+  }
+  return 'fkp_dashboard-page__widgets-section__item__row--success';
 }
 
 async function onStoreUpdate(

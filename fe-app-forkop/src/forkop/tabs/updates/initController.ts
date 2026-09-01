@@ -841,6 +841,7 @@ function getComponentCards(): ComponentCard[] {
   const zapret2Installed = Boolean(systemInfo.zapret2_installed);
   const byedpiInstalled = Boolean(systemInfo.byedpi_installed);
   const wdttInstalled = Boolean(systemInfo.wdtt_installed);
+  const qwdttInstalled = Boolean(systemInfo.qwdtt_installed);
   const olcrtcInstalled = Boolean(systemInfo.olcrtc_installed);
   const singBoxInstalled = !isNotInstalled(systemInfo.sing_box_version);
   const singBoxStable =
@@ -927,7 +928,7 @@ function getComponentCards(): ComponentCard[] {
   });
   const qwdttActions = getOptionalComponentActions({
     component: 'qwdtt',
-    installed: wdttInstalled,
+    installed: qwdttInstalled,
     checkKey: 'qwdttCheck',
     installKey: 'qwdttInstall',
     removeKey: 'qwdttRemove',
@@ -1008,8 +1009,8 @@ function getComponentCards(): ComponentCard[] {
       title: 'Qwdtt',
       version: systemInfoLoading
         ? _('Loading...')
-        : wdttInstalled
-          ? systemInfo.wdtt_version
+        : qwdttInstalled
+          ? systemInfo.qwdtt_version
           : _('Not installed'),
       latestVersion: getLatestVersion('qwdtt'),
       releaseUrl: getGitHubReleaseUrl('qwdtt'),

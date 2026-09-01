@@ -161,6 +161,14 @@ export interface StoreType {
       forkopRunning: number;
       forkopEnabled: number;
       forkopStatus: string;
+      wdttRunning: number;
+      wdttReady: number;
+      wdttInstalled: number;
+      wdttRuleCount: number;
+      olcrtcRunning: number;
+      olcrtcReady: number;
+      olcrtcInstalled: number;
+      olcrtcRuleCount: number;
     };
   };
   sectionsWidget: {
@@ -206,6 +214,8 @@ export interface StoreType {
     byedpi_installed: number;
     wdtt_version: string;
     wdtt_installed: number;
+    qwdtt_version: string;
+    qwdtt_installed: number;
     olcrtc_version: string;
     olcrtc_installed: number;
     server_inbounds_enabled_count: number;
@@ -275,6 +285,14 @@ const initialStore: StoreType = {
       forkopRunning: 0,
       forkopEnabled: 0,
       forkopStatus: '',
+      wdttRunning: 0,
+      wdttReady: 0,
+      wdttInstalled: 0,
+      wdttRuleCount: 0,
+      olcrtcRunning: 0,
+      olcrtcReady: 0,
+      olcrtcInstalled: 0,
+      olcrtcRuleCount: 0,
     },
   },
   sectionsWidget: {

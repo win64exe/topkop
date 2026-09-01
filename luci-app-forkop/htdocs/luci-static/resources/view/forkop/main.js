@@ -1770,6 +1770,9 @@ function prettyBytes(n) {
 }
 
 // src/forkop/tabs/dashboard/partials/renderSections.ts
+function isProviderSection(section) {
+  return Boolean(section.action && ["wdtt", "olcrtc"].includes(section.action));
+}
 function renderFailedState() {
   return E(
     "div",
@@ -2080,6 +2083,28 @@ function renderDefaultState({
     subscriptionUpdating,
     onUpdateSubscription
   );
+  if (isProviderSection(section)) {
+    return E("div", { class: "fkp_dashboard-page__outbound-section" }, [
+      E(
+        "div",
+        { class: "fkp_dashboard-page__outbound-section__title-section" },
+        [
+          E(
+            "div",
+            {
+              class: "fkp_dashboard-page__outbound-section__title-section__title"
+            },
+            section.displayName
+          )
+        ]
+      ),
+      E(
+        "div",
+        { class: "fkp_dashboard-page__provider-status" },
+        renderProviderStatus(section.providerStatus)
+      )
+    ]);
+  }
   return E("div", { class: "fkp_dashboard-page__outbound-section" }, [
     // Title with test latency
     E("div", { class: "fkp_dashboard-page__outbound-section__title-section" }, [
@@ -2137,6 +2162,25 @@ function renderDefaultState({
       ...metadataNodes,
       ...section.outbounds.map((outbound) => renderOutbound(outbound))
     ])
+  ]);
+}
+function renderProviderStatus(status) {
+  const installed = Number(status?.installed ?? 0);
+  const running = Number(status?.running ?? 0);
+  const ready = Number(status?.ready ?? 0);
+  const statusLabel = !installed ? _("\u2718 Not installed") : running ? ready ? _("\u2714 Running") : _("\u26A0 Running") : _("\u2718 Stopped");
+  const statusClass = !installed ? "fkp_dashboard-page__provider-status__item--error" : running ? "fkp_dashboard-page__provider-status__item--success" : "fkp_dashboard-page__provider-status__item--error";
+  return E("div", { class: "fkp_dashboard-page__provider-status__row" }, [
+    E(
+      "span",
+      { class: [statusClass].join(" ") },
+      statusLabel
+    ),
+    E(
+      "span",
+      { class: "fkp_dashboard-page__provider-status__item" },
+      `${_("Status")}: ${installed && running && ready ? _("ready") : _("not ready")}`
+    )
   ]);
 }
 function renderSections(props) {
@@ -3250,6 +3294,9 @@ function getJsonOutbounds(section) {
   const values = getListValues(section.outbound_jsons);
   return values.length ? values : getListValues(section.outbound_json);
 }
+function isProviderAction(action) {
+  return Boolean(action && ["wdtt", "olcrtc"].includes(action));
+}
 function isConnectionAction(action) {
   return Boolean(
     action && ["connection", "proxy", "outbound", "vpn"].includes(action)
@@ -3923,21 +3970,19 @@ async function getDashboardSections(options = {}) {
   const includeSubscriptionCopyState = options.includeSubscriptionCopyState ?? true;
   const configSections = hydrateConfigSections(await getConfigSections());
   const clashProxies = await getClashApiProxies(configSections);
-  if (!clashProxies.success || !clashProxies.data?.proxies) {
-    return {
-      success: false,
-      data: []
-    };
-  }
-  const proxies = Object.entries(clashProxies.data.proxies).map(
+  const clashProxiesData = clashProxies.success ? clashProxies.data : void 0;
+  const proxies = Object.entries(clashProxiesData?.proxies ?? {}).map(
     ([key, value]) => ({
       code: key,
       value
     })
   );
+  const clashAvailable = Boolean(
+    clashProxies.success && clashProxiesData?.proxies
+  );
   const data = await Promise.all(
     configSections.filter(
-      (section) => section.enabled !== "0" && isConnectionAction(section.action)
+      (section) => section.enabled !== "0" && (isConnectionAction(section.action) || isProviderAction(section.action))
     ).map(async (section) => {
       const displayName = getDisplayName(section);
       const sectionName = section[".name"];
@@ -4001,6 +4046,16 @@ async function getDashboardSections(options = {}) {
           ]
         };
       }
+      if (isProviderAction(sectionAction)) {
+        return {
+          withTagSelect: false,
+          code: sectionName,
+          sectionName,
+          displayName,
+          action: sectionAction,
+          outbounds: []
+        };
+      }
       if (sectionAction === "outbound") {
         const outboundTag = getOutboundTagBySection(sectionName);
         const outbound = proxies.find((proxy) => proxy.code === outboundTag);
@@ -4034,7 +4089,9 @@ async function getDashboardSections(options = {}) {
   );
   return {
     success: true,
-    data
+    data: clashAvailable ? data : data.filter(
+      (section) => Boolean(section && isProviderAction(section.action))
+    )
   };
 }
 
@@ -4294,6 +4351,8 @@ var initialDiagnosticStore = {
     byedpi_installed: 0,
     wdtt_version: "loading",
     wdtt_installed: 0,
+    qwdtt_version: "loading",
+    qwdtt_installed: 0,
     olcrtc_version: "loading",
     olcrtc_installed: 0,
     server_inbounds_enabled_count: -1,
@@ -4479,7 +4538,15 @@ var initialStore = {
       singbox: 0,
       forkopRunning: 0,
       forkopEnabled: 0,
-      forkopStatus: ""
+      forkopStatus: "",
+      wdttRunning: 0,
+      wdttReady: 0,
+      wdttInstalled: 0,
+      wdttRuleCount: 0,
+      olcrtcRunning: 0,
+      olcrtcReady: 0,
+      olcrtcInstalled: 0,
+      olcrtcRuleCount: 0
     }
   },
   sectionsWidget: {
@@ -4867,6 +4934,8 @@ function applyServiceState(uiState) {
   nextSystemInfo.sing_box_tiny = uiState.capabilities.sing_box_tiny;
   nextSystemInfo.sing_box_compressed = uiState.capabilities.sing_box_compressed;
   nextSystemInfo.sing_box_tailscale = uiState.capabilities.sing_box_tailscale;
+  const wdtt = uiState.providers?.wdtt;
+  const olcrtc = uiState.providers?.olcrtc;
   store.set({
     servicesInfoWidget: {
       loading: false,
@@ -4875,7 +4944,15 @@ function applyServiceState(uiState) {
         singbox: uiState.service.sing_box.running,
         forkopRunning: uiState.service.forkop.running,
         forkopEnabled: uiState.service.forkop.enabled,
-        forkopStatus: uiState.service.forkop.status
+        forkopStatus: uiState.service.forkop.status,
+        wdttRunning: Number(wdtt?.running ?? 0),
+        wdttReady: Number(wdtt?.ready ?? 0),
+        wdttInstalled: Number(wdtt?.installed ?? 0),
+        wdttRuleCount: Number(wdtt?.enabled_rule_count ?? 0),
+        olcrtcRunning: Number(olcrtc?.running ?? 0),
+        olcrtcReady: Number(olcrtc?.ready ?? 0),
+        olcrtcInstalled: Number(olcrtc?.installed ?? 0),
+        olcrtcRuleCount: Number(olcrtc?.enabled_rule_count ?? 0)
       }
     },
     diagnosticsSystemInfo: normalizeSingBoxVariantFields(nextSystemInfo)
@@ -5442,7 +5519,15 @@ async function fetchServicesInfo() {
         singbox: singbox.success ? singbox.data.running : previousData.singbox,
         forkopRunning: forkop.success ? forkop.data.running : previousData.forkopRunning,
         forkopEnabled: forkop.success ? forkop.data.enabled : previousData.forkopEnabled,
-        forkopStatus: forkop.success ? forkop.data.status : previousData.forkopStatus
+        forkopStatus: forkop.success ? forkop.data.status : previousData.forkopStatus,
+        wdttRunning: previousData.wdttRunning,
+        wdttReady: previousData.wdttReady,
+        wdttInstalled: previousData.wdttInstalled,
+        wdttRuleCount: previousData.wdttRuleCount,
+        olcrtcRunning: previousData.olcrtcRunning,
+        olcrtcReady: previousData.olcrtcReady,
+        olcrtcInstalled: previousData.olcrtcInstalled,
+        olcrtcRuleCount: previousData.olcrtcRuleCount
       }
     }
   });
@@ -6579,11 +6664,12 @@ async function renderSectionsWidget() {
       container.replaceChildren(renderedWidget);
     });
   }
-  const renderedWidgets = sectionsWidget.data.map(
-    (section) => renderSections({
+  const renderedWidgets = sectionsWidget.data.map((section) => {
+    const providerStatus = getProviderStatusForSection(section);
+    return renderSections({
       loading: sectionsWidget.loading,
       failed: sectionsWidget.failed,
-      section,
+      section: providerStatus ? { ...section, providerStatus } : section,
       latencyFetching: Boolean(
         sectionsWidget.latencyFetchingSections[section.sectionName]
       ),
@@ -6622,11 +6708,11 @@ async function renderSectionsWidget() {
       onShowPriorityInfo: (outbound) => {
         handleShowPriorityInfo(outbound);
       },
-      onUpdateSubscription: (section2) => {
-        void handleUpdateSubscription(section2);
+      onUpdateSubscription: (targetSection) => {
+        void handleUpdateSubscription(targetSection);
       }
-    })
-  );
+    });
+  });
   return preserveScrollForPage(() => {
     container.replaceChildren(...renderedWidgets);
   });
@@ -6724,6 +6810,24 @@ async function renderSystemInfoWidget() {
   });
   container.replaceChildren(renderedWidget);
 }
+function getProviderStatusForSection(section) {
+  const servicesInfoWidget = store.get().servicesInfoWidget;
+  if (section.action === "wdtt") {
+    return {
+      installed: Number(servicesInfoWidget.data.wdttInstalled ?? 0),
+      running: Number(servicesInfoWidget.data.wdttRunning ?? 0),
+      ready: Number(servicesInfoWidget.data.wdttReady ?? 0)
+    };
+  }
+  if (section.action === "olcrtc") {
+    return {
+      installed: Number(servicesInfoWidget.data.olcrtcInstalled ?? 0),
+      running: Number(servicesInfoWidget.data.olcrtcRunning ?? 0),
+      ready: Number(servicesInfoWidget.data.olcrtcReady ?? 0)
+    };
+  }
+  return void 0;
+}
 async function renderServicesInfoWidget() {
   logger.debug("[DASHBOARD]", "renderServicesInfoWidget");
   const servicesInfoWidget = store.get().servicesInfoWidget;
@@ -6758,10 +6862,53 @@ async function renderServicesInfoWidget() {
         attributes: {
           class: servicesInfoWidget.data.singbox ? "fkp_dashboard-page__widgets-section__item__row--success" : "fkp_dashboard-page__widgets-section__item__row--error"
         }
+      },
+      {
+        key: "Qwdtt",
+        value: providerStatusLabel(
+          servicesInfoWidget.data.wdttInstalled,
+          servicesInfoWidget.data.wdttRunning,
+          servicesInfoWidget.data.wdttReady
+        ),
+        attributes: {
+          class: providerStatusClass(
+            servicesInfoWidget.data.wdttInstalled,
+            servicesInfoWidget.data.wdttRunning
+          )
+        }
+      },
+      {
+        key: "Olcrtc",
+        value: providerStatusLabel(
+          servicesInfoWidget.data.olcrtcInstalled,
+          servicesInfoWidget.data.olcrtcRunning,
+          servicesInfoWidget.data.olcrtcReady
+        ),
+        attributes: {
+          class: providerStatusClass(
+            servicesInfoWidget.data.olcrtcInstalled,
+            servicesInfoWidget.data.olcrtcRunning
+          )
+        }
       }
     ]
   });
   container.replaceChildren(renderedWidget);
+}
+function providerStatusLabel(installed, running, ready) {
+  if (!installed) {
+    return _("\u2718 Not installed");
+  }
+  if (running) {
+    return ready ? _("\u2714 Running") : _("\u26A0 Running");
+  }
+  return _("\u2718 Stopped");
+}
+function providerStatusClass(installed, running) {
+  if (!installed || !running) {
+    return "fkp_dashboard-page__widgets-section__item__row--error";
+  }
+  return "fkp_dashboard-page__widgets-section__item__row--success";
 }
 async function onStoreUpdate(next, prev, diff) {
   if (diff.sectionsWidget) {
@@ -8386,6 +8533,8 @@ var UNKNOWN_SYSTEM_INFO = {
   byedpi_installed: 0,
   wdtt_version: _("unknown"),
   wdtt_installed: 0,
+  qwdtt_version: _("unknown"),
+  qwdtt_installed: 0,
   olcrtc_version: _("unknown"),
   olcrtc_installed: 0,
   server_inbounds_enabled_count: -1,
@@ -8452,6 +8601,8 @@ async function ensureSystemInfo({
         zapret2_installed: latestSystemInfo.zapret2_installed,
         byedpi_installed: latestSystemInfo.byedpi_installed,
         wdtt_installed: latestSystemInfo.wdtt_installed,
+        qwdtt_installed: latestSystemInfo.qwdtt_installed,
+        qwdtt_version: latestSystemInfo.qwdtt_version,
         olcrtc_installed: latestSystemInfo.olcrtc_installed,
         server_inbounds_enabled_count: latestSystemInfo.server_inbounds_enabled_count
       };
@@ -13459,6 +13610,7 @@ function getComponentCards() {
   const zapret2Installed = Boolean(systemInfo.zapret2_installed);
   const byedpiInstalled = Boolean(systemInfo.byedpi_installed);
   const wdttInstalled = Boolean(systemInfo.wdtt_installed);
+  const qwdttInstalled = Boolean(systemInfo.qwdtt_installed);
   const olcrtcInstalled = Boolean(systemInfo.olcrtc_installed);
   const singBoxInstalled = !isNotInstalled(systemInfo.sing_box_version);
   const singBoxStable = singBoxInstalled && !systemInfo.sing_box_extended && !systemInfo.sing_box_tiny;
@@ -13535,7 +13687,7 @@ function getComponentCards() {
   });
   const qwdttActions = getOptionalComponentActions({
     component: "qwdtt",
-    installed: wdttInstalled,
+    installed: qwdttInstalled,
     checkKey: "qwdttCheck",
     installKey: "qwdttInstall",
     removeKey: "qwdttRemove"
@@ -13597,7 +13749,7 @@ function getComponentCards() {
       component: "qwdtt",
       column: 1,
       title: "Qwdtt",
-      version: systemInfoLoading ? _("Loading...") : wdttInstalled ? systemInfo.wdtt_version : _("Not installed"),
+      version: systemInfoLoading ? _("Loading...") : qwdttInstalled ? systemInfo.qwdtt_version : _("Not installed"),
       latestVersion: getLatestVersion("qwdtt"),
       releaseUrl: getGitHubReleaseUrl("qwdtt"),
       actions: qwdttActions

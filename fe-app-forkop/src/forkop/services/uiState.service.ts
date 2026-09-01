@@ -90,6 +90,9 @@ function applyServiceState(uiState: Forkop.UiState) {
   nextSystemInfo.sing_box_compressed = uiState.capabilities.sing_box_compressed;
   nextSystemInfo.sing_box_tailscale = uiState.capabilities.sing_box_tailscale;
 
+  const wdtt = uiState.providers?.wdtt;
+  const olcrtc = uiState.providers?.olcrtc;
+
   store.set({
     servicesInfoWidget: {
       loading: false,
@@ -99,6 +102,14 @@ function applyServiceState(uiState: Forkop.UiState) {
         forkopRunning: uiState.service.forkop.running,
         forkopEnabled: uiState.service.forkop.enabled,
         forkopStatus: uiState.service.forkop.status,
+        wdttRunning: Number(wdtt?.running ?? 0),
+        wdttReady: Number(wdtt?.ready ?? 0),
+        wdttInstalled: Number(wdtt?.installed ?? 0),
+        wdttRuleCount: Number(wdtt?.enabled_rule_count ?? 0),
+        olcrtcRunning: Number(olcrtc?.running ?? 0),
+        olcrtcReady: Number(olcrtc?.ready ?? 0),
+        olcrtcInstalled: Number(olcrtc?.installed ?? 0),
+        olcrtcRuleCount: Number(olcrtc?.enabled_rule_count ?? 0),
       },
     },
     diagnosticsSystemInfo: normalizeSingBoxVariantFields(nextSystemInfo),

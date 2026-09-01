@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FORKOP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-01 22:28+0300\n"
-"PO-Revision-Date: 2026-09-01 22:28+0300\n"
+"POT-Creation-Date: 2026-09-01 23:24+0300\n"
+"PO-Revision-Date: 2026-09-01 23:24+0300\n"
 "Last-Translator: win64exe\n"
 "Language-Team: none\n"
 "Language: ru\n"
@@ -32,8 +32,14 @@ msgstr "+ Добавить приоритет"
 msgid "+ Add URLTest"
 msgstr "+ Добавить URLTest"
 
+msgid "⚠ Running"
+msgstr ""
+
 msgid "✔ Running"
 msgstr "✔ Работает"
+
+msgid "✘ Not installed"
+msgstr ""
 
 msgid "✘ Stopped"
 msgstr "✘ Остановлен"
@@ -1343,6 +1349,9 @@ msgstr "Не установлено"
 msgid "Not public"
 msgstr "Не публичный"
 
+msgid "not ready"
+msgstr ""
+
 msgid "Not required for this listen address"
 msgstr "Не требуется для этого адреса прослушивания"
 
@@ -1593,6 +1602,9 @@ msgid "RAW TUN interface name (default qwdtt0)."
 msgstr ""
 
 msgid "rawtun = RAW-IP tunnel (default, works with the OpenWrt build); vpn = userspace WireGuard; socks = local SOCKS5 proxy. vpn/socks require the full qwdtt build."
+msgstr ""
+
+msgid "ready"
 msgstr ""
 
 msgid "Reality fake site"
@@ -1972,6 +1984,9 @@ msgstr "Отдельная служба Zapret2 неактивна"
 
 msgid "Start Topkop"
 msgstr "Запустить Topkop"
+
+msgid "Status"
+msgstr ""
 
 msgid "Stop checking when URLTest group is not used. Use sing-box duration format like 1d, 12h or 30m."
 msgstr "Останавливать проверку если URLTest группа не используется. Используйте формат длительности sing-box, например 1d, 12h или 30m."

@@ -1017,6 +1017,14 @@ function provider_installed(runtime_uc) {
     return module_success(runtime_uc, [ "installed" ]);
 }
 
+// Прямая проверка бинарника qwdtt-client (/usr/bin/qwdtt-client).
+// Отдельно от provider_installed(WDTT_RUNTIME_UC), потому что тот считает
+// провайдера установленным при наличии /etc/config/wdtt, который существует
+// всегда (пустой конфиг), даже когда qwdtt-клиент не ставился.
+function wdtt_runtime_qwdtt_installed() {
+    return file_exists("/usr/bin/qwdtt-client") ? 1 : 0;
+}
+
 function provider_version(runtime_uc) {
     let value = replace(module_output(runtime_uc, [ "package-version" ]), /[\r\n]+$/g, "");
     return value != "" ? value : "unknown";
@@ -1074,6 +1082,10 @@ function build_system_info() {
     let byedpi_version = byedpi_installed ? provider_version(BYEDPI_RUNTIME_UC) : "not installed";
     let wdtt_installed = provider_installed(WDTT_RUNTIME_UC) ? 1 : 0;
     let wdtt_version = wdtt_installed ? provider_version(WDTT_RUNTIME_UC) : "not installed";
+    // qwdtt (RAW-IP/WG клиент SpaceNeuroX) — проверяем именно бинарник,
+    // а не наличие /etc/config/wdtt (этот файл существует всегда).
+    let qwdtt_installed = wdtt_runtime_qwdtt_installed();
+    let qwdtt_version = qwdtt_installed ? provider_version(WDTT_RUNTIME_UC) : "not installed";
     let olcrtc_installed = provider_installed(OLCRTC_RUNTIME_UC) ? 1 : 0;
     let olcrtc_version = olcrtc_installed ? provider_version(OLCRTC_RUNTIME_UC) : "not installed";
     let device_model = first_line_value("/tmp/sysinfo/model", "unknown");
@@ -1095,6 +1107,8 @@ function build_system_info() {
         byedpi_installed,
         wdtt_version,
         wdtt_installed,
+        qwdtt_installed,
+        qwdtt_version,
         olcrtc_version,
         olcrtc_installed,
         openwrt_version: openwrt_release(),

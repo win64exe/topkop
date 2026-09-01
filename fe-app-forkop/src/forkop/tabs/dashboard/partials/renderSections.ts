@@ -32,6 +32,10 @@ interface IRenderSectionsProps {
   selectorSwitchingTag?: string;
 }
 
+function isProviderSection(section: Forkop.OutboundGroup) {
+  return Boolean(section.action && ['wdtt', 'olcrtc'].includes(section.action));
+}
+
 function renderFailedState() {
   return E(
     'div',
@@ -433,6 +437,29 @@ function renderDefaultState({
     onUpdateSubscription,
   );
 
+  if (isProviderSection(section)) {
+    return E('div', { class: 'fkp_dashboard-page__outbound-section' }, [
+      E(
+        'div',
+        { class: 'fkp_dashboard-page__outbound-section__title-section' },
+        [
+          E(
+            'div',
+            {
+              class: 'fkp_dashboard-page__outbound-section__title-section__title',
+            },
+            section.displayName,
+          ),
+        ],
+      ),
+      E(
+        'div',
+        { class: 'fkp_dashboard-page__provider-status' },
+        renderProviderStatus(section.providerStatus),
+      ),
+    ]);
+  }
+
   return E('div', { class: 'fkp_dashboard-page__outbound-section' }, [
     // Title with test latency
     E('div', { class: 'fkp_dashboard-page__outbound-section__title-section' }, [
@@ -493,6 +520,44 @@ function renderDefaultState({
       ...metadataNodes,
       ...section.outbounds.map((outbound) => renderOutbound(outbound)),
     ]),
+  ]);
+}
+
+function renderProviderStatus(
+  status?: Forkop.OutboundGroup['providerStatus'],
+) {
+  const installed = Number(status?.installed ?? 0);
+  const running = Number(status?.running ?? 0);
+  const ready = Number(status?.ready ?? 0);
+
+  const statusLabel = !installed
+    ? _('✘ Not installed')
+    : running
+      ? ready
+        ? _('✔ Running')
+        : _('⚠ Running')
+      : _('✘ Stopped');
+  const statusClass = !installed
+    ? 'fkp_dashboard-page__provider-status__item--error'
+    : running
+      ? 'fkp_dashboard-page__provider-status__item--success'
+      : 'fkp_dashboard-page__provider-status__item--error';
+
+  return E('div', { class: 'fkp_dashboard-page__provider-status__row' }, [
+    E(
+      'span',
+      { class: [statusClass].join(' ') },
+      statusLabel,
+    ),
+    E(
+      'span',
+      { class: 'fkp_dashboard-page__provider-status__item' },
+      `${_('Status')}: ${
+        installed && running && ready
+          ? _('ready')
+          : _('not ready')
+      }`,
+    ),
   ]);
 }
 

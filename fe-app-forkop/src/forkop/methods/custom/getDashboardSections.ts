@@ -363,6 +363,10 @@ function getJsonOutbounds(section: Forkop.ConfigSection) {
   return values.length ? values : getListValues(section.outbound_json);
 }
 
+function isProviderAction(action?: string) {
+  return Boolean(action && ['wdtt', 'olcrtc'].includes(action));
+}
+
 function isConnectionAction(action?: string) {
   return Boolean(
     action && ['connection', 'proxy', 'outbound', 'vpn'].includes(action),
@@ -1363,25 +1367,23 @@ export async function getDashboardSections(
     options.includeSubscriptionCopyState ?? true;
   const configSections = hydrateConfigSections(await getConfigSections());
   const clashProxies = await getClashApiProxies(configSections);
-
-  if (!clashProxies.success || !clashProxies.data?.proxies) {
-    return {
-      success: false,
-      data: [],
-    };
-  }
-
-  const proxies = Object.entries(clashProxies.data.proxies).map(
+  const clashProxiesData = clashProxies.success ? clashProxies.data : undefined;
+  const proxies = Object.entries(clashProxiesData?.proxies ?? {}).map(
     ([key, value]) => ({
       code: key,
       value,
     }),
   );
+  const clashAvailable = Boolean(
+    clashProxies.success && clashProxiesData?.proxies,
+  );
   const data = await Promise.all(
     configSections
       .filter(
         (section) =>
-          section.enabled !== '0' && isConnectionAction(section.action),
+          section.enabled !== '0' &&
+          (isConnectionAction(section.action) ||
+            isProviderAction(section.action)),
       )
       .map(async (section) => {
         const displayName = getDisplayName(section);
@@ -1456,6 +1458,17 @@ export async function getDashboardSections(
           };
         }
 
+        if (isProviderAction(sectionAction)) {
+          return {
+            withTagSelect: false,
+            code: sectionName,
+            sectionName,
+            displayName,
+            action: sectionAction,
+            outbounds: [],
+          };
+        }
+
         if (sectionAction === 'outbound') {
           const outboundTag = getOutboundTagBySection(sectionName);
           const outbound = proxies.find((proxy) => proxy.code === outboundTag);
@@ -1495,6 +1508,10 @@ export async function getDashboardSections(
 
   return {
     success: true,
-    data,
+    data: clashAvailable
+      ? data
+      : data.filter((section) =>
+          Boolean(section && isProviderAction(section.action)),
+        ),
   };
 }
