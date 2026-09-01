@@ -36,6 +36,8 @@ const SB_DNS_INBOUND_ADDRESS = getenv("SB_DNS_INBOUND_ADDRESS") || "127.0.0.42";
 const ZAPRET_PROVIDER_NFQWS_BIN = getenv("ZAPRET_PROVIDER_NFQWS_BIN") || "/opt/zapret/nfq/nfqws";
 const ZAPRET2_PROVIDER_NFQWS2_BIN = getenv("ZAPRET2_PROVIDER_NFQWS2_BIN") || "/opt/zapret2/nfq2/nfqws2";
 const BYEDPI_BIN = getenv("BYEDPI_BIN") || "/usr/bin/ciadpi";
+const WDTT_CONFIG = getenv("WDTT_CONFIG") || "/etc/config/wdtt";
+const OLCRTC_BIN = getenv("OLCRTC_BIN") || "/usr/bin/olcrtc";
 
 function as_string(value) {
     return value == null ? "" : "" + value;
@@ -326,7 +328,9 @@ function ui_state_json() {
             zapret_installed: arg_number(ARGV[12]),
             zapret2_installed: arg_number(ARGV[13]),
             byedpi_installed: arg_number(ARGV[14]),
-            server_inbounds_enabled_count: arg_number(ARGV[15])
+            wdtt_installed: arg_number(ARGV[15]),
+            olcrtc_installed: arg_number(ARGV[16]),
+            server_inbounds_enabled_count: arg_number(ARGV[17])
         },
         actions: action_state
     });
@@ -521,6 +525,10 @@ function active_service_action_value() {
 function file_executable(path) {
     let stat = fs.stat(as_string(path));
     return stat != null && stat.mode != null && (int(stat.mode) & 73) != 0;
+}
+
+function file_exists(path) {
+    return fs.stat(as_string(path)) != null;
 }
 
 function first_line(path) {
@@ -1031,6 +1039,8 @@ function capability_flags() {
         zapret_installed: file_executable(ZAPRET_PROVIDER_NFQWS_BIN) ? 1 : 0,
         zapret2_installed: file_executable(ZAPRET2_PROVIDER_NFQWS2_BIN) ? 1 : 0,
         byedpi_installed: file_executable(BYEDPI_BIN) ? 1 : 0,
+        wdtt_installed: file_exists(WDTT_CONFIG) ? 1 : 0,
+        olcrtc_installed: file_executable(OLCRTC_BIN) ? 1 : 0,
         server_inbounds_enabled_count: 0
     };
 

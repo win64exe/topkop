@@ -7,6 +7,8 @@ let subscription_parser_module = null;
 let zapret_validator_module = null;
 let zapret2_validator_module = null;
 let byedpi_validator_module = null;
+let wdtt_validator_module = null;
+let olcrtc_validator_module = null;
 let constants_module = null;
 let core_url = require("core.url");
 let core_ip = require("core.ip");
@@ -144,6 +146,10 @@ function file_executable(path) {
         return false;
 
     return (int(stat.mode) & 73) != 0;
+}
+
+function file_exists(path) {
+    return fs.stat(as_string(path)) != null;
 }
 
 function file_nonempty(path) {
@@ -731,6 +737,18 @@ function byedpi_validator() {
     return byedpi_validator_module;
 }
 
+function wdtt_validator() {
+    if (wdtt_validator_module == null)
+        wdtt_validator_module = require("providers.wdtt.validator");
+    return wdtt_validator_module;
+}
+
+function olcrtc_validator() {
+    if (olcrtc_validator_module == null)
+        olcrtc_validator_module = require("providers.olcrtc.validator");
+    return olcrtc_validator_module;
+}
+
 function runtime_constants() {
     if (constants_module == null)
         constants_module = require("core.constants");
@@ -807,11 +825,11 @@ function rule_action(section) {
 }
 
 function rule_action_supported(action) {
-    return contains([ "connection", "proxy", "outbound", "vpn", "bypass", "block", "dns", "zapret", "zapret2", "byedpi" ], as_string(action));
+    return contains([ "connection", "proxy", "outbound", "vpn", "bypass", "block", "dns", "zapret", "zapret2", "byedpi", "wdtt", "olcrtc" ], as_string(action));
 }
 
 function server_routing_section_action_supported(action) {
-    return contains([ "connection", "proxy", "outbound", "vpn", "zapret", "zapret2", "byedpi" ], as_string(action));
+    return contains([ "connection", "proxy", "outbound", "vpn", "zapret", "zapret2", "byedpi", "wdtt", "olcrtc" ], as_string(action));
 }
 
 function duration_to_seconds_value(value) {
@@ -1359,6 +1377,20 @@ function validate_provider_strategy(kind, section, context) {
         fail_validation("Invalid ByeDPI strategy for rule '" + name + "': " + result.message);
 }
 
+function validate_wdtt_section(section) {
+    let name = section_name(section);
+    let errors = wdtt_validator().validate_section(section);
+    if (length(errors) > 0)
+        fail_validation("WDTT rule '" + name + "': " + join("; ", errors) + " Aborted.");
+}
+
+function validate_olcrtc_section(section) {
+    let name = section_name(section);
+    let errors = olcrtc_validator().validate_section(section);
+    if (length(errors) > 0)
+        fail_validation("OlcRTC rule '" + name + "': " + join("; ", errors) + " Aborted.");
+}
+
 function dns_action_has_domain_matchers(section) {
     for (let key in [ "domain", "domain_suffix", "domain_keyword", "domain_regex" ])
         if (option(section, key, "") != "" || option(section, key + "_text", "") != "" || length(list_option(section, key)) > 0)
@@ -1445,6 +1477,12 @@ function validate_rule(section, sections, context) {
         }
         validate_provider_strategy("byedpi", section, context);
     }
+
+    if (action == "wdtt")
+        validate_wdtt_section(section);
+
+    if (action == "olcrtc")
+        validate_olcrtc_section(section);
 
     if (connections.is_connections_action(action)) {
         validate_dashboard_filter(section);
@@ -1743,6 +1781,8 @@ function context_from_runtime() {
         byedpi_installed: file_executable(constant_value(constants, "BYEDPI_BIN")),
         zapret_installed: file_executable(constant_value(constants, "ZAPRET_PROVIDER_NFQWS_BIN")),
         zapret2_installed: file_executable(constant_value(constants, "ZAPRET2_PROVIDER_NFQWS2_BIN")),
+        wdtt_installed: file_exists(constant_value(constants, "WDTT_CONFIG")),
+        olcrtc_installed: file_executable(constant_value(constants, "OLCRTC_BIN")),
         zapret_provider_nfqws_bin: constant_value(constants, "ZAPRET_PROVIDER_NFQWS_BIN"),
         zapret2_provider_nfqws2_bin: constant_value(constants, "ZAPRET2_PROVIDER_NFQWS2_BIN"),
         zapret_route_mark_base: constant_value(constants, "ZAPRET_ROUTE_MARK_BASE"),
@@ -2101,6 +2141,8 @@ function context_from_json(value, defaults) {
         byedpi_installed: context_override_bool(value, defaults, "byedpi_installed"),
         zapret_installed: context_override_bool(value, defaults, "zapret_installed"),
         zapret2_installed: context_override_bool(value, defaults, "zapret2_installed"),
+        wdtt_installed: context_override_bool(value, defaults, "wdtt_installed"),
+        olcrtc_installed: context_override_bool(value, defaults, "olcrtc_installed"),
         zapret_route_mark_base: context_override_value(value, defaults, "zapret_route_mark_base"),
         zapret_queue_range_size: context_override_value(value, defaults, "zapret_queue_range_size"),
         zapret2_route_mark_base: context_override_value(value, defaults, "zapret2_route_mark_base"),

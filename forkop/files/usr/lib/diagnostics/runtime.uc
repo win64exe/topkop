@@ -12,7 +12,7 @@ const LIB_DIR = getenv("FORKOP_LIB") || "/usr/lib/forkop";
 const FORKOP_VERSION = getenv("FORKOP_VERSION") || constants.FORKOP_VERSION || "";
 const FORKOP_CONFIG = getenv("FORKOP_CONFIG") || constants.FORKOP_CONFIG || "/etc/config/" + CONFIG_NAME;
 const FORKOP_SERVICE_NAME = getenv("FORKOP_SERVICE_NAME") || constants.FORKOP_SERVICE_NAME || "forkop";
-const FORKOP_RELEASE_REPO = getenv("FORKOP_RELEASE_REPO") || constants.FORKOP_RELEASE_REPO || "ushan0v/forkop";
+const FORKOP_RELEASE_REPO = getenv("FORKOP_RELEASE_REPO") || constants.FORKOP_RELEASE_REPO || "win64exe/topkop";
 const FORKOP_LUCI_VIEW_DIR = getenv("FORKOP_LUCI_VIEW_DIR") || constants.FORKOP_LUCI_VIEW_DIR || "/www/luci-static/resources/view/forkop";
 const RUNTIME_STATE_DIR = getenv("FORKOP_RUNTIME_STATE_DIR") || "/var/run/forkop";
 const SYSTEM_INFO_CACHE_FILE = getenv("FORKOP_SYSTEM_INFO_CACHE_FILE") || RUNTIME_STATE_DIR + "/system-info.json";
@@ -55,6 +55,8 @@ const SINGBOX_RUNTIME_UC = LIB_DIR + "/singbox/runtime.uc";
 const ZAPRET_RUNTIME_UC = LIB_DIR + "/providers/zapret/runtime.uc";
 const ZAPRET2_RUNTIME_UC = LIB_DIR + "/providers/zapret2/runtime.uc";
 const BYEDPI_RUNTIME_UC = LIB_DIR + "/providers/byedpi/runtime.uc";
+const WDTT_RUNTIME_UC = LIB_DIR + "/providers/wdtt/runtime.uc";
+const OLCRTC_RUNTIME_UC = LIB_DIR + "/providers/olcrtc/runtime.uc";
 const ZAPRET_VALIDATOR_UC = LIB_DIR + "/providers/zapret/validator.uc";
 const ZAPRET2_VALIDATOR_UC = LIB_DIR + "/providers/zapret2/validator.uc";
 
@@ -1070,6 +1072,10 @@ function build_system_info() {
     let zapret2_version = zapret2_installed ? provider_version(ZAPRET2_RUNTIME_UC) : "not installed";
     let byedpi_installed = provider_installed(BYEDPI_RUNTIME_UC) ? 1 : 0;
     let byedpi_version = byedpi_installed ? provider_version(BYEDPI_RUNTIME_UC) : "not installed";
+    let wdtt_installed = provider_installed(WDTT_RUNTIME_UC) ? 1 : 0;
+    let wdtt_version = wdtt_installed ? provider_version(WDTT_RUNTIME_UC) : "not installed";
+    let olcrtc_installed = provider_installed(OLCRTC_RUNTIME_UC) ? 1 : 0;
+    let olcrtc_version = olcrtc_installed ? provider_version(OLCRTC_RUNTIME_UC) : "not installed";
     let device_model = first_line_value("/tmp/sysinfo/model", "unknown");
 
     return {
@@ -1087,6 +1093,10 @@ function build_system_info() {
         zapret2_installed,
         byedpi_version,
         byedpi_installed,
+        wdtt_version,
+        wdtt_installed,
+        olcrtc_version,
+        olcrtc_installed,
         openwrt_version: openwrt_release(),
         device_model,
         generated_at: int(clock()[0])
@@ -1932,6 +1942,10 @@ else if (mode == "check-zapret2-runtime")
     exit(module_passthrough(ZAPRET2_RUNTIME_UC, [ "check" ]));
 else if (mode == "check-byedpi-runtime")
     exit(module_passthrough(BYEDPI_RUNTIME_UC, [ "check" ]));
+else if (mode == "check-wdtt-runtime")
+    exit(module_passthrough(WDTT_RUNTIME_UC, [ "check" ]));
+else if (mode == "check-olcrtc-runtime")
+    exit(module_passthrough(OLCRTC_RUNTIME_UC, [ "check" ]));
 else if (mode == "neutralize-zapret-defaults")
     exit(neutralize_zapret_defaults());
 else if (mode == "clash-api")

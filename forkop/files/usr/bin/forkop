@@ -83,6 +83,8 @@ function show_help() {
     print("    check_zapret_runtime    Check external zapret provider state\n");
     print("    check_zapret2_runtime   Check external zapret2 provider state\n");
     print("    check_byedpi_runtime    Check external ByeDPI provider state\n");
+    print("    check_wdtt_runtime      Check external WDTT provider state\n");
+    print("    check_olcrtc_runtime    Check external OlcRTC provider state\n");
     print("    neutralize_zapret_defaults\n");
     print("                            Compatibility no-op; Forkop does not manage standalone zapret\n");
     print("    clash_api               Clash API interface for managing proxies and groups\n");
@@ -157,6 +159,8 @@ function command_spec(command) {
         check_zapret_runtime: [ "diagnostics/runtime.uc", "check-zapret-runtime", 0 ],
         check_zapret2_runtime: [ "diagnostics/runtime.uc", "check-zapret2-runtime", 0 ],
         check_byedpi_runtime: [ "diagnostics/runtime.uc", "check-byedpi-runtime", 0 ],
+        check_wdtt_runtime: [ "diagnostics/runtime.uc", "check-wdtt-runtime", 0 ],
+        check_olcrtc_runtime: [ "diagnostics/runtime.uc", "check-olcrtc-runtime", 0 ],
         neutralize_zapret_defaults: [ "diagnostics/runtime.uc", "neutralize-zapret-defaults", 0 ],
         clash_api: [ "diagnostics/runtime.uc", "clash-api", 4 ],
         show_config: [ "diagnostics/runtime.uc", "show-config", 1 ],

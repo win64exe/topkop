@@ -204,6 +204,10 @@ export interface StoreType {
     zapret2_installed: number;
     byedpi_version: string;
     byedpi_installed: number;
+    wdtt_version: string;
+    wdtt_installed: number;
+    olcrtc_version: string;
+    olcrtc_installed: number;
     server_inbounds_enabled_count: number;
     openwrt_version: string;
     device_model: string;

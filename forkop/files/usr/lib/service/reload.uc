@@ -64,6 +64,8 @@ function emit_reload_plan(previous, current, context) {
         zapret2_queue: current.zapret2_queue != previous.zapret2_queue,
         zapret2_runtime: current.zapret2_runtime != previous.zapret2_runtime,
         byedpi_runtime: current.byedpi_runtime != previous.byedpi_runtime,
+        wdtt_runtime: current.wdtt_runtime != previous.wdtt_runtime,
+        olcrtc_runtime: current.olcrtc_runtime != previous.olcrtc_runtime,
         list: current.list != previous.list,
         cron: current.cron != previous.cron
     };
@@ -74,6 +76,8 @@ function emit_reload_plan(previous, current, context) {
         zapret_restart: false,
         zapret2_restart: false,
         byedpi_restart: false,
+        wdtt_restart: false,
+        olcrtc_restart: false,
         dnsmasq_configure: false,
         dnsmasq_restore: false,
         cron_refresh: false,
@@ -107,6 +111,12 @@ function emit_reload_plan(previous, current, context) {
     if (changed.byedpi_runtime)
         needs.byedpi_restart = true;
 
+    if (changed.wdtt_runtime)
+        needs.wdtt_restart = true;
+
+    if (changed.olcrtc_runtime)
+        needs.olcrtc_restart = true;
+
     if (changed.dnsmasq) {
         if (!current.dont_touch_dhcp)
             needs.dnsmasq_configure = true;
@@ -134,6 +144,8 @@ function emit_reload_plan(previous, current, context) {
         !needs.zapret_restart &&
         !needs.zapret2_restart &&
         !needs.byedpi_restart &&
+        !needs.wdtt_restart &&
+        !needs.olcrtc_restart &&
         !needs.dnsmasq_configure &&
         !needs.dnsmasq_restore)
         needs.sing_box_reload = true;
@@ -144,6 +156,8 @@ function emit_reload_plan(previous, current, context) {
         needs.zapret_restart ||
         needs.zapret2_restart ||
         needs.byedpi_restart ||
+        needs.wdtt_restart ||
+        needs.olcrtc_restart ||
         needs.dnsmasq_configure ||
         needs.dnsmasq_restore ||
         needs.cron_refresh ||
@@ -164,6 +178,8 @@ function emit_reload_plan(previous, current, context) {
     emit_bool("changed_zapret2_queue", changed.zapret2_queue);
     emit_bool("changed_zapret2_runtime", changed.zapret2_runtime);
     emit_bool("changed_byedpi_runtime", changed.byedpi_runtime);
+    emit_bool("changed_wdtt_runtime", changed.wdtt_runtime);
+    emit_bool("changed_olcrtc_runtime", changed.olcrtc_runtime);
     emit_bool("changed_cron", changed.cron);
     emit_bool("changed_list", changed.list);
 
@@ -172,6 +188,8 @@ function emit_reload_plan(previous, current, context) {
     emit_bool("needs_zapret_restart", needs.zapret_restart);
     emit_bool("needs_zapret2_restart", needs.zapret2_restart);
     emit_bool("needs_byedpi_restart", needs.byedpi_restart);
+    emit_bool("needs_wdtt_restart", needs.wdtt_restart);
+    emit_bool("needs_olcrtc_restart", needs.olcrtc_restart);
     emit_bool("needs_dnsmasq_configure", needs.dnsmasq_configure);
     emit_bool("needs_dnsmasq_restore", needs.dnsmasq_restore);
     emit_bool("needs_cron_refresh", needs.cron_refresh);
@@ -190,34 +208,38 @@ function reload_plan() {
         zapret2_queue: as_string(ARGV[7]),
         zapret2_runtime: as_string(ARGV[8]),
         byedpi_runtime: as_string(ARGV[9]),
-        list: as_string(ARGV[10]),
-        cron: as_string(ARGV[11]),
-        urltest_sections_known: arg_bool(ARGV[12]),
-        urltest_sections: as_string(ARGV[13])
+        wdtt_runtime: as_string(ARGV[10]),
+        olcrtc_runtime: as_string(ARGV[11]),
+        list: as_string(ARGV[12]),
+        cron: as_string(ARGV[13]),
+        urltest_sections_known: arg_bool(ARGV[14]),
+        urltest_sections: as_string(ARGV[15])
     };
 
     let current = {
-        service_trigger: as_string(ARGV[14]),
-        dnsmasq: as_string(ARGV[15]),
-        sing_box: as_string(ARGV[16]),
-        nft: as_string(ARGV[17]),
-        zapret_queue: as_string(ARGV[18]),
-        zapret_runtime: as_string(ARGV[19]),
-        zapret2_queue: as_string(ARGV[20]),
-        zapret2_runtime: as_string(ARGV[21]),
-        byedpi_runtime: as_string(ARGV[22]),
-        list: as_string(ARGV[23]),
-        cron: as_string(ARGV[24]),
-        urltest_sections: as_string(ARGV[25]),
-        dont_touch_dhcp: arg_bool(ARGV[26])
+        service_trigger: as_string(ARGV[16]),
+        dnsmasq: as_string(ARGV[17]),
+        sing_box: as_string(ARGV[18]),
+        nft: as_string(ARGV[19]),
+        zapret_queue: as_string(ARGV[20]),
+        zapret_runtime: as_string(ARGV[21]),
+        zapret2_queue: as_string(ARGV[22]),
+        zapret2_runtime: as_string(ARGV[23]),
+        byedpi_runtime: as_string(ARGV[24]),
+        wdtt_runtime: as_string(ARGV[25]),
+        olcrtc_runtime: as_string(ARGV[26]),
+        list: as_string(ARGV[27]),
+        cron: as_string(ARGV[28]),
+        urltest_sections: as_string(ARGV[29]),
+        dont_touch_dhcp: arg_bool(ARGV[30])
     };
 
     let context = {
-        force_runtime_reload: arg_bool(ARGV[27]),
-        dnsmasq_managed_state: arg_bool(ARGV[28]),
-        has_list_update_sources: arg_bool(ARGV[29]),
-        has_nft_list_update_sources: arg_bool(ARGV[30]),
-        runtime_cache_needs_rebuild: arg_bool(ARGV[31])
+        force_runtime_reload: arg_bool(ARGV[31]),
+        dnsmasq_managed_state: arg_bool(ARGV[32]),
+        has_list_update_sources: arg_bool(ARGV[33]),
+        has_nft_list_update_sources: arg_bool(ARGV[34]),
+        runtime_cache_needs_rebuild: arg_bool(ARGV[35])
     };
 
     emit_reload_plan(previous, current, context);
@@ -264,6 +286,8 @@ function plan_state_from_file(path) {
         zapret2_queue: as_string(state.zapret2_queue_signature),
         zapret2_runtime: as_string(state.zapret2_runtime_signature),
         byedpi_runtime: as_string(state.byedpi_runtime_signature),
+        wdtt_runtime: as_string(state.wdtt_runtime_signature),
+        olcrtc_runtime: as_string(state.olcrtc_runtime_signature),
         list: as_string(state.list_signature),
         cron: as_string(state.cron_signature),
         urltest_sections_known: state.__has.urltest_enabled_sections === true,

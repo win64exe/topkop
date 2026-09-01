@@ -23,6 +23,8 @@ const ROUTING_ACTIONS = [
   "zapret",
   "zapret2",
   "byedpi",
+  "wdtt",
+  "olcrtc",
 ];
 const CONNECTIONS_BLOCKED_INTERFACES = [
   "br-lan",
@@ -170,6 +172,106 @@ function dependsOnRuleConditions(option) {
     (condition) => option.depends({ action: "dns", [condition]: /\S/ }),
   );
   return option;
+}
+
+const OLCRTC_PROVIDERS = ["jitsi", "telemost", "wbstream"];
+const OLCRTC_TRANSPORTS = [
+  "datachannel",
+  "vp8channel",
+  "seichannel",
+  "videochannel",
+];
+
+// Парсит olcrtc:// URI по формату olcrtc docs/uri.md:
+//   olcrtc://<Provider>?<Transport><key=value&...>@<RoomID>#<Key>$<MIMO>
+function parseOlcrtcUri(value) {
+  const input = `${value || ""}`.trim();
+  if (!/^olcrtc:\/\//.test(input)) {
+    return { valid: false, reason: _("Expected an olcrtc:// URI") };
+  }
+
+  let rest = input.replace(/^olcrtc:\/\//, "");
+  let mimo = "";
+  let cryptoKey = "";
+
+  const hashPos = rest.indexOf("#");
+  if (hashPos >= 0) {
+    let tail = rest.slice(hashPos + 1);
+    rest = rest.slice(0, hashPos);
+    const dollarPos = tail.indexOf("$");
+    if (dollarPos >= 0) {
+      mimo = tail.slice(dollarPos + 1);
+      tail = tail.slice(0, dollarPos);
+    }
+    cryptoKey = tail;
+    if (!/^[0-9a-fA-F]{64}$/.test(cryptoKey)) {
+      return {
+        valid: false,
+        reason: _("crypto key must be 64 hex chars in olcrtc:// URI"),
+      };
+    }
+  }
+
+  const atPos = rest.indexOf("@");
+  if (atPos < 0) {
+    return { valid: false, reason: _("olcrtc:// URI is missing @<RoomID>") };
+  }
+  const roomId = rest.slice(atPos + 1);
+  const head = rest.slice(0, atPos);
+  if (!roomId) {
+    return { valid: false, reason: _("olcrtc:// URI has empty RoomID") };
+  }
+
+  let provider = "";
+  let transport = "";
+  let payload = "";
+  const questionPos = head.indexOf("?");
+  if (questionPos < 0) {
+    provider = head;
+  } else {
+    provider = head.slice(0, questionPos);
+    const transportPart = head.slice(questionPos + 1);
+    const payloadPos = transportPart.indexOf("<");
+    if (payloadPos >= 0 && transportPart.endsWith(">")) {
+      payload = transportPart.slice(payloadPos + 1, -1);
+      transport = transportPart.slice(0, payloadPos);
+    } else {
+      transport = transportPart;
+    }
+  }
+
+  if (!provider) {
+    return { valid: false, reason: _("olcrtc:// URI has empty Provider") };
+  }
+  if (!transport) {
+    return { valid: false, reason: _("olcrtc:// URI has empty Transport") };
+  }
+  if (!OLCRTC_PROVIDERS.includes(provider)) {
+    return {
+      valid: false,
+      reason: _(
+        `unknown olcrtc provider '${provider}'. Supported: ${OLCRTC_PROVIDERS.join(", ")}`,
+      ),
+    };
+  }
+  if (!OLCRTC_TRANSPORTS.includes(transport)) {
+    return {
+      valid: false,
+      reason: _(
+        `unknown olcrtc transport '${transport}'. Supported: ${OLCRTC_TRANSPORTS.join(", ")}`,
+      ),
+    };
+  }
+
+  return {
+    valid: true,
+    provider,
+    transport,
+    room_id: roomId,
+    crypto_key: cryptoKey,
+    mimo,
+    payload,
+  };
 }
 
 const ZAPRET_LEGACY_DEFAULT_NFQWS_OPT =
@@ -445,6 +547,8 @@ const actionProvidersAvailabilityState = {
   zapretInstalled: false,
   zapret2Installed: false,
   byedpiInstalled: false,
+  wdttInstalled: false,
+  olcrtcInstalled: false,
 };
 let actionProvidersAvailabilityPromise = null;
 let actionProvidersAvailabilityLoader = null;
@@ -488,6 +592,18 @@ function updateActionProvidersAvailabilityState(nextState) {
     );
   }
 
+  if (typeof nextState.wdttInstalled !== "undefined") {
+    actionProvidersAvailabilityState.wdttInstalled = Boolean(
+      nextState.wdttInstalled,
+    );
+  }
+
+  if (typeof nextState.olcrtcInstalled !== "undefined") {
+    actionProvidersAvailabilityState.olcrtcInstalled = Boolean(
+      nextState.olcrtcInstalled,
+    );
+  }
+
   actionProvidersAvailabilityPromise = null;
 }
 
@@ -500,6 +616,8 @@ function updateActionProvidersAvailabilityFromSystemInfo(systemInfo) {
     zapretInstalled: Boolean(systemInfo.zapret_installed),
     zapret2Installed: Boolean(systemInfo.zapret2_installed),
     byedpiInstalled: Boolean(systemInfo.byedpi_installed),
+    wdttInstalled: Boolean(systemInfo.wdtt_installed),
+    olcrtcInstalled: Boolean(systemInfo.olcrtc_installed),
   });
 }
 
@@ -3966,6 +4084,8 @@ function ensureActionProvidersAvailabilityLoaded() {
           zapretInstalled: Boolean(capabilities?.zapretInstalled),
           zapret2Installed: Boolean(capabilities?.zapret2Installed),
           byedpiInstalled: Boolean(capabilities?.byedpiInstalled),
+          wdttInstalled: Boolean(capabilities?.wdttInstalled),
+          olcrtcInstalled: Boolean(capabilities?.olcrtcInstalled),
         });
         return actionProvidersAvailabilityState;
       })
@@ -3985,41 +4105,67 @@ function ensureActionProvidersAvailabilityLoaded() {
     main.ForkopShellMethods.checkZapretRuntime(),
     main.ForkopShellMethods.checkZapret2Runtime(),
     main.ForkopShellMethods.checkByedpiRuntime(),
+    main.ForkopShellMethods.checkWdttRuntime(),
+    main.ForkopShellMethods.checkOlcrtcRuntime(),
   ])
-    .then(([zapretResult, zapret2Result, byedpiResult]) => {
-      const zapret =
-        zapretResult && zapretResult.status === "fulfilled"
-          ? zapretResult.value
-          : null;
-      const zapret2 =
-        zapret2Result && zapret2Result.status === "fulfilled"
-          ? zapret2Result.value
-          : null;
-      const byedpi =
-        byedpiResult && byedpiResult.status === "fulfilled"
-          ? byedpiResult.value
-          : null;
+    .then(
+      ([zapretResult, zapret2Result, byedpiResult, wdttResult, olcrtcResult]) => {
+        const zapret =
+          zapretResult && zapretResult.status === "fulfilled"
+            ? zapretResult.value
+            : null;
+        const zapret2 =
+          zapret2Result && zapret2Result.status === "fulfilled"
+            ? zapret2Result.value
+            : null;
+        const byedpi =
+          byedpiResult && byedpiResult.status === "fulfilled"
+            ? byedpiResult.value
+            : null;
+        const wdtt =
+          wdttResult && wdttResult.status === "fulfilled"
+            ? wdttResult.value
+            : null;
+        const olcrtc =
+          olcrtcResult && olcrtcResult.status === "fulfilled"
+            ? olcrtcResult.value
+            : null;
 
-      actionProvidersAvailabilityState.loaded = true;
-      actionProvidersAvailabilityState.zapretInstalled = Boolean(
-        zapret && zapret.success && zapret.data && zapret.data.zapret_installed,
-      );
-      actionProvidersAvailabilityState.zapret2Installed = Boolean(
-        zapret2 &&
-          zapret2.success &&
-          zapret2.data &&
-          zapret2.data.zapret2_installed,
-      );
-      actionProvidersAvailabilityState.byedpiInstalled = Boolean(
-        byedpi && byedpi.success && byedpi.data && byedpi.data.byedpi_installed,
-      );
-      return actionProvidersAvailabilityState;
-    })
+        actionProvidersAvailabilityState.loaded = true;
+        actionProvidersAvailabilityState.zapretInstalled = Boolean(
+          zapret &&
+            zapret.success &&
+            zapret.data &&
+            zapret.data.zapret_installed,
+        );
+        actionProvidersAvailabilityState.zapret2Installed = Boolean(
+          zapret2 &&
+            zapret2.success &&
+            zapret2.data &&
+            zapret2.data.zapret2_installed,
+        );
+        actionProvidersAvailabilityState.byedpiInstalled = Boolean(
+          byedpi &&
+            byedpi.success &&
+            byedpi.data &&
+            byedpi.data.byedpi_installed,
+        );
+        actionProvidersAvailabilityState.wdttInstalled = Boolean(
+          wdtt && wdtt.success && wdtt.data && wdtt.data.wdtt_installed,
+        );
+        actionProvidersAvailabilityState.olcrtcInstalled = Boolean(
+          olcrtc && olcrtc.success && olcrtc.data && olcrtc.data.olcrtc_installed,
+        );
+        return actionProvidersAvailabilityState;
+      },
+    )
     .catch(() => {
       actionProvidersAvailabilityState.loaded = true;
       actionProvidersAvailabilityState.zapretInstalled = false;
       actionProvidersAvailabilityState.zapret2Installed = false;
       actionProvidersAvailabilityState.byedpiInstalled = false;
+      actionProvidersAvailabilityState.wdttInstalled = false;
+      actionProvidersAvailabilityState.olcrtcInstalled = false;
       return actionProvidersAvailabilityState;
     })
     .finally(() => {
@@ -4039,6 +4185,14 @@ function isZapret2InstalledForUi() {
 
 function isByedpiInstalledForUi() {
   return actionProvidersAvailabilityState.byedpiInstalled;
+}
+
+function isWdttInstalledForUi() {
+  return actionProvidersAvailabilityState.wdttInstalled;
+}
+
+function isOlcrtcInstalledForUi() {
+  return actionProvidersAvailabilityState.olcrtcInstalled;
 }
 
 function getRuleConfiguredAction(section_id) {
@@ -4068,6 +4222,10 @@ function getActionOptionLabel(action) {
       return "Zapret2";
     case "byedpi":
       return "ByeDPI";
+    case "wdtt":
+      return "WDTT";
+    case "olcrtc":
+      return "OlcRTC";
     case "outbound":
       return _("JSON outbound");
     case "proxy":
@@ -4089,6 +4247,14 @@ function getRuleActionDisplayValue(section_id) {
 
   if (action === "byedpi") {
     return "ByeDPI";
+  }
+
+  if (action === "wdtt") {
+    return "WDTT";
+  }
+
+  if (action === "olcrtc") {
+    return "OlcRTC";
   }
 
   return getActionOptionLabel(action);
@@ -4114,6 +4280,12 @@ function populateActionOptionValues(option) {
   }
   if (isByedpiInstalledForUi()) {
     option.value("byedpi", getActionOptionLabel("byedpi"));
+  }
+  if (isWdttInstalledForUi()) {
+    option.value("wdtt", getActionOptionLabel("wdtt"));
+  }
+  if (isOlcrtcInstalledForUi()) {
+    option.value("olcrtc", getActionOptionLabel("olcrtc"));
   }
 }
 
@@ -7201,6 +7373,278 @@ function createSectionContent(section) {
     return analysis.valid ? true : analysis.message;
   };
   configureTextareaOption(o, analyzeByedpiStrategy);
+
+  o = section.taboption(
+    "settings",
+    form.Value,
+    "peer",
+    _("WDTT server endpoint"),
+    _(
+      "DTLS endpoint of your WDTT server in HOST:PORT form, e.g. server:56000 (wdtt-openwrt option peer).",
+    ),
+  );
+  o.depends("action", "wdtt");
+  o.rmempty = false;
+  o.modalonly = true;
+  o.validate = function (_section_id, value) {
+    const normalized = `${value || ""}`.trim();
+    if (!normalized) {
+      return _("WDTT server endpoint cannot be empty");
+    }
+    return /^[^\s:]+:[0-9]{1,5}$/.test(normalized)
+      ? true
+      : _("Enter HOST:PORT, e.g. server:56000");
+  };
+
+  o = section.taboption(
+    "settings",
+    form.Value,
+    "password",
+    _("WDTT owner password"),
+    _("Matches the wdtt-server -password option (wdtt-openwrt)."),
+  );
+  o.depends("action", "wdtt");
+  o.rmempty = false;
+  o.password = true;
+  o.modalonly = true;
+
+  o = section.taboption(
+    "settings",
+    form.DynamicList,
+    "subscription_links",
+    _("WDTT subscription links"),
+    _(
+      "WDTT link formats (see wdtt-openwrt): http://SERVER:56090/TOKEN/links?n=4 — hashes_url of the wdtt-linkd endpoint (add &slot=N for multiple routers); a local token file path like /etc/wdtt/vk-calls.txt; remote domain list URLs like https://example.com/domains.txt.",
+    ),
+  );
+  o.depends("action", "wdtt");
+  o.rmempty = true;
+  o.modalonly = true;
+  o.placeholder = "http://SERVER:56090/TOKEN/links?n=4";
+  o.validate = function (_section_id, value) {
+    const values = normalizeOptionValues(value);
+    for (const entry of values) {
+      if (
+        !/^https?:\/\/\S+$/i.test(entry) &&
+        !/^\/\S+$/.test(entry)
+      ) {
+        return _(
+          "Enter a WDTT hashes_url (http://SERVER:56090/TOKEN/links?n=4), a local file path, or an http(s) domain list URL",
+        );
+      }
+    }
+    return true;
+  };
+
+  o = section.taboption(
+    "settings",
+    form.ListValue,
+    "mode",
+    _("WDTT routing mode"),
+    _(
+      "selective = tunnel only blocked domains (default); lan-all = all LAN client traffic; full = the whole router.",
+    ),
+  );
+  o.depends("action", "wdtt");
+  o.value("selective", "Selective (blocked domains only)");
+  o.value("lan-all", "LAN all");
+  o.value("full", "Full router");
+  o.default = "selective";
+  o.rmempty = false;
+  o.modalonly = true;
+
+  o = section.taboption(
+    "settings",
+    form.Value,
+    "workers",
+    _("WDTT TURN workers"),
+    _(
+      "The engine uses 9 workers per call-hash, so set = max_hashes x 9 (36 for 4 hashes) to use all calls in parallel.",
+    ),
+  );
+  o.depends("action", "wdtt");
+  o.default = "36";
+  o.datatype = "uinteger";
+  o.rmempty = true;
+  o.modalonly = true;
+
+  o = section.taboption(
+    "settings",
+    form.Value,
+    "max_hashes",
+    _("WDTT max call tokens"),
+    _("How many VK call tokens to use at once (Android uses 4)."),
+  );
+  o.depends("action", "wdtt");
+  o.default = "4";
+  o.datatype = "uinteger";
+  o.rmempty = true;
+  o.modalonly = true;
+
+  o = section.taboption(
+    "settings",
+    form.DynamicList,
+    "community_lists",
+    _("WDTT community lists"),
+    _(
+      "Services to route through the tunnel from itdoginfo/allow-domains. Ids: russia-inside, russia-outside, ukraine, telegram, meta, youtube, discord, tiktok, twitter, hdrezka, roblox, cloudflare, cloudfront, google_ai, google_meet, google_play, hetzner, ovh, digitalocean, anime, news, geoblock, block, porn, hodca.",
+    ),
+  );
+  o.depends("action", "wdtt");
+  o.rmempty = true;
+  o.modalonly = true;
+  o.placeholder = "telegram";
+
+  o = section.taboption(
+    "settings",
+    form.DynamicList,
+    "remote_domain_list",
+    _("WDTT remote domain lists"),
+    _("Remote URLs with domain lists to route through the tunnel."),
+  );
+  o.depends("action", "wdtt");
+  o.rmempty = true;
+  o.modalonly = true;
+  o.placeholder = "https://example.com/domains.txt";
+
+  o = section.taboption(
+    "settings",
+    form.Flag,
+    "auto_update",
+    _("Auto-refresh WDTT lists"),
+    _("Daily cron refresh of the source lists (wdtt-openwrt option auto_update)."),
+  );
+  o.depends("action", "wdtt");
+  o.default = "1";
+  o.rmempty = false;
+  o.modalonly = true;
+
+  o = section.taboption(
+    "settings",
+    form.Flag,
+    "block_doh",
+    _("Block external DoH/DoT"),
+    _("Block external DoH/DoT so clients resolve via the router DNS."),
+  );
+  o.depends("action", "wdtt");
+  o.default = "0";
+  o.rmempty = false;
+  o.modalonly = true;
+
+  o = section.taboption(
+    "settings",
+    form.Flag,
+    "block_ipv6",
+    _("Block IPv6 to bypass domains"),
+    _("Drop IPv6 to bypass domains so clients fall back to tunneled IPv4."),
+  );
+  o.depends("action", "wdtt");
+  o.default = "0";
+  o.rmempty = false;
+  o.modalonly = true;
+
+  o = section.taboption(
+    "settings",
+    form.DynamicList,
+    "subscription_links",
+    _("OlcRTC subscription links"),
+    _(
+      "OlcRTC link formats (see olcrtc docs/uri.md and docs/sub.md): a single server URI olcrtc://<Provider>?<Transport>@<RoomID>#<Key>$<MIMO> (e.g. olcrtc://jitsi?datachannel@https://meet.example.org/myroom#<64-hex>$RU / olc free sub) or a sub.md subscription URL like https://host/sub. Providers: jitsi, telemost, wbstream. Transports: datachannel, vp8channel, seichannel, videochannel.",
+    ),
+  );
+  o.depends("action", "olcrtc");
+  o.rmempty = true;
+  o.modalonly = true;
+  o.placeholder = "olcrtc://jitsi?datachannel@room#0000...0000$RU / olc free sub";
+  o.validate = function (_section_id, value) {
+    const values = normalizeOptionValues(value);
+    for (const entry of values) {
+      if (/^olcrtc:\/\//.test(entry)) {
+        const parsed = parseOlcrtcUri(entry);
+        if (!parsed || parsed.valid !== true) {
+          return parsed && parsed.reason
+            ? parsed.reason
+            : _("Invalid olcrtc:// URI");
+        }
+      } else if (!/^https?:\/\/\S+$/i.test(entry)) {
+        return _(
+          "Enter an olcrtc:// URI or an http(s) sub.md subscription URL",
+        );
+      }
+    }
+    return true;
+  };
+
+  o = section.taboption(
+    "settings",
+    form.Value,
+    "socks_host",
+    _("OlcRTC SOCKS5 host"),
+    _(
+      "Host of the local SOCKS5 proxy. A non-loopback address requires a login and password (olcrtc requirement).",
+    ),
+  );
+  o.depends("action", "olcrtc");
+  o.default = "127.0.0.1";
+  o.rmempty = true;
+  o.modalonly = true;
+
+  o = section.taboption(
+    "settings",
+    form.Value,
+    "socks_port",
+    _("OlcRTC SOCKS5 port"),
+    _("Port of the local SOCKS5 proxy (default 1080)."),
+  );
+  o.depends("action", "olcrtc");
+  o.default = "1080";
+  o.datatype = "port";
+  o.rmempty = true;
+  o.modalonly = true;
+
+  o = section.taboption(
+    "settings",
+    form.Value,
+    "dns_server",
+    _("OlcRTC DNS server"),
+    _("DNS inside the tunnel in HOST:PORT form, e.g. 8.8.8.8:53."),
+  );
+  o.depends("action", "olcrtc");
+  o.default = "8.8.8.8:53";
+  o.rmempty = true;
+  o.modalonly = true;
+  o.validate = function (_section_id, value) {
+    const normalized = `${value || ""}`.trim();
+    if (!normalized) {
+      return true;
+    }
+    return /^\S+:[0-9]{1,5}$/.test(normalized)
+      ? true
+      : _("Enter HOST:PORT, e.g. 8.8.8.8:53");
+  };
+
+  o = section.taboption(
+    "settings",
+    form.Value,
+    "socks_user",
+    _("OlcRTC SOCKS5 login"),
+    _("Optional; enables RFC 1929 authentication when set."),
+  );
+  o.depends("action", "olcrtc");
+  o.rmempty = true;
+  o.modalonly = true;
+
+  o = section.taboption(
+    "settings",
+    form.Value,
+    "socks_pass",
+    _("OlcRTC SOCKS5 password"),
+    _("Optional; required together with the login for non-loopback hosts."),
+  );
+  o.depends("action", "olcrtc");
+  o.rmempty = true;
+  o.password = true;
+  o.modalonly = true;
 
   o = section.taboption(
     "settings",

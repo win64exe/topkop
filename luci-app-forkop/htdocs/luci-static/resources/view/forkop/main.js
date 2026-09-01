@@ -2430,6 +2430,8 @@ var Forkop;
     AvailableMethods2["CHECK_ZAPRET_RUNTIME"] = "check_zapret_runtime";
     AvailableMethods2["CHECK_ZAPRET2_RUNTIME"] = "check_zapret2_runtime";
     AvailableMethods2["CHECK_BYEDPI_RUNTIME"] = "check_byedpi_runtime";
+    AvailableMethods2["CHECK_WDTT_RUNTIME"] = "check_wdtt_runtime";
+    AvailableMethods2["CHECK_OLCRTC_RUNTIME"] = "check_olcrtc_runtime";
     AvailableMethods2["CHECK_INBOUNDS_CONFIG"] = "check_inbounds_config";
     AvailableMethods2["GET_STATUS"] = "get_status";
     AvailableMethods2["GET_OUTBOUND_METADATA"] = "get_outbound_metadata";
@@ -2648,6 +2650,12 @@ var ForkopShellMethods = {
   ),
   checkByedpiRuntime: async () => callBaseMethod(
     Forkop.AvailableMethods.CHECK_BYEDPI_RUNTIME
+  ),
+  checkWdttRuntime: async () => callBaseMethod(
+    Forkop.AvailableMethods.CHECK_WDTT_RUNTIME
+  ),
+  checkOlcrtcRuntime: async () => callBaseMethod(
+    Forkop.AvailableMethods.CHECK_OLCRTC_RUNTIME
   ),
   checkInboundsConfig: async () => callBaseMethod(
     Forkop.AvailableMethods.CHECK_INBOUNDS_CONFIG
@@ -4284,6 +4292,10 @@ var initialDiagnosticStore = {
     zapret2_installed: 0,
     byedpi_version: "loading",
     byedpi_installed: 0,
+    wdtt_version: "loading",
+    wdtt_installed: 0,
+    olcrtc_version: "loading",
+    olcrtc_installed: 0,
     server_inbounds_enabled_count: -1,
     openwrt_version: "loading",
     device_model: "loading"
@@ -4827,6 +4839,8 @@ function applyServiceState(uiState) {
     zapret_installed: uiState.capabilities.zapret_installed,
     zapret2_installed: uiState.capabilities.zapret2_installed,
     byedpi_installed: uiState.capabilities.byedpi_installed,
+    wdtt_installed: uiState.capabilities.wdtt_installed,
+    olcrtc_installed: uiState.capabilities.olcrtc_installed,
     server_inbounds_enabled_count: uiState.capabilities.server_inbounds_enabled_count
   };
   nextSystemInfo.sing_box_extended = uiState.capabilities.sing_box_extended;
@@ -8350,6 +8364,10 @@ var UNKNOWN_SYSTEM_INFO = {
   zapret2_installed: 0,
   byedpi_version: _("unknown"),
   byedpi_installed: 0,
+  wdtt_version: _("unknown"),
+  wdtt_installed: 0,
+  olcrtc_version: _("unknown"),
+  olcrtc_installed: 0,
   server_inbounds_enabled_count: -1,
   openwrt_version: _("unknown"),
   device_model: _("unknown")
@@ -8413,6 +8431,8 @@ async function ensureSystemInfo({
         zapret_installed: latestSystemInfo.zapret_installed,
         zapret2_installed: latestSystemInfo.zapret2_installed,
         byedpi_installed: latestSystemInfo.byedpi_installed,
+        wdtt_installed: latestSystemInfo.wdtt_installed,
+        olcrtc_installed: latestSystemInfo.olcrtc_installed,
         server_inbounds_enabled_count: latestSystemInfo.server_inbounds_enabled_count
       };
       store.set({
@@ -9158,7 +9178,7 @@ function renderWikiDisclaimer(kind) {
       classNames: ["cbi-button-save"],
       text: _("Open Project Page"),
       onClick: () => window.open(
-        "https://github.com/ushan0v/forkop#readme",
+        "https://github.com/win64exe/topkop#readme",
         "_blank",
         "noopener,noreferrer"
       )
@@ -9395,7 +9415,7 @@ function isDiagnosticsProviderOptions(value) {
   if (!isRecord(value)) {
     return false;
   }
-  return isOptionalBoolean(value.includeZapret) && isOptionalBoolean(value.includeZapret2) && isOptionalBoolean(value.includeByedpi) && isOptionalBoolean(value.includeInbounds);
+  return isOptionalBoolean(value.includeZapret) && isOptionalBoolean(value.includeZapret2) && isOptionalBoolean(value.includeByedpi) && isOptionalBoolean(value.includeWdtt) && isOptionalBoolean(value.includeOlcrtc) && isOptionalBoolean(value.includeInbounds);
 }
 function isDiagnosticCheckItem(value) {
   return isRecord(value) && CHECK_ITEM_STATES.includes(String(value.state)) && typeof value.key === "string" && typeof value.value === "string";
@@ -9668,6 +9688,8 @@ function getDiagnosticsProviderOptions(systemInfo = store.get().diagnosticsSyste
     includeZapret: Boolean(systemInfo.zapret_installed),
     includeZapret2: Boolean(systemInfo.zapret2_installed),
     includeByedpi: Boolean(systemInfo.byedpi_installed),
+    includeWdtt: Boolean(systemInfo.wdtt_installed),
+    includeOlcrtc: Boolean(systemInfo.olcrtc_installed),
     includeInbounds: systemInfo.server_inbounds_enabled_count > 0
   };
 }
@@ -9868,6 +9890,8 @@ async function fetchDiagnosticsProviderInfo({
         zapret_installed: uiState.capabilities.zapret_installed,
         zapret2_installed: uiState.capabilities.zapret2_installed,
         byedpi_installed: uiState.capabilities.byedpi_installed,
+        wdtt_installed: uiState.capabilities.wdtt_installed,
+        olcrtc_installed: uiState.capabilities.olcrtc_installed,
         server_inbounds_enabled_count: uiState.capabilities.server_inbounds_enabled_count
       });
       if (!nextSystemInfo2.zapret_installed) {
@@ -9878,6 +9902,12 @@ async function fetchDiagnosticsProviderInfo({
       }
       if (!nextSystemInfo2.byedpi_installed) {
         nextSystemInfo2.byedpi_version = "not installed";
+      }
+      if (!nextSystemInfo2.wdtt_installed) {
+        nextSystemInfo2.wdtt_version = "not installed";
+      }
+      if (!nextSystemInfo2.olcrtc_installed) {
+        nextSystemInfo2.olcrtc_version = "not installed";
       }
       const nextState2 = {
         diagnosticsSystemInfo: nextSystemInfo2
@@ -9894,10 +9924,19 @@ async function fetchDiagnosticsProviderInfo({
       store.set(nextState2);
       return;
     }
-    const [zapretRuntime, zapret2Runtime, byedpiRuntime, inboundsConfig] = await Promise.all([
+    const [
+      zapretRuntime,
+      zapret2Runtime,
+      byedpiRuntime,
+      wdttRuntime,
+      olcrtcRuntime,
+      inboundsConfig
+    ] = await Promise.all([
       ForkopShellMethods.checkZapretRuntime(),
       ForkopShellMethods.checkZapret2Runtime(),
       ForkopShellMethods.checkByedpiRuntime(),
+      ForkopShellMethods.checkWdttRuntime(),
+      ForkopShellMethods.checkOlcrtcRuntime(),
       ForkopShellMethods.checkInboundsConfig()
     ]);
     if (requestId !== latestProviderInfoRequestId) {
@@ -9910,6 +9949,8 @@ async function fetchDiagnosticsProviderInfo({
       zapret_installed: zapretRuntime.success ? zapretRuntime.data.zapret_installed : currentSystemInfo.zapret_installed,
       zapret2_installed: zapret2Runtime.success ? zapret2Runtime.data.zapret2_installed : currentSystemInfo.zapret2_installed,
       byedpi_installed: byedpiRuntime.success ? byedpiRuntime.data.byedpi_installed : currentSystemInfo.byedpi_installed,
+      wdtt_installed: wdttRuntime.success ? wdttRuntime.data.wdtt_installed : currentSystemInfo.wdtt_installed,
+      olcrtc_installed: olcrtcRuntime.success ? olcrtcRuntime.data.olcrtc_installed : currentSystemInfo.olcrtc_installed,
       server_inbounds_enabled_count: inboundsConfig.success ? inboundsConfig.data.enabled_count : -1
     };
     if (!zapretRuntime.success) {
@@ -9924,6 +9965,16 @@ async function fetchDiagnosticsProviderInfo({
     }
     if (!byedpiRuntime.success) {
       logger.error("[DIAGNOSTIC]", "fetchByedpiRuntime failed", byedpiRuntime);
+    }
+    if (!wdttRuntime.success) {
+      logger.error("[DIAGNOSTIC]", "fetchWdttRuntime failed", wdttRuntime);
+    }
+    if (!olcrtcRuntime.success) {
+      logger.error(
+        "[DIAGNOSTIC]",
+        "fetchOlcrtcRuntime failed",
+        olcrtcRuntime
+      );
     }
     if (!inboundsConfig.success) {
       logger.error(
@@ -9940,6 +9991,12 @@ async function fetchDiagnosticsProviderInfo({
     }
     if (!nextSystemInfo.byedpi_installed) {
       nextSystemInfo.byedpi_version = "not installed";
+    }
+    if (!nextSystemInfo.wdtt_installed) {
+      nextSystemInfo.wdtt_version = "not installed";
+    }
+    if (!nextSystemInfo.olcrtc_installed) {
+      nextSystemInfo.olcrtc_version = "not installed";
     }
     const nextState = {
       diagnosticsSystemInfo: nextSystemInfo

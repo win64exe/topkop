@@ -45,6 +45,8 @@ function isDiagnosticsProviderOptions(
     isOptionalBoolean(value.includeZapret) &&
     isOptionalBoolean(value.includeZapret2) &&
     isOptionalBoolean(value.includeByedpi) &&
+    isOptionalBoolean(value.includeWdtt) &&
+    isOptionalBoolean(value.includeOlcrtc) &&
     isOptionalBoolean(value.includeInbounds)
   );
 }

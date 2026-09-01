@@ -164,3 +164,55 @@ config settings 'settings'
 #        option tailscale_accept_routes '0'
 #        option tailscale_advertise_exit_node '1'
 #        #list tailscale_advertise_routes '192.168.1.0/24'
+
+# --- WDTT (WireGuard-over-TURN Tunnel) ---
+# Первоисточник: https://github.com/xDarkOne/wdtt-openwrt
+#                https://github.com/RSokolovRS/WDTT-Cudy-TR3000-256mb
+# Поддерживаемые форматы ссылок (подписки):
+#   hashes_url — эндпоинт wdtt-linkd с токенами VK-звонков:
+#     http://SERVER:56090/TOKEN/links?n=4  (добавьте &slot=N для нескольких роутеров)
+#   локальный файл токенов: /etc/wdtt/vk-calls.txt
+#   списки доменов: https://example.com/domains.txt
+#   community_list: telegram, meta, youtube, discord, tiktok, ... (itdoginfo/allow-domains)
+#
+#config section 'wdtt_example'
+#        option label 'WDTT'
+#        option enabled '1'
+#        option action 'wdtt'
+#        option peer 'YOUR_SERVER:56000'
+#        option password 'CHANGEME'
+#        #option device_id ''
+#        option mode 'selective'
+#        option workers '36'
+#        option max_hashes '4'
+#        option mtu '1280'
+#        option refresh '15m'
+#        list subscription_links 'http://YOUR_SERVER:56090/YOUR_TOKEN/links?n=4'
+#        list community_lists 'telegram'
+#        #list remote_domain_list 'https://example.com/domains.txt'
+#        option auto_update '1'
+#        option block_doh '0'
+#        option block_ipv6 '0'
+
+# --- OlcRTC (OpenLibreCommunity RTC, TCP-over-WebRTC) ---
+# Первоисточник: https://github.com/openlibrecommunity/olcrtc (docs/uri.md, docs/sub.md)
+#                https://github.com/skorp505/OlcRTC-OpenWRT
+# Поддерживаемые форматы ссылок (подписки):
+#   одиночный сервер: olcrtc://<Provider>?<Transport>@<RoomID>#<Key>$<MIMO>
+#     olcrtc://jitsi?datachannel@https://meet.example.org/myroom#<64-hex>$RU / olc free sub
+#   подписка sub.md: https://host/sub (файл со строками olcrtc:// и полями #name:, #refresh:)
+#   Провайдеры: jitsi, telemost, wbstream
+#   Транспорты: datachannel, vp8channel, seichannel, videochannel
+#
+#config section 'olcrtc_example'
+#        option label 'OlcRTC'
+#        option enabled '1'
+#        option action 'olcrtc'
+#        option socks_host '127.0.0.1'
+#        option socks_port '1080'
+#        option dns_server '8.8.8.8:53'
+#        list subscription_links 'olcrtc://jitsi?datachannel@https://meet.example.org/myroom#0000000000000000000000000000000000000000000000000000000000000000$RU / olc free sub'
+#        #option provider 'jitsi'
+#        #option transport 'datachannel'
+#        #option room_id ''
+#        #option crypto_key ''

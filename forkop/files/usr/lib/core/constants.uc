@@ -22,7 +22,7 @@ function constants_map() {
     c.FORKOP_BIN = env("FORKOP_BIN", "/usr/bin/forkop");
     c.FORKOP_SERVICE_NAME = env("FORKOP_SERVICE_NAME", "forkop");
     c.FORKOP_SERVICE_INIT = env("FORKOP_SERVICE_INIT", "/etc/init.d/forkop");
-    c.FORKOP_RELEASE_REPO = env("FORKOP_RELEASE_REPO", "ushan0v/forkop");
+    c.FORKOP_RELEASE_REPO = env("FORKOP_RELEASE_REPO", "win64exe/topkop");
     c.FORKOP_LUCI_VIEW_NAMESPACE = env("FORKOP_LUCI_VIEW_NAMESPACE", "forkop");
     c.FORKOP_LUCI_VIEW_DIR = env("FORKOP_LUCI_VIEW_DIR", "/www/luci-static/resources/view/" + c.FORKOP_LUCI_VIEW_NAMESPACE);
     c.FORKOP_LUCI_I18N_DOMAIN = env("FORKOP_LUCI_I18N_DOMAIN", "forkop");
@@ -143,6 +143,31 @@ function constants_map() {
     c.BYEDPI_RESPAWN_DELAY = env("BYEDPI_RESPAWN_DELAY", "5");
     c.BYEDPI_OPEN_FILES_LIMIT = env("BYEDPI_OPEN_FILES_LIMIT", "4096");
     c.BYEDPI_DEFAULT_CMD_OPTS = env("BYEDPI_DEFAULT_CMD_OPTS", "-o 2 --auto=t,r,a,s -d 2");
+
+    c.WDTT_CONFIG = env("WDTT_CONFIG", "/etc/config/wdtt");
+    c.WDTT_SERVICE_INIT = env("WDTT_SERVICE_INIT", "/etc/init.d/wdtt-client");
+    c.WDTT_BIN = env("WDTT_BIN", "/usr/sbin/wdtt-client");
+    c.WDTT_GENLISTS_BIN = env("WDTT_GENLISTS_BIN", "/usr/sbin/wdtt-genlists");
+    c.WDTT_RESOLVE_BIN = env("WDTT_RESOLVE_BIN", "/usr/sbin/wdtt-resolve");
+    c.WDTT_STATE_DIR = env("WDTT_STATE_DIR", "/var/run/forkop/wdtt");
+    c.WDTT_DEFAULT_PEER = env("WDTT_DEFAULT_PEER", "YOUR_SERVER:56000");
+    c.WDTT_DEFAULT_WORKERS = env("WDTT_DEFAULT_WORKERS", "36");
+    c.WDTT_DEFAULT_MAX_HASHES = env("WDTT_DEFAULT_MAX_HASHES", "4");
+    c.WDTT_DEFAULT_MODE = env("WDTT_DEFAULT_MODE", "selective");
+    c.WDTT_DEFAULT_MTU = env("WDTT_DEFAULT_MTU", "1280");
+    c.WDTT_DEFAULT_REFRESH = env("WDTT_DEFAULT_REFRESH", "15m");
+    c.WDTT_COMMUNITY_LISTS = env("WDTT_COMMUNITY_LISTS", "russia-inside russia-outside ukraine telegram meta youtube discord tiktok twitter hdrezka roblox cloudflare cloudfront google_ai google_meet google_play hetzner ovh digitalocean anime news geoblock block porn hodca");
+
+    c.OLCRTC_CONFIG_DIR = env("OLCRTC_CONFIG_DIR", "/etc/olcrtc");
+    c.OLCRTC_CONFIG = env("OLCRTC_CONFIG", "/etc/olcrtc/client.yaml");
+    c.OLCRTC_BIN = env("OLCRTC_BIN", "/usr/bin/olcrtc");
+    c.OLCRTC_SERVICE_INIT = env("OLCRTC_SERVICE_INIT", "/etc/init.d/olcrtc");
+    c.OLCRTC_STATE_DIR = env("OLCRTC_STATE_DIR", "/var/run/forkop/olcrtc");
+    c.OLCRTC_DEFAULT_SOCKS_HOST = env("OLCRTC_DEFAULT_SOCKS_HOST", "127.0.0.1");
+    c.OLCRTC_DEFAULT_SOCKS_PORT = env("OLCRTC_DEFAULT_SOCKS_PORT", "1080");
+    c.OLCRTC_DEFAULT_DNS = env("OLCRTC_DEFAULT_DNS", "8.8.8.8:53");
+    c.OLCRTC_DEFAULT_PROVIDER = env("OLCRTC_DEFAULT_PROVIDER", "jitsi");
+    c.OLCRTC_DEFAULT_TRANSPORT = env("OLCRTC_DEFAULT_TRANSPORT", "datachannel");
 
     return c;
 }

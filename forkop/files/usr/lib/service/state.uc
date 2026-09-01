@@ -170,6 +170,8 @@ const RELOAD_STATE_FIELDS = [
     "zapret2_queue_signature",
     "zapret2_runtime_signature",
     "byedpi_runtime_signature",
+    "wdtt_runtime_signature",
+    "olcrtc_runtime_signature",
     "list_signature",
     "cron_signature",
     "urltest_enabled_sections",
@@ -1553,6 +1555,63 @@ function byedpi_runtime_signature_body(sections) {
     return body;
 }
 
+function wdtt_runtime_signature_body(sections) {
+    let body = "";
+
+    for (let section in sections) {
+        section = object_or_empty(section);
+        if (!section_action_is_enabled(section, "wdtt"))
+            continue;
+
+        let name = section_name(section);
+        body = signature_add_value(body, "wdtt." + name + ".index", enabled_action_index(sections, name, "wdtt"));
+        body = signature_add_value(body, "wdtt." + name + ".peer", option(section, "peer", ""));
+        body = signature_add_value(body, "wdtt." + name + ".password", option(section, "password", ""));
+        body = signature_add_value(body, "wdtt." + name + ".device_id", option(section, "device_id", ""));
+        body = signature_add_value(body, "wdtt." + name + ".subscription_links", option(section, "subscription_links", ""));
+        body = signature_add_value(body, "wdtt." + name + ".hashes_url", option(section, "hashes_url", ""));
+        body = signature_add_value(body, "wdtt." + name + ".hashes_file", option(section, "hashes_file", ""));
+        body = signature_add_value(body, "wdtt." + name + ".mode", option(section, "mode", ""));
+        body = signature_add_value(body, "wdtt." + name + ".workers", option(section, "workers", ""));
+        body = signature_add_value(body, "wdtt." + name + ".max_hashes", option(section, "max_hashes", ""));
+        body = signature_add_value(body, "wdtt." + name + ".mtu", option(section, "mtu", ""));
+        body = signature_add_value(body, "wdtt." + name + ".refresh", option(section, "refresh", ""));
+        body = signature_add_value(body, "wdtt." + name + ".community_lists", connections.community_lists_value(section));
+        body = signature_add_value(body, "wdtt." + name + ".remote_domain_list", option(section, "remote_domain_list", ""));
+        body = signature_add_value(body, "wdtt." + name + ".local_domain_list", option(section, "local_domain_list", ""));
+        body = signature_add_value(body, "wdtt." + name + ".auto_update", option(section, "auto_update", ""));
+        body = signature_add_value(body, "wdtt." + name + ".block_doh", option(section, "block_doh", ""));
+        body = signature_add_value(body, "wdtt." + name + ".block_ipv6", option(section, "block_ipv6", ""));
+    }
+
+    return body;
+}
+
+function olcrtc_runtime_signature_body(sections) {
+    let body = "";
+
+    for (let section in sections) {
+        section = object_or_empty(section);
+        if (!section_action_is_enabled(section, "olcrtc"))
+            continue;
+
+        let name = section_name(section);
+        body = signature_add_value(body, "olcrtc." + name + ".index", enabled_action_index(sections, name, "olcrtc"));
+        body = signature_add_value(body, "olcrtc." + name + ".subscription_links", option(section, "subscription_links", ""));
+        body = signature_add_value(body, "olcrtc." + name + ".provider", option(section, "provider", ""));
+        body = signature_add_value(body, "olcrtc." + name + ".transport", option(section, "transport", ""));
+        body = signature_add_value(body, "olcrtc." + name + ".room_id", option(section, "room_id", ""));
+        body = signature_add_value(body, "olcrtc." + name + ".crypto_key", option(section, "crypto_key", ""));
+        body = signature_add_value(body, "olcrtc." + name + ".socks_host", option(section, "socks_host", ""));
+        body = signature_add_value(body, "olcrtc." + name + ".socks_port", option(section, "socks_port", ""));
+        body = signature_add_value(body, "olcrtc." + name + ".socks_user", option(section, "socks_user", ""));
+        body = signature_add_value(body, "olcrtc." + name + ".socks_pass", option(section, "socks_pass", ""));
+        body = signature_add_value(body, "olcrtc." + name + ".dns_server", option(section, "dns_server", ""));
+    }
+
+    return body;
+}
+
 function reload_state_values_from_sources(format, settings, sections, servers, dnsmasq, legacy_dnsmasq_present, mwan3_active_value) {
     return {
         format: as_string(format),
@@ -1565,6 +1624,8 @@ function reload_state_values_from_sources(format, settings, sections, servers, d
         zapret2_queue_signature: signature_hash(action_queue_signature_body(sections, "zapret2", "zapret2_queue.section")),
         zapret2_runtime_signature: signature_hash(zapret2_runtime_signature_body(sections)),
         byedpi_runtime_signature: signature_hash(byedpi_runtime_signature_body(sections)),
+        wdtt_runtime_signature: signature_hash(wdtt_runtime_signature_body(sections)),
+        olcrtc_runtime_signature: signature_hash(olcrtc_runtime_signature_body(sections)),
         list_signature: signature_hash(list_update_signature_body(sections)),
         cron_signature: signature_hash(cron_signature_body(settings, sections)),
         urltest_enabled_sections: urltest_enabled_sections_value(sections),
@@ -1930,6 +1991,18 @@ else if (mode == "byedpi-runtime-signature")
 else if (mode == "byedpi-runtime-signature-fixture") {
     let data = fixture_data(ARGV[1]);
     exit(print_signature_hash(byedpi_runtime_signature_body(fixture_section_list(data))) ? 0 : 1);
+}
+else if (mode == "wdtt-runtime-signature")
+    exit(print_signature_hash(wdtt_runtime_signature_body(uci_sections("section"))) ? 0 : 1);
+else if (mode == "wdtt-runtime-signature-fixture") {
+    let data = fixture_data(ARGV[1]);
+    exit(print_signature_hash(wdtt_runtime_signature_body(fixture_section_list(data))) ? 0 : 1);
+}
+else if (mode == "olcrtc-runtime-signature")
+    exit(print_signature_hash(olcrtc_runtime_signature_body(uci_sections("section"))) ? 0 : 1);
+else if (mode == "olcrtc-runtime-signature-fixture") {
+    let data = fixture_data(ARGV[1]);
+    exit(print_signature_hash(olcrtc_runtime_signature_body(fixture_section_list(data))) ? 0 : 1);
 }
 else if (mode == "dont-touch-dhcp")
     print(dont_touch_dhcp_value(uci_settings()), "\n");

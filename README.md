@@ -1,16 +1,14 @@
-# Forkop (Podkop Plus)
+# Topkop (Forkop Plus)
 
-[![Star](https://img.shields.io/github/stars/ushan0v/forkop?style=social)](https://github.com/ushan0v/forkop/stargazers)
-[![Releases](https://img.shields.io/github/v/release/ushan0v/forkop?label=releases)](https://github.com/ushan0v/forkop/releases)
-[![Telegram](https://img.shields.io/badge/Telegram-Forkop%20%7C%20Chat-2CA5E0?logo=telegram\&logoColor=white)](https://t.me/forkop_chat)
-[![AI Assistant](https://img.shields.io/badge/Telegram-Forkop%20%7C%20AI%20Assistant-2CA5E0?logo=telegram\&logoColor=white)](https://t.me/forkop_aibot)
+[![Star](https://img.shields.io/github/stars/win64exe/topkop?style=social)](https://github.com/win64exe/topkop/stargazers)
+[![Releases](https://img.shields.io/github/v/release/win64exe/topkop?label=releases)](https://github.com/win64exe/topkop/releases)
 
-> **Forkop — это бывший Podkop Plus.** Проект переименован и продолжает развиваться как независимый форк [Podkop](https://github.com/itdoginfo/podkop).
+> **Topkop — это форк [Forkop](https://github.com/ushan0v/forkop)** (бывший Podkop Plus) с дополнительной интеграцией протоколов **WDTT** и **OlcRTC**.
 
 ### Установка
 
 ```sh
-sh <(wget -O - https://raw.githubusercontent.com/ushan0v/forkop/main/install.sh)
+sh <(wget -O - https://raw.githubusercontent.com/win64exe/topkop/main/install.sh)
 ```
 
 <details>
@@ -41,6 +39,9 @@ sh <(wget -O - https://forkop.sourceforge.io/install.sh)
 * Поддержка IPv6.
 * Действие Bypass с полным обходом sing-box.
 * Интеграция Zapret, Zapret2 и ByeDPI как отдельных действий секции.
+* Интеграция **WDTT** и **OlcRTC** как отдельных действий секции с поддержкой подписок:
+  * **WDTT** — подписки на списки хэшей DPI (`wdtt://`, `http(s)://` ссылки на `.list`/`.hash` файлы, ссылки сообществ). Первоисточники: [wdtt-openwrt](https://github.com/xDarkOne/wdtt-openwrt), [WDTT-Cudy-TR3000-256mb](https://github.com/RSokolovRS/WDTT-Cudy-TR3000-256mb).
+  * **OlcRTC** — подписки через URI-протокол (`olcrtc://server/peer@host:port#key`), одиночные и множественные серверы. Первоисточники: [olcrtc](https://github.com/openlibrecommunity/olcrtc), [OlcRTC-OpenWRT](https://github.com/skorp505/OlcRTC-OpenWRT), [OlcRTC-OpenWRT](https://github.com/tankionline2005/OlcRTC-OpenWRT).
 * Служба полностью переписана на ucode.
 * Другие исправления и улучшения.
 

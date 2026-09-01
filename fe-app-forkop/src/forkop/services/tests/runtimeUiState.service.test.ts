@@ -42,6 +42,8 @@ function createUiState(
       zapret_installed: 1,
       zapret2_installed: 1,
       byedpi_installed: 0,
+      wdtt_installed: 0,
+      olcrtc_installed: 0,
       server_inbounds_enabled_count: 0,
     },
     actions: {

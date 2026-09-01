@@ -229,6 +229,14 @@ export const ForkopShellMethods = {
     callBaseMethod<Forkop.ByedpiCheckResult>(
       Forkop.AvailableMethods.CHECK_BYEDPI_RUNTIME,
     ),
+  checkWdttRuntime: async () =>
+    callBaseMethod<Forkop.WdttCheckResult>(
+      Forkop.AvailableMethods.CHECK_WDTT_RUNTIME,
+    ),
+  checkOlcrtcRuntime: async () =>
+    callBaseMethod<Forkop.OlcrtcCheckResult>(
+      Forkop.AvailableMethods.CHECK_OLCRTC_RUNTIME,
+    ),
   checkInboundsConfig: async () =>
     callBaseMethod<Forkop.InboundsConfigCheckResult>(
       Forkop.AvailableMethods.CHECK_INBOUNDS_CONFIG,

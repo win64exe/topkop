@@ -100,6 +100,8 @@ function getDiagnosticsProviderOptions(
     | 'zapret_installed'
     | 'zapret2_installed'
     | 'byedpi_installed'
+    | 'wdtt_installed'
+    | 'olcrtc_installed'
     | 'server_inbounds_enabled_count'
   > = store.get().diagnosticsSystemInfo,
 ): DiagnosticsProviderOptions {
@@ -107,6 +109,8 @@ function getDiagnosticsProviderOptions(
     includeZapret: Boolean(systemInfo.zapret_installed),
     includeZapret2: Boolean(systemInfo.zapret2_installed),
     includeByedpi: Boolean(systemInfo.byedpi_installed),
+    includeWdtt: Boolean(systemInfo.wdtt_installed),
+    includeOlcrtc: Boolean(systemInfo.olcrtc_installed),
     includeInbounds: systemInfo.server_inbounds_enabled_count > 0,
   };
 }
@@ -373,6 +377,8 @@ async function fetchDiagnosticsProviderInfo({
         zapret_installed: uiState.capabilities.zapret_installed,
         zapret2_installed: uiState.capabilities.zapret2_installed,
         byedpi_installed: uiState.capabilities.byedpi_installed,
+        wdtt_installed: uiState.capabilities.wdtt_installed,
+        olcrtc_installed: uiState.capabilities.olcrtc_installed,
         server_inbounds_enabled_count:
           uiState.capabilities.server_inbounds_enabled_count,
       });
@@ -387,6 +393,14 @@ async function fetchDiagnosticsProviderInfo({
 
       if (!nextSystemInfo.byedpi_installed) {
         nextSystemInfo.byedpi_version = 'not installed';
+      }
+
+      if (!nextSystemInfo.wdtt_installed) {
+        nextSystemInfo.wdtt_version = 'not installed';
+      }
+
+      if (!nextSystemInfo.olcrtc_installed) {
+        nextSystemInfo.olcrtc_version = 'not installed';
       }
 
       const nextState: Partial<StoreType> = {
@@ -409,13 +423,21 @@ async function fetchDiagnosticsProviderInfo({
       return;
     }
 
-    const [zapretRuntime, zapret2Runtime, byedpiRuntime, inboundsConfig] =
-      await Promise.all([
-        ForkopShellMethods.checkZapretRuntime(),
-        ForkopShellMethods.checkZapret2Runtime(),
-        ForkopShellMethods.checkByedpiRuntime(),
-        ForkopShellMethods.checkInboundsConfig(),
-      ]);
+    const [
+      zapretRuntime,
+      zapret2Runtime,
+      byedpiRuntime,
+      wdttRuntime,
+      olcrtcRuntime,
+      inboundsConfig,
+    ] = await Promise.all([
+      ForkopShellMethods.checkZapretRuntime(),
+      ForkopShellMethods.checkZapret2Runtime(),
+      ForkopShellMethods.checkByedpiRuntime(),
+      ForkopShellMethods.checkWdttRuntime(),
+      ForkopShellMethods.checkOlcrtcRuntime(),
+      ForkopShellMethods.checkInboundsConfig(),
+    ]);
 
     if (requestId !== latestProviderInfoRequestId) {
       return;
@@ -434,6 +456,12 @@ async function fetchDiagnosticsProviderInfo({
       byedpi_installed: byedpiRuntime.success
         ? byedpiRuntime.data.byedpi_installed
         : currentSystemInfo.byedpi_installed,
+      wdtt_installed: wdttRuntime.success
+        ? wdttRuntime.data.wdtt_installed
+        : currentSystemInfo.wdtt_installed,
+      olcrtc_installed: olcrtcRuntime.success
+        ? olcrtcRuntime.data.olcrtc_installed
+        : currentSystemInfo.olcrtc_installed,
       server_inbounds_enabled_count: inboundsConfig.success
         ? inboundsConfig.data.enabled_count
         : -1,
@@ -455,6 +483,18 @@ async function fetchDiagnosticsProviderInfo({
       logger.error('[DIAGNOSTIC]', 'fetchByedpiRuntime failed', byedpiRuntime);
     }
 
+    if (!wdttRuntime.success) {
+      logger.error('[DIAGNOSTIC]', 'fetchWdttRuntime failed', wdttRuntime);
+    }
+
+    if (!olcrtcRuntime.success) {
+      logger.error(
+        '[DIAGNOSTIC]',
+        'fetchOlcrtcRuntime failed',
+        olcrtcRuntime,
+      );
+    }
+
     if (!inboundsConfig.success) {
       logger.error(
         '[DIAGNOSTIC]',
@@ -473,6 +513,14 @@ async function fetchDiagnosticsProviderInfo({
 
     if (!nextSystemInfo.byedpi_installed) {
       nextSystemInfo.byedpi_version = 'not installed';
+    }
+
+    if (!nextSystemInfo.wdtt_installed) {
+      nextSystemInfo.wdtt_version = 'not installed';
+    }
+
+    if (!nextSystemInfo.olcrtc_installed) {
+      nextSystemInfo.olcrtc_version = 'not installed';
     }
 
     const nextState: Partial<StoreType> = {

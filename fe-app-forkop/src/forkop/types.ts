@@ -58,6 +58,8 @@ export namespace Forkop {
     CHECK_ZAPRET_RUNTIME = 'check_zapret_runtime',
     CHECK_ZAPRET2_RUNTIME = 'check_zapret2_runtime',
     CHECK_BYEDPI_RUNTIME = 'check_byedpi_runtime',
+    CHECK_WDTT_RUNTIME = 'check_wdtt_runtime',
+    CHECK_OLCRTC_RUNTIME = 'check_olcrtc_runtime',
     CHECK_INBOUNDS_CONFIG = 'check_inbounds_config',
     GET_STATUS = 'get_status',
     GET_OUTBOUND_METADATA = 'get_outbound_metadata',
@@ -478,6 +480,10 @@ export namespace Forkop {
     zapret2_installed: 0 | 1;
     byedpi_version: string;
     byedpi_installed: 0 | 1;
+    wdtt_version: string;
+    wdtt_installed: 0 | 1;
+    olcrtc_version: string;
+    olcrtc_installed: 0 | 1;
     openwrt_version: string;
     device_model: string;
     generated_at?: number;
@@ -497,6 +503,8 @@ export namespace Forkop {
     zapret_installed: 0 | 1;
     zapret2_installed: 0 | 1;
     byedpi_installed: 0 | 1;
+    wdtt_installed: 0 | 1;
+    olcrtc_installed: 0 | 1;
     server_inbounds_enabled_count: number;
   }
 
@@ -704,6 +712,16 @@ export namespace Forkop {
     byedpi_installed: 0 | 1;
     byedpi_package_installed: 0 | 1;
     byedpi_provider_path: string;
+  }
+
+  export interface WdttCheckResult {
+    wdtt_installed: 0 | 1;
+    wdtt_config_path: string;
+  }
+
+  export interface OlcrtcCheckResult {
+    olcrtc_installed: 0 | 1;
+    olcrtc_config_path: string;
   }
 
   export interface GetClashApiProxyLatency {

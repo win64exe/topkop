@@ -31,7 +31,7 @@ export function renderWikiDisclaimer(kind: 'default' | 'error' | 'warning') {
       text: _('Open Project Page'),
       onClick: () =>
         window.open(
-          'https://github.com/ushan0v/forkop#readme',
+          'https://github.com/win64exe/topkop#readme',
           '_blank',
           'noopener,noreferrer',
         ),
