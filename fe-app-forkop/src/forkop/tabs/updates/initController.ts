@@ -311,6 +311,7 @@ function notifyActionProvidersAvailabilityChanged(
         zapretInstalled: Boolean(systemInfo.zapret_installed),
         zapret2Installed: Boolean(systemInfo.zapret2_installed),
         byedpiInstalled: Boolean(systemInfo.byedpi_installed),
+        wdttInstalled: Boolean(systemInfo.wdtt_installed),
       },
     }),
   );
@@ -400,6 +401,18 @@ function patchSystemInfoAfterMutation(result: Forkop.ComponentActionResult) {
     }
   }
 
+  if (result.component === 'qwdtt') {
+    nextSystemInfo.providerInfoLoaded = true;
+
+    if (result.action === 'remove') {
+      nextSystemInfo.wdtt_installed = 0;
+      nextSystemInfo.wdtt_version = 'not installed';
+    } else {
+      nextSystemInfo.wdtt_installed = 1;
+      nextSystemInfo.wdtt_version = version;
+    }
+  }
+
   const normalizedSystemInfo = normalizeSingBoxVariantFields(nextSystemInfo);
 
   store.set({
@@ -409,7 +422,8 @@ function patchSystemInfoAfterMutation(result: Forkop.ComponentActionResult) {
   if (
     result.component === 'zapret' ||
     result.component === 'zapret2' ||
-    result.component === 'byedpi'
+    result.component === 'byedpi' ||
+    result.component === 'qwdtt'
   ) {
     notifyActionProvidersAvailabilityChanged(normalizedSystemInfo);
   }
@@ -782,7 +796,7 @@ function getOptionalComponentActions({
   installKey,
   removeKey,
 }: {
-  component: 'zapret' | 'zapret2' | 'byedpi';
+  component: 'zapret' | 'zapret2' | 'byedpi' | 'qwdtt';
   installed: boolean;
   checkKey: UpdatesActionKey;
   installKey: UpdatesActionKey;
@@ -812,6 +826,7 @@ function getComponentCards(): ComponentCard[] {
   const zapretInstalled = Boolean(systemInfo.zapret_installed);
   const zapret2Installed = Boolean(systemInfo.zapret2_installed);
   const byedpiInstalled = Boolean(systemInfo.byedpi_installed);
+  const wdttInstalled = Boolean(systemInfo.wdtt_installed);
   const singBoxInstalled = !isNotInstalled(systemInfo.sing_box_version);
   const singBoxStable =
     singBoxInstalled &&
@@ -895,6 +910,13 @@ function getComponentCards(): ComponentCard[] {
     installKey: 'byedpiInstall',
     removeKey: 'byedpiRemove',
   });
+  const qwdttActions = getOptionalComponentActions({
+    component: 'qwdtt',
+    installed: wdttInstalled,
+    checkKey: 'qwdttCheck',
+    installKey: 'qwdttInstall',
+    removeKey: 'qwdttRemove',
+  });
 
   return [
     {
@@ -957,6 +979,19 @@ function getComponentCards(): ComponentCard[] {
       latestVersion: getLatestVersion('byedpi'),
       releaseUrl: getGitHubReleaseUrl('byedpi'),
       actions: byedpiActions,
+    },
+    {
+      component: 'qwdtt',
+      column: 1,
+      title: 'Qwdtt',
+      version: systemInfoLoading
+        ? _('Loading...')
+        : wdttInstalled
+          ? systemInfo.wdtt_version
+          : _('Not installed'),
+      latestVersion: getLatestVersion('qwdtt'),
+      releaseUrl: getGitHubReleaseUrl('qwdtt'),
+      actions: qwdttActions,
     },
   ];
 }

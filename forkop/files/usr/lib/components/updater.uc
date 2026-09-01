@@ -900,6 +900,55 @@ function byedpi_select_asset(series, asset_ext, arch_candidates) {
     }
 }
 
+// qwdtt-openwrt (SpaceNeuroX) выпускает архивы qwdtt-openwrt-<arch>.tar.gz
+// для архитектур: x86_64, aarch64, armv7, mipsel. Маппит кандидатов
+// OpenWrt на имя архитектуры в имени ассета.
+function qwdtt_asset_arch_name(arch) {
+    arch = as_string(arch);
+    if (str_contains(arch, "x86_64") || arch == "amd64")
+        return "x86_64";
+    if (str_contains(arch, "aarch64") || arch == "arm64")
+        return "aarch64";
+    if (str_contains(arch, "armv7") || str_contains(arch, "arm_cortex") || str_contains(arch, "arm_"))
+        return "armv7";
+    if (str_contains(arch, "mipsel") || str_contains(arch, "mipsle"))
+        return "mipsel";
+    return "";
+}
+
+function qwdtt_select_asset(arch_candidates) {
+    let releases = array_or_empty(read_stdin_json());
+
+    // Проект выпускает релизы всегда с флагом prerelease, поэтому фильтруем
+    // только черновики (draft).
+    for (let release in releases) {
+        if (type(release) != "object")
+            continue;
+        if (release.draft === true)
+            continue;
+
+        for (let arch in split(as_string(arch_candidates), " ")) {
+            if (arch == "")
+                continue;
+            let asset_arch = qwdtt_asset_arch_name(arch);
+            if (asset_arch == "")
+                continue;
+            let asset_name = "qwdtt-openwrt-" + asset_arch + ".tar.gz";
+            for (let asset in array_or_empty(release.assets)) {
+                if (type(asset) != "object")
+                    continue;
+                let name = as_string(asset.name || "");
+                let url = as_string(asset.browser_download_url || "");
+                if (url != "" && name == asset_name) {
+                    print(arch, "\t", name, "\t", url, "\t",
+                        as_string(release.html_url || ""), "\t", as_string(release.tag_name || ""), "\n");
+                    return;
+                }
+            }
+        }
+    }
+}
+
 function sing_box_extended_release_tag() {
     for (let release in array_or_empty(read_stdin_json())) {
         if (type(release) != "object")
@@ -1223,6 +1272,8 @@ else if (mode == "release-select-arch-suffix-asset")
     release_select_arch_suffix_asset(ARGV[1], ARGV[2]);
 else if (mode == "byedpi-select-asset")
     byedpi_select_asset(ARGV[1], ARGV[2], ARGV[3]);
+else if (mode == "qwdtt-select-asset")
+    qwdtt_select_asset(ARGV[1]);
 else if (mode == "sing-box-extended-release-tag")
     sing_box_extended_release_tag();
 else if (mode == "file-last-nonblank-line")

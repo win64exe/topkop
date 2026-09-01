@@ -1036,6 +1036,142 @@ function install_byedpi(action) {
     action_success("byedpi", action, "ByeDPI package has been installed", current_version, pkg.version, 1, "latest", release.release_url || "");
 }
 
+function str_startswith(value, prefix) {
+    value = as_string(value);
+    prefix = as_string(prefix);
+    return length(value) >= length(prefix) && substr(value, 0, length(prefix)) == prefix;
+}
+
+function uci_section_exists(config_name, section_name) {
+    return command_success_from_args([ "uci", "-q", "get", as_string(config_name) + "." + as_string(section_name) ]);
+}
+
+function qwdtt_binary_installed() {
+    return file_exists("/usr/bin/qwdtt-client");
+}
+
+function qwdtt_installed_version() {
+    if (!qwdtt_binary_installed())
+        return "";
+    let version = trim(read_file("/etc/qwdtt/.version"));
+    if (version != "")
+        return version;
+    return "unknown";
+}
+
+function resolve_qwdtt_release(arch) {
+    let releases_json = fetch_github_releases_json("SpaceNeuroX", "qwdtt-openwrt", "10");
+    if (releases_json == "")
+        return null;
+    let resolved = trim(helper_output_input(releases_json, "qwdtt-select-asset", [ arch.candidates ]));
+    let fields = split(resolved, "\t");
+    if (length(fields) < 5 || as_string(fields[1]) == "")
+        return null;
+
+    let bundle_name = as_string(fields[1]);
+    let asset_arch = replace(replace(bundle_name, /^qwdtt-openwrt-/, ""), /\.tar\.gz$/, "");
+    let version = as_string(fields[4]);
+    if (str_startswith(version, "v"))
+        version = substr(version, 1);
+
+    return {
+        arch: as_string(fields[0]),
+        asset_arch,
+        bundle_name,
+        bundle_url: as_string(fields[2]),
+        release_url: as_string(fields[3]),
+        version
+    };
+}
+
+function install_qwdtt(action) {
+    init_tmp_dir() || action_fail("qwdtt", action, "Failed to create temporary directory");
+    let arch = resolve_arch_candidates();
+    if (arch == null)
+        action_fail("qwdtt", action, "Failed to detect package architecture");
+
+    let release = null;
+    retry_resolve("Resolving qwdtt package", function() {
+        release = resolve_qwdtt_release(arch);
+        return release != null;
+    });
+    if (release == null)
+        action_fail("qwdtt", action, "Failed to resolve qwdtt package for this router architecture");
+
+    let installed = qwdtt_binary_installed();
+    let current_version = qwdtt_installed_version();
+    if (action == "check_update") {
+        if (!installed)
+            action_fail("qwdtt", action, "qwdtt is not installed", current_version, release.version, "", release.release_url || "");
+        check_success_compared("qwdtt", current_version, release.version, current_version, release.version, release.release_url || "");
+    }
+
+    let bundle_file = tmp_dir + "/" + release.bundle_name;
+    if (!download_with_retry(release.bundle_url, bundle_file, release.bundle_name) || !file_nonempty(bundle_file))
+        action_fail("qwdtt", action, "Failed to download qwdtt package", current_version, release.version, "", release.release_url || "");
+
+    let extract_dir = tmp_dir + "/qwdtt-extract";
+    command_success_from_args([ "rm", "-rf", extract_dir ]);
+    if (!ensure_dir(extract_dir) ||
+        !command_success_from_args([ "tar", "-xzf", bundle_file, "-C", extract_dir ]))
+        action_fail("qwdtt", action, "Failed to extract qwdtt package", current_version, release.version, "", release.release_url || "");
+
+    let bin_src = extract_dir + "/qwdtt-client";
+    let init_src = extract_dir + "/files/etc/init.d/qwdtt";
+    let uci_src = extract_dir + "/files/etc/config/qwdtt";
+    let json_src = extract_dir + "/files/etc/qwdtt/config.json";
+    let defaults_src = extract_dir + "/files/etc/uci-defaults/99-qwdtt";
+    if (!file_exists(bin_src) || !file_exists(init_src) || !file_exists(uci_src) || !file_exists(json_src))
+        action_fail("qwdtt", action, "qwdtt package has an unexpected layout", current_version, release.version, "", release.release_url || "");
+
+    run_logged("Installing qwdtt client", command_from_args([ "sh", "-c", "cp -f " + shell_quote(bin_src) + " " + shell_quote("/usr/bin/qwdtt-client") + " && chmod 0755 /usr/bin/qwdtt-client" ]));
+    run_logged("Installing qwdtt service", command_from_args([ "sh", "-c", "cp -f " + shell_quote(init_src) + " " + shell_quote("/etc/init.d/qwdtt") + " && chmod 0755 /etc/init.d/qwdtt" ]));
+    if (!file_exists("/etc/config/qwdtt"))
+        run_logged("Installing qwdtt UCI config", command_from_args([ "sh", "-c", "cp -f " + shell_quote(uci_src) + " /etc/config/qwdtt && chmod 0600 /etc/config/qwdtt" ]));
+    if (!file_exists("/etc/qwdtt/config.json")) {
+        ensure_dir("/etc/qwdtt");
+        run_logged("Installing qwdtt config.json", command_from_args([ "sh", "-c", "cp -f " + shell_quote(json_src) + " /etc/qwdtt/config.json && chmod 0600 /etc/qwdtt/config.json" ]));
+    }
+    if (file_exists(defaults_src) && !uci_section_exists("firewall", "qwdtt"))
+        run_logged("Applying qwdtt firewall zone", command_from_args([ "sh", defaults_src ]));
+
+    ensure_dir("/etc/qwdtt");
+    let version_handle = fs.open("/etc/qwdtt/.version", "w");
+    if (version_handle) {
+        version_handle.write(as_string(release.version), "\n");
+        version_handle.close();
+    }
+
+    disable_standalone_service("qwdtt");
+    restart_forkop_after_successful_change();
+    clear_version_caches();
+    current_version = qwdtt_installed_version();
+    if (current_version == "")
+        current_version = "unknown";
+    action_success("qwdtt", action, "qwdtt client has been installed", current_version, release.version, 1, "latest", release.release_url || "");
+}
+
+function remove_qwdtt(action) {
+    let current_version = qwdtt_installed_version();
+    if (!qwdtt_binary_installed()) {
+        action_success("qwdtt", "remove", "qwdtt is already removed", current_version, "", 0);
+        return;
+    }
+
+    run_logged("Removing qwdtt client", command_from_args([ "rm", "-f", "/usr/bin/qwdtt-client", "/etc/init.d/qwdtt", "/etc/config/qwdtt", "/etc/qwdtt/.version" ]));
+    command_success_from_args([ "rm", "-rf", "/etc/qwdtt" ]);
+    if (uci_section_exists("firewall", "qwdtt")) {
+        command_success_from_args([ "uci", "-q", "delete", "firewall.qwdtt" ]);
+        command_success_from_args([ "uci", "-q", "delete", "firewall.qwdtt_lan" ]);
+        command_success_from_args([ "uci", "commit", "firewall" ]);
+        command_success_from_args([ "/etc/init.d/firewall", "reload" ]);
+    }
+
+    clear_version_caches();
+    restart_forkop_after_successful_change();
+    action_success("qwdtt", "remove", "qwdtt client has been removed", current_version, "", 1);
+}
+
 function remove_optional_component(component, package_name, label, runtime_module) {
     if (!pkg_is_installed(package_name)) {
         if (provider_installed(runtime_module))
@@ -1875,6 +2011,10 @@ function component_action(component, action) {
         install_byedpi(action);
     else if (component == "byedpi" && action == "remove")
         remove_optional_component("byedpi", "byedpi", "ByeDPI", LIB_DIR + "/providers/byedpi/runtime.uc");
+    else if (component == "qwdtt" && (action == "check_update" || action == "install"))
+        install_qwdtt(action);
+    else if (component == "qwdtt" && action == "remove")
+        remove_qwdtt(action);
     else
         action_fail(component != "" ? component : "unknown", action != "" ? action : "unknown", "Unknown component action");
 }

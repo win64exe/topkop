@@ -561,7 +561,8 @@ export namespace Forkop {
     | 'sing_box'
     | 'zapret'
     | 'zapret2'
-    | 'byedpi';
+    | 'byedpi'
+    | 'qwdtt';
 
   export type ComponentAction =
     | 'check_update'

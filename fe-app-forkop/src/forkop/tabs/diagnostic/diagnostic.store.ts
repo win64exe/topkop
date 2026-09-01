@@ -147,6 +147,9 @@ export const initialDiagnosticStore: Pick<
     byedpiCheck: { loading: false },
     byedpiInstall: { loading: false },
     byedpiRemove: { loading: false },
+    qwdttCheck: { loading: false },
+    qwdttInstall: { loading: false },
+    qwdttRemove: { loading: false },
   },
   updatesChecks: {
     forkop: { status: null, latest_version: '', release_url: '' },
@@ -154,5 +157,6 @@ export const initialDiagnosticStore: Pick<
     zapret: { status: null, latest_version: '', release_url: '' },
     zapret2: { status: null, latest_version: '', release_url: '' },
     byedpi: { status: null, latest_version: '', release_url: '' },
+    qwdtt: { status: null, latest_version: '', release_url: '' },
   },
 };

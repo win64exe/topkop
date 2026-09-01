@@ -30,6 +30,9 @@ function getEmptyUpdatesActions(): StoreType['updatesActions'] {
     byedpiCheck: { loading: false },
     byedpiInstall: { loading: false },
     byedpiRemove: { loading: false },
+    qwdttCheck: { loading: false },
+    qwdttInstall: { loading: false },
+    qwdttRemove: { loading: false },
   };
 }
 

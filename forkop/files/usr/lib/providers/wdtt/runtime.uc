@@ -14,6 +14,10 @@ const LIB_DIR = getenv("FORKOP_LIB") || "/usr/lib/forkop";
 
 const WDTT_CONFIG = getenv("WDTT_CONFIG") || "/etc/config/wdtt";
 const WDTT_SERVICE_INIT = getenv("WDTT_SERVICE_INIT") || "/etc/init.d/wdtt-client";
+const QWDTT_BIN = getenv("QWDTT_BIN") || "/usr/bin/qwdtt-client";
+const QWDTT_CONFIG = getenv("QWDTT_CONFIG") || "/etc/qwdtt/config.json";
+const QWDTT_SERVICE_INIT = getenv("QWDTT_SERVICE_INIT") || "/etc/init.d/qwdtt";
+const QWDTT_VERSION_FILE = getenv("QWDTT_VERSION_FILE") || "/etc/qwdtt/.version";
 const WDTT_GENLISTS_BIN = getenv("WDTT_GENLISTS_BIN") || "/usr/sbin/wdtt-genlists";
 const WDTT_RESOLVE_BIN = getenv("WDTT_RESOLVE_BIN") || "/usr/sbin/wdtt-resolve";
 const WDTT_DEFAULT_PEER = getenv("WDTT_DEFAULT_PEER") || "YOUR_SERVER:56000";
@@ -180,20 +184,29 @@ function write_qwdtt_hashes_file(hashes_value) {
     return path;
 }
 
+function qwdtt_installed() {
+    return fs.stat(QWDTT_BIN) != null;
+}
+
 function provider_available() {
-    return fs.stat(WDTT_CONFIG) != null;
+    return fs.stat(WDTT_CONFIG) != null || qwdtt_installed();
+}
+
+// Выбирает init-скрипт: qwdtt (RAW-IP клиент SpaceNeuroX) или wdtt-client (wdtt-openwrt).
+function active_service_init() {
+    return qwdtt_installed() ? QWDTT_SERVICE_INIT : WDTT_SERVICE_INIT;
 }
 
 function service_init_exists() {
-    return fs.stat(WDTT_SERVICE_INIT) != null;
+    return fs.stat(active_service_init()) != null;
 }
 
 function service_running() {
-    return service_init_exists() && command_success_from_args([ WDTT_SERVICE_INIT, "status" ]);
+    return service_init_exists() && command_success_from_args([ active_service_init(), "status" ]);
 }
 
 function service_enabled() {
-    return service_init_exists() && command_success_from_args([ WDTT_SERVICE_INIT, "enabled" ]);
+    return service_init_exists() && command_success_from_args([ active_service_init(), "enabled" ]);
 }
 
 function lan_mac_address() {
@@ -207,6 +220,66 @@ function lan_mac_address() {
 
 function uci_set_quote(value) {
     return shell_quote(as_string(value));
+}
+
+// Собирает VK-хэши для qwdtt config.json: из qwdtt:// ссылки или из файла hashes_file.
+function qwdtt_hashes_list(qwdtt, hashes_file) {
+    let hashes = [];
+    if (qwdtt && qwdtt.hashes != "") {
+        for (let item in split(as_string(qwdtt.hashes), /[, \t\r\n]+/))
+            if (as_string(item) != "")
+                push(hashes, as_string(item));
+    }
+    if (length(hashes) == 0 && hashes_file != "") {
+        let data = fs.readfile(as_string(hashes_file));
+        if (data != null) {
+            for (let line in split(as_string(data), "\n")) {
+                line = trim(as_string(line));
+                if (line != "")
+                    push(hashes, line);
+            }
+        }
+    }
+    return hashes;
+}
+
+// Пишет /etc/qwdtt/config.json (RAW-IP клиент SpaceNeuroX/qwdtt-openwrt).
+function write_qwdtt_json_config(section, name, peer, password, device_id, workers, qwdtt, hashes_file) {
+    let hashes = qwdtt_hashes_list(qwdtt, hashes_file);
+    let tun_name = as_string(option(section, "tun_name", "qwdtt0"));
+    let lan_interface = as_string(option(section, "lan_iface", "br-lan"));
+    let dns = as_string(option(section, "dns", "yandex"));
+
+    let config = {
+        peer: peer,
+        hashes: hashes,
+        password: password,
+        device_id: device_id,
+        workers: int(workers, 10) > 0 ? int(workers, 10) : 9,
+        dns: dns,
+        obfs: "audio",
+        captcha_mode: "auto",
+        vk_auth: "anonymous",
+        vk_anon_path: "vkcalls",
+        no_dtls: false,
+        turn_tcp: false,
+        tun_name: tun_name,
+        lan_interface: lan_interface
+    };
+
+    if (!command_success_from_args([ "mkdir", "-p", "/etc/qwdtt" ]))
+        return false;
+    let handle = fs.open(QWDTT_CONFIG, "w");
+    if (!handle)
+        return false;
+    handle.write(sprintf("%J", config), "\n");
+    handle.close();
+
+    command_success_from_args([ "chmod", "0600", QWDTT_CONFIG ]);
+    command_success_from_args([ "uci", "set", "qwdtt.main.enabled=" + (bool_option(section, "enabled", true) ? "1" : "0") ]);
+    command_success_from_args([ "uci", "commit", "qwdtt" ]);
+    log_message("WDTT section '" + name + "' written to " + QWDTT_CONFIG + " (qwdtt RAW-IP client)", "info");
+    return true;
 }
 
 function write_wdtt_config(section) {
@@ -241,14 +314,29 @@ function write_wdtt_config(section) {
     if (qwdtt && qwdtt.hashes != "" && option(section, "max_hashes", "") == "")
         max_hashes = "" + length(split(as_string(qwdtt.hashes), /[, \t\r\n]+/));
 
+    let peer = option(section, "peer", qwdtt && qwdtt.peer || WDTT_DEFAULT_PEER);
+    let password = option(section, "password", qwdtt && qwdtt.pass || "");
+    let workers = option(section, "workers", qwdtt && qwdtt.workers || WDTT_DEFAULT_WORKERS);
+
+    // Установлен qwdtt RAW-IP клиент — управляем им, а не wdtt-openwrt.
+    if (qwdtt_installed()) {
+        if (write_qwdtt_json_config(section, name, peer, password, device_id, workers, qwdtt, hashes_file)) {
+            if (fs.stat(QWDTT_SERVICE_INIT) != null)
+                command_success_from_args([ QWDTT_SERVICE_INIT, "restart" ]);
+            else
+                log_message("qwdtt service init script " + QWDTT_SERVICE_INIT + " is missing", "fatal");
+        }
+        return;
+    }
+
     let commands = [];
     let sets = {
         enabled: bool_option(section, "enabled", true) ? "1" : "0",
-        peer: option(section, "peer", qwdtt && qwdtt.peer || WDTT_DEFAULT_PEER),
-        password: option(section, "password", qwdtt && qwdtt.pass || ""),
+        peer: peer,
+        password: password,
         device_id: device_id,
         max_hashes: max_hashes,
-        workers: option(section, "workers", qwdtt && qwdtt.workers || WDTT_DEFAULT_WORKERS),
+        workers: workers,
         mode: option(section, "mode", WDTT_DEFAULT_MODE),
         mtu: option(section, "mtu", WDTT_DEFAULT_MTU),
         refresh: option(section, "refresh", WDTT_DEFAULT_REFRESH),
@@ -286,16 +374,22 @@ function start_runtime() {
     let sections = enabled_wdtt_sections();
     if (length(sections) == 0) {
         if (provider_available()) {
-            command_success_from_args([ "uci", "set", "wdtt.settings.enabled=0" ]);
-            command_success_from_args([ "uci", "commit", "wdtt" ]);
+            if (qwdtt_installed() && fs.stat("/etc/config/qwdtt") != null) {
+                command_success_from_args([ "uci", "set", "qwdtt.main.enabled=0" ]);
+                command_success_from_args([ "uci", "commit", "qwdtt" ]);
+            }
+            else {
+                command_success_from_args([ "uci", "set", "wdtt.settings.enabled=0" ]);
+                command_success_from_args([ "uci", "commit", "wdtt" ]);
+            }
             if (service_init_exists())
-                command_success_from_args([ WDTT_SERVICE_INIT, "stop" ]);
+                command_success_from_args([ active_service_init(), "stop" ]);
         }
         return;
     }
 
     if (!provider_available()) {
-        log_message("WDTT is not installed (missing " + WDTT_CONFIG + "). Install it first (install.sh --with-wdtt or luci-app-wdtt). Aborted.", "fatal");
+        log_message("WDTT is not installed (missing " + WDTT_CONFIG + " or " + QWDTT_BIN + "). Install the qwdtt or wdtt-openwrt client first (Components \u2192 Qwdtt). Aborted.", "fatal");
         exit(1);
     }
 
@@ -305,6 +399,14 @@ function start_runtime() {
         log_message("Multiple action=wdtt sections are enabled; only '" + section_name(section) + "' is applied", "warn");
 
     write_wdtt_config(section);
+
+    if (qwdtt_installed()) {
+        if (fs.stat(QWDTT_SERVICE_INIT) != null)
+            command_success_from_args([ QWDTT_SERVICE_INIT, "restart" ]);
+        else
+            log_message("qwdtt service init script " + QWDTT_SERVICE_INIT + " is missing", "fatal");
+        return;
+    }
 
     command_success_from_args([ "uci", "set", "wdtt.settings.enabled=1" ]);
     command_success_from_args([ "uci", "commit", "wdtt" ]);
@@ -324,10 +426,26 @@ function start_runtime() {
 function stop_runtime() {
     if (!provider_available())
         return;
+    if (qwdtt_installed()) {
+        if (fs.stat("/etc/config/qwdtt") != null) {
+            command_success_from_args([ "uci", "set", "qwdtt.main.enabled=0" ]);
+            command_success_from_args([ "uci", "commit", "qwdtt" ]);
+        }
+        if (fs.stat(QWDTT_SERVICE_INIT) != null)
+            command_success_from_args([ QWDTT_SERVICE_INIT, "stop" ]);
+        return;
+    }
     command_success_from_args([ "uci", "set", "wdtt.settings.enabled=0" ]);
     command_success_from_args([ "uci", "commit", "wdtt" ]);
     if (service_init_exists())
         command_success_from_args([ WDTT_SERVICE_INIT, "stop" ]);
+}
+
+function package_version() {
+    if (!qwdtt_installed())
+        return "";
+    let version = trim(command_output_from_args([ "cat", QWDTT_VERSION_FILE ]));
+    return version;
 }
 
 function status_json() {
@@ -339,13 +457,17 @@ function status_json() {
     let enabled = service_enabled();
     let ready = configured && provider && init_exists && running;
 
+    let config_path = qwdtt_installed() ? QWDTT_CONFIG : WDTT_CONFIG;
+    let service_init = qwdtt_installed() ? QWDTT_SERVICE_INIT : WDTT_SERVICE_INIT;
+    let client_label = qwdtt_installed() ? "qwdtt-client" : "wdtt-client";
+
     let message = "wdtt provider status is normal";
     if (configured && !provider)
-        message = "action=wdtt is configured, but WDTT is not installed (missing " + WDTT_CONFIG + ")";
+        message = "action=wdtt is configured, but WDTT is not installed (missing " + WDTT_CONFIG + " or " + QWDTT_BIN + ")";
     else if (configured && !init_exists)
-        message = "action=wdtt is configured, but the WDTT service " + WDTT_SERVICE_INIT + " is missing";
+        message = "action=wdtt is configured, but the " + client_label + " service " + service_init + " is missing";
     else if (configured && !running)
-        message = "action=wdtt is configured, but the wdtt-client service is not running";
+        message = "action=wdtt is configured, but the " + client_label + " service is not running";
     else if (!configured && !provider)
         message = "WDTT is not installed; action=wdtt is unavailable";
 
@@ -355,8 +477,10 @@ function status_json() {
         enabled_rule_count: length(sections),
         service_enabled: enabled,
         service_running: running,
-        config_path: WDTT_CONFIG,
-        service_init: WDTT_SERVICE_INIT,
+        config_path: config_path,
+        service_init: service_init,
+        client: qwdtt_installed() ? "qwdtt" : "wdtt-openwrt",
+        package_version: package_version(),
         ready,
         status_message: message
     });
@@ -365,7 +489,9 @@ function status_json() {
 function check_json() {
     write_json({
         wdtt_installed: provider_available(),
-        wdtt_config_path: WDTT_CONFIG
+        wdtt_config_path: WDTT_CONFIG,
+        qwdtt_installed: qwdtt_installed(),
+        qwdtt_version: package_version()
     });
 }
 
@@ -381,9 +507,11 @@ else if (mode == "check")
     check_json();
 else if (mode == "installed" || mode == "provider-available")
     exit(provider_available() ? 0 : 1);
+else if (mode == "package-version")
+    print(package_version(), "\n");
 else if (mode == "enabled-rule-count")
     print(enabled_rule_count(), "\n");
 else {
-    warn("Usage: providers/wdtt/runtime.uc <start-runtime|stop-runtime|status|check|installed|enabled-rule-count>\n");
+    warn("Usage: providers/wdtt/runtime.uc <start-runtime|stop-runtime|status|check|installed|package-version|enabled-rule-count>\n");
     exit(1);
 }

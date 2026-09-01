@@ -230,6 +230,9 @@ export interface StoreType {
     byedpiCheck: { loading: boolean };
     byedpiInstall: { loading: boolean };
     byedpiRemove: { loading: boolean };
+    qwdttCheck: { loading: boolean };
+    qwdttInstall: { loading: boolean };
+    qwdttRemove: { loading: boolean };
   };
   updatesChecks: Record<
     Forkop.ComponentName,

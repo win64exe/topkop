@@ -4345,14 +4345,18 @@ var initialDiagnosticStore = {
     zapret2Remove: { loading: false },
     byedpiCheck: { loading: false },
     byedpiInstall: { loading: false },
-    byedpiRemove: { loading: false }
+    byedpiRemove: { loading: false },
+    qwdttCheck: { loading: false },
+    qwdttInstall: { loading: false },
+    qwdttRemove: { loading: false }
   },
   updatesChecks: {
     forkop: { status: null, latest_version: "", release_url: "" },
     sing_box: { status: null, latest_version: "", release_url: "" },
     zapret: { status: null, latest_version: "", release_url: "" },
     zapret2: { status: null, latest_version: "", release_url: "" },
-    byedpi: { status: null, latest_version: "", release_url: "" }
+    byedpi: { status: null, latest_version: "", release_url: "" },
+    qwdtt: { status: null, latest_version: "", release_url: "" }
   }
 };
 
@@ -4698,7 +4702,10 @@ var componentActionKeyMap = {
   "zapret2:remove": "zapret2Remove",
   "byedpi:check_update": "byedpiCheck",
   "byedpi:install": "byedpiInstall",
-  "byedpi:remove": "byedpiRemove"
+  "byedpi:remove": "byedpiRemove",
+  "qwdtt:check_update": "qwdttCheck",
+  "qwdtt:install": "qwdttInstall",
+  "qwdtt:remove": "qwdttRemove"
 };
 function getComponentActionKey(component, action) {
   return componentActionKeyMap[`${component}:${action}`];
@@ -4805,7 +4812,10 @@ function getEmptyUpdatesActions() {
     zapret2Remove: { loading: false },
     byedpiCheck: { loading: false },
     byedpiInstall: { loading: false },
-    byedpiRemove: { loading: false }
+    byedpiRemove: { loading: false },
+    qwdttCheck: { loading: false },
+    qwdttInstall: { loading: false },
+    qwdttRemove: { loading: false }
   };
 }
 function getEmptyDiagnosticsActions() {
@@ -13035,7 +13045,8 @@ function notifyActionProvidersAvailabilityChanged(systemInfo) {
       detail: {
         zapretInstalled: Boolean(systemInfo.zapret_installed),
         zapret2Installed: Boolean(systemInfo.zapret2_installed),
-        byedpiInstalled: Boolean(systemInfo.byedpi_installed)
+        byedpiInstalled: Boolean(systemInfo.byedpi_installed),
+        wdttInstalled: Boolean(systemInfo.wdtt_installed)
       }
     })
   );
@@ -13109,11 +13120,21 @@ function patchSystemInfoAfterMutation(result) {
       nextSystemInfo.byedpi_version = version;
     }
   }
+  if (result.component === "qwdtt") {
+    nextSystemInfo.providerInfoLoaded = true;
+    if (result.action === "remove") {
+      nextSystemInfo.wdtt_installed = 0;
+      nextSystemInfo.wdtt_version = "not installed";
+    } else {
+      nextSystemInfo.wdtt_installed = 1;
+      nextSystemInfo.wdtt_version = version;
+    }
+  }
   const normalizedSystemInfo = normalizeSingBoxVariantFields(nextSystemInfo);
   store.set({
     diagnosticsSystemInfo: normalizedSystemInfo
   });
-  if (result.component === "zapret" || result.component === "zapret2" || result.component === "byedpi") {
+  if (result.component === "zapret" || result.component === "zapret2" || result.component === "byedpi" || result.component === "qwdtt") {
     notifyActionProvidersAvailabilityChanged(normalizedSystemInfo);
   }
 }
@@ -13416,6 +13437,7 @@ function getComponentCards() {
   const zapretInstalled = Boolean(systemInfo.zapret_installed);
   const zapret2Installed = Boolean(systemInfo.zapret2_installed);
   const byedpiInstalled = Boolean(systemInfo.byedpi_installed);
+  const wdttInstalled = Boolean(systemInfo.wdtt_installed);
   const singBoxInstalled = !isNotInstalled(systemInfo.sing_box_version);
   const singBoxStable = singBoxInstalled && !systemInfo.sing_box_extended && !systemInfo.sing_box_tiny;
   const singBoxExtended = Boolean(systemInfo.sing_box_extended) && !systemInfo.sing_box_compressed;
@@ -13489,6 +13511,13 @@ function getComponentCards() {
     installKey: "byedpiInstall",
     removeKey: "byedpiRemove"
   });
+  const qwdttActions = getOptionalComponentActions({
+    component: "qwdtt",
+    installed: wdttInstalled,
+    checkKey: "qwdttCheck",
+    installKey: "qwdttInstall",
+    removeKey: "qwdttRemove"
+  });
   return [
     {
       component: "forkop",
@@ -13534,6 +13563,15 @@ function getComponentCards() {
       latestVersion: getLatestVersion("byedpi"),
       releaseUrl: getGitHubReleaseUrl("byedpi"),
       actions: byedpiActions
+    },
+    {
+      component: "qwdtt",
+      column: 1,
+      title: "Qwdtt",
+      version: systemInfoLoading ? _("Loading...") : wdttInstalled ? systemInfo.wdtt_version : _("Not installed"),
+      latestVersion: getLatestVersion("qwdtt"),
+      releaseUrl: getGitHubReleaseUrl("qwdtt"),
+      actions: qwdttActions
     }
   ];
 }

@@ -21,6 +21,9 @@ const componentActionKeyMap: Record<string, UpdatesActionKey> = {
   'byedpi:check_update': 'byedpiCheck',
   'byedpi:install': 'byedpiInstall',
   'byedpi:remove': 'byedpiRemove',
+  'qwdtt:check_update': 'qwdttCheck',
+  'qwdtt:install': 'qwdttInstall',
+  'qwdtt:remove': 'qwdttRemove',
 };
 
 export function getComponentActionKey(
