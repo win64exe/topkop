@@ -1,4 +1,7 @@
 #!/usr/bin/env ucode
+
+let fs = require("fs");
+
 // WDTT provider validator.
 // WDTT (WireGuard-over-TURN Tunnel) — см. первоисточник:
 //   https://github.com/xDarkOne/wdtt-openwrt

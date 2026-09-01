@@ -1,4 +1,7 @@
 #!/usr/bin/env ucode
+
+let fs = require("fs");
+
 // OlcRTC provider validator.
 // OlcRTC (OpenLibreCommunity RTC) — TCP-over-WebRTC туннель. См. первоисточник:
 //   https://github.com/openlibrecommunity/olcrtc (docs/uri.md, docs/sub.md)
