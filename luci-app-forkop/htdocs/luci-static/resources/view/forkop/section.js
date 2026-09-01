@@ -7472,33 +7472,50 @@ function createSectionContent(section) {
     "settings",
     form.DynamicList,
     "subscription_links",
-    _("WDTT subscription links"),
+    _("Subscription links"),
     _(
-      "WDTT link formats (see wdtt-openwrt and qwdtt-android): http://SERVER:56090/TOKEN/links?n=4 — hashes_url of the wdtt-linkd endpoint (add &slot=N for multiple routers); a qwdtt://config link with direct VK hashes (qwdtt://config?peer=HOST:PORT&hashes=H1,H2&pass=...&workers=N); a local token file path like /etc/wdtt/vk-calls.txt; remote domain list URLs like https://example.com/domains.txt.",
+      "Tunnel subscription links, one per line. For the WDTT action: http://SERVER:56090/TOKEN/links?n=4 — hashes_url of the wdtt-linkd endpoint (add &slot=N for multiple routers); a qwdtt://config link with direct VK hashes (qwdtt://config?peer=HOST:PORT&hashes=H1,H2&pass=...&workers=N); a local token file path like /etc/wdtt/vk-calls.txt; remote domain list URLs like https://example.com/domains.txt. For the OlcRTC action: olcrtc://<Provider>?<Transport>@<RoomID>#<Key>$<MIMO> servers or http(s) sub.md subscription URLs.",
     ),
   );
   o.depends("action", "wdtt");
+  o.depends("action", "olcrtc");
   o.rmempty = true;
   o.modalonly = true;
   o.placeholder =
-    "http://SERVER:56090/TOKEN/links?n=4 | qwdtt://config?peer=server:56000&hashes=...";
-  o.validate = function (_section_id, value) {
+    "http://SERVER:56090/TOKEN/links?n=4 | qwdtt://config?peer=server:56000&hashes=... | olcrtc://jitsi?datachannel@room#0000...0000";
+  o.validate = function (section_id, value) {
+    const action = getRuleResolvedAction(section_id);
     const values = normalizeOptionValues(value);
     for (const entry of values) {
-      if (/^qwdtt:(\/\/)?config/i.test(entry)) {
-        const parsed = parseQwdttUri(entry);
-        if (!parsed || parsed.valid !== true) {
-          return parsed && parsed.reason
-            ? parsed.reason
-            : _("Invalid qwdtt://config link");
+      if (action === "olcrtc") {
+        if (/^olcrtc:\/\//.test(entry)) {
+          const parsed = parseOlcrtcUri(entry);
+          if (!parsed || parsed.valid !== true) {
+            return parsed && parsed.reason
+              ? parsed.reason
+              : _("Invalid olcrtc:// URI");
+          }
+        } else if (!/^https?:\/\/\S+$/i.test(entry)) {
+          return _(
+            "Enter an olcrtc:// URI or an http(s) sub.md subscription URL",
+          );
         }
-      } else if (
-        !/^https?:\/\/\S+$/i.test(entry) &&
-        !/^\/\S+$/.test(entry)
-      ) {
-        return _(
-          "Enter a WDTT hashes_url (http://SERVER:56090/TOKEN/links?n=4), a qwdtt://config link, a local file path, or an http(s) domain list URL",
-        );
+      } else {
+        if (/^qwdtt:(\/\/)?config/i.test(entry)) {
+          const parsed = parseQwdttUri(entry);
+          if (!parsed || parsed.valid !== true) {
+            return parsed && parsed.reason
+              ? parsed.reason
+              : _("Invalid qwdtt://config link");
+          }
+        } else if (
+          !/^https?:\/\/\S+$/i.test(entry) &&
+          !/^\/\S+$/.test(entry)
+        ) {
+          return _(
+            "Enter a WDTT hashes_url (http://SERVER:56090/TOKEN/links?n=4), a qwdtt://config link, a local file path, or an http(s) domain list URL",
+          );
+        }
       }
     }
     return true;
@@ -7611,37 +7628,6 @@ function createSectionContent(section) {
   o.rmempty = false;
   o.modalonly = true;
 
-  o = section.taboption(
-    "settings",
-    form.DynamicList,
-    "subscription_links",
-    _("OlcRTC subscription links"),
-    _(
-      "OlcRTC link formats (see olcrtc docs/uri.md and docs/sub.md): a single server URI olcrtc://<Provider>?<Transport>@<RoomID>#<Key>$<MIMO> (e.g. olcrtc://jitsi?datachannel@https://meet.example.org/myroom#<64-hex>$RU / olc free sub) or a sub.md subscription URL like https://host/sub. Providers: jitsi, telemost, wbstream. Transports: datachannel, vp8channel, seichannel, videochannel.",
-    ),
-  );
-  o.depends("action", "olcrtc");
-  o.rmempty = true;
-  o.modalonly = true;
-  o.placeholder = "olcrtc://jitsi?datachannel@room#0000...0000$RU / olc free sub";
-  o.validate = function (_section_id, value) {
-    const values = normalizeOptionValues(value);
-    for (const entry of values) {
-      if (/^olcrtc:\/\//.test(entry)) {
-        const parsed = parseOlcrtcUri(entry);
-        if (!parsed || parsed.valid !== true) {
-          return parsed && parsed.reason
-            ? parsed.reason
-            : _("Invalid olcrtc:// URI");
-        }
-      } else if (!/^https?:\/\/\S+$/i.test(entry)) {
-        return _(
-          "Enter an olcrtc:// URI or an http(s) sub.md subscription URL",
-        );
-      }
-    }
-    return true;
-  };
 
   o = section.taboption(
     "settings",

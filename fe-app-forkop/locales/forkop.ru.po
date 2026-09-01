@@ -1,15 +1,15 @@
 # RU translations for FORKOP package.
 # Copyright (C) 2026 THE FORKOP COPYRIGHT HOLDER
 # This file is distributed under the same license as the FORKOP package.
-# ushan0v, 2026.
+# win64exe, 2026.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: FORKOP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-18 07:01+0300\n"
-"PO-Revision-Date: 2026-07-18 07:01+0300\n"
-"Last-Translator: ushan0v\n"
+"POT-Creation-Date: 2026-09-01 21:36+0300\n"
+"PO-Revision-Date: 2026-09-01 21:36+0300\n"
+"Last-Translator: win64exe\n"
 "Language-Team: none\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
@@ -71,20 +71,17 @@ msgstr "Добавьте хотя бы один DNS-сервер"
 msgid "Add prefix to nodes"
 msgstr "Добавлять префикс к узлам"
 
-msgid "Add URLs or local paths to .lst lists containing domains, IP addresses, or CIDR ranges. DNS actions ignore IP entries."
-msgstr "Добавьте URL или локальные пути к спискам .lst с доменами, IP-адресами или CIDR-подсетями. Для действия DNS записи IP игнорируются."
-
 msgid "Add URLs or local paths to .lst lists containing domains and subnets."
 msgstr "Добавьте URL или локальные пути к спискам .lst с доменами и подсетями."
 
 msgid "Add URLs or local paths to .lst lists containing domains. IP entries are ignored."
 msgstr "Добавьте URL или локальные пути к спискам .lst с доменами. IP игнорируются."
 
-msgid "Add URLs or local paths to .srs / .json lists. Subnets are ignored by default."
-msgstr "Добавьте URL или локальные пути к спискам .srs / .json. Подсети по умолчанию игнорируются."
-
 msgid "Add URLs or local paths to .srs / .json lists. Only domain rules are supported."
 msgstr "Добавьте URL или локальные пути к спискам .srs / .json. Поддерживаются только доменные правила."
+
+msgid "Add URLs or local paths to .srs / .json lists. Subnets are ignored by default."
+msgstr "Добавьте URL или локальные пути к спискам .srs / .json. Подсети по умолчанию игнорируются."
 
 msgid "Add URLTest / Priority group"
 msgstr "Добавить URLTest / Приоритет группу"
@@ -147,7 +144,7 @@ msgid "ALPN"
 msgstr "ALPN"
 
 msgid "Alter ID"
-msgstr "Alter ID"
+msgstr "Идентификатор Alter"
 
 msgid "Apply section rules only to the specified local IP addresses"
 msgstr "Применять правила секции только к указанным локальным IP-адресам"
@@ -166,6 +163,9 @@ msgstr "Автообновление"
 
 msgid "Auto-generate HWID"
 msgstr "Авто-генерация HWID"
+
+msgid "Auto-refresh WDTT lists"
+msgstr "Автообновление списков WDTT"
 
 msgid "Automatic component update checks"
 msgstr "Автоматическая проверка обновлений компонентов"
@@ -187,6 +187,15 @@ msgstr "Доступные действия"
 
 msgid "Backend validation failed: %s"
 msgstr "Backend-проверка завершилась ошибкой: %s"
+
+msgid "Block external DoH/DoT"
+msgstr "Блокировать внешние DoH/DoT"
+
+msgid "Block external DoH/DoT so clients resolve via the router DNS."
+msgstr "Блокировка внешних DoH/DoT, чтобы клиенты резолвили через DNS роутера."
+
+msgid "Block IPv6 to bypass domains"
+msgstr "Блокировать IPv6 для обходных доменов"
 
 msgid "Bootstrap DNS"
 msgstr "Bootstrap DNS"
@@ -333,7 +342,7 @@ msgid "Components"
 msgstr "Компоненты"
 
 msgid "compressed"
-msgstr "compressed"
+msgstr "сжатая"
 
 msgid "Concurrency"
 msgstr "Параллелизм"
@@ -374,6 +383,9 @@ msgstr "Скопировать ссылку прокси"
 msgid "Could not compare FakeIP and control public IPs"
 msgstr "Не удалось сравнить публичные IP FakeIP и контрольной проверки"
 
+msgid "crypto key must be 64 hex chars in olcrtc:// URI"
+msgstr "крипто-ключ должен быть 64 hex-символа в olcrtc:// URI"
+
 msgid "Current section cannot be used as its own transit section"
 msgstr "Текущую секцию нельзя использовать как транзит для самой себя"
 
@@ -385,6 +397,9 @@ msgstr "Временно недоступно"
 
 msgid "Custom outbound configurations in JSON format"
 msgstr "Пользовательские конфигурации outbound в формате JSON"
+
+msgid "Daily cron refresh of the source lists (wdtt-openwrt option auto_update)."
+msgstr "Ежедневное обновление списков по cron (опция auto_update в wdtt-openwrt)."
 
 msgid "Dashboard"
 msgstr "Дашборд"
@@ -448,6 +463,9 @@ msgstr "Отображаемое имя"
 
 msgid "DNS Check Interval"
 msgstr "Период проверки DNS"
+
+msgid "DNS inside the tunnel in HOST:PORT form, e.g. 8.8.8.8:53."
+msgstr "DNS внутри туннеля в формате HOST:PORT, например 8.8.8.8:53."
 
 msgid "DNS on router"
 msgstr "DNS на роутере"
@@ -578,6 +596,12 @@ msgstr "Загружено"
 msgid "Drag rows to change priority. The rule at the top is checked first."
 msgstr "Перетаскивайте строки, чтобы изменить приоритет. Правило сверху проверяется первым."
 
+msgid "Drop IPv6 to bypass domains so clients fall back to tunneled IPv4."
+msgstr "Отбрасывать IPv6 к обходным доменам, чтобы клиенты переходили на туннелированный IPv4."
+
+msgid "DTLS endpoint of your WDTT server in HOST:PORT form, e.g. server:56000 (wdtt-openwrt option peer)."
+msgstr "DTLS-адрес вашего WDTT-сервера в формате HOST:PORT, например server:56000 (опция peer в wdtt-openwrt)."
+
 msgid "Duplicate JSON outbound tag"
 msgstr "Такой тег JSON outbound уже используется"
 
@@ -635,6 +659,18 @@ msgstr "Введите название уровня"
 msgid "Enter a valid DNS server address"
 msgstr "Укажите корректный адрес DNS-сервера"
 
+msgid "Enter a WDTT hashes_url (http://SERVER:56090/TOKEN/links?n=4), a qwdtt://config link, a local file path, or an http(s) domain list URL"
+msgstr "Введите hashes_url WDTT (http://SERVER:56090/TOKEN/links?n=4), ссылку qwdtt://config, локальный путь к файлу или http(s) URL списка доменов"
+
+msgid "Enter an olcrtc:// URI or an http(s) sub.md subscription URL"
+msgstr "Введите olcrtc:// URI или http(s) URL подписки sub.md"
+
+msgid "Enter HOST:PORT, e.g. 8.8.8.8:53"
+msgstr "Введите HOST:PORT, например 8.8.8.8:53"
+
+msgid "Enter HOST:PORT, e.g. server:56000"
+msgstr "Введите HOST:PORT, например server:56000"
+
 msgid "Enter HWID"
 msgstr "Укажите HWID"
 
@@ -673,6 +709,12 @@ msgstr "Исключить из этого уровня серверы с одн
 
 msgid "Exclude URLTest / Priority group"
 msgstr "Исключить URLTest / Приоритет группу"
+
+msgid "Expected a qwdtt://config link"
+msgstr "Ожидается ссылка qwdtt://config"
+
+msgid "Expected an olcrtc:// URI"
+msgstr "Ожидается olcrtc:// URI"
 
 msgid "Expecting: %s"
 msgstr "Ожидается: %s"
@@ -736,63 +778,6 @@ msgstr "Исправьте подсвеченные поля и сохранит
 
 msgid "Forced device routing"
 msgstr "Принудительная маршрутизация устройств"
-
-msgid "Topkop Error"
-msgstr "Ошибка Topkop"
-
-msgid "Topkop manages ciadpi pid files itself, so pidfile options are not allowed here."
-msgstr "Topkop сам управляет pid-файлами ciadpi, поэтому параметры pidfile здесь запрещены."
-
-msgid "Topkop manages the ciadpi process lifecycle itself, so daemon mode is not allowed here."
-msgstr "Topkop сам управляет жизненным циклом ciadpi, поэтому режим daemon здесь запрещён."
-
-msgid "Topkop manages the nfqws process lifecycle itself, so daemon mode is not allowed here."
-msgstr "Topkop сам управляет жизненным циклом nfqws, поэтому режим daemon здесь запрещён."
-
-msgid "Topkop manages the nfqws2 process lifecycle itself, so daemon mode is not allowed here."
-msgstr "Topkop сам управляет жизненным циклом nfqws2, поэтому режим daemon здесь запрещён."
-
-msgid "Topkop service is stopped. Start the service to display connections."
-msgstr "Служба Topkop остановлена. Запустите сервис для отображения подключений."
-
-msgid "Topkop service is stopped. Start the service to display the dashboard."
-msgstr "Служба Topkop остановлена. Запустите сервис для отображения дашборда."
-
-msgid "Topkop Settings"
-msgstr "Настройки Topkop"
-
-msgid "Topkop will not modify your DHCP configuration"
-msgstr "Topkop не будет изменять вашу конфигурацию DHCP"
-
-msgid "Topkop-managed ciadpi runtime has restarted"
-msgstr "ciadpi Topkop перезапускался"
-
-msgid "Topkop-managed ciadpi runtime is not ready"
-msgstr "ciadpi Topkop не готов"
-
-msgid "Topkop-managed ciadpi runtime is not running"
-msgstr "ciadpi Topkop не запущен"
-
-msgid "Topkop-managed ciadpi runtime is ready"
-msgstr "ciadpi Topkop готов"
-
-msgid "Topkop-managed nfqws runtime is not ready"
-msgstr "NFQWS Topkop не готов"
-
-msgid "Topkop-managed nfqws runtime is not running"
-msgstr "NFQWS Topkop не запущен"
-
-msgid "Topkop-managed nfqws runtime is ready"
-msgstr "NFQWS Topkop готов"
-
-msgid "Topkop-managed nfqws2 runtime is not ready"
-msgstr "NFQWS2 Topkop не готов"
-
-msgid "Topkop-managed nfqws2 runtime is not running"
-msgstr "NFQWS2 Topkop не запущен"
-
-msgid "Topkop-managed nfqws2 runtime is ready"
-msgstr "NFQWS2 Topkop готов"
 
 msgid "Fronting IP"
 msgstr "IP фронтинга"
@@ -868,6 +853,12 @@ msgstr "Проверка верхних DNS"
 
 msgid "Host"
 msgstr "Хост"
+
+msgid "Host of the local SOCKS5 proxy. A non-loopback address requires a login and password (olcrtc requirement)."
+msgstr "Адрес локального SOCKS5-прокси. Для не-loopback адреса обязательны логин и пароль (требование olcrtc)."
+
+msgid "How many VK call tokens to use at once (Android uses 4)."
+msgstr "Сколько VK-токенов звонков использовать одновременно (в Android — 4)."
 
 msgid "How often higher priority levels are checked while a lower level is active"
 msgstr "Как часто проверять верхние уровни приоритета, пока активен нижний уровень"
@@ -965,6 +956,9 @@ msgstr "Неверный префикс CIDR"
 msgid "Invalid DNS server format. Examples: 8.8.8.8 or dns.example.com or dns.example.com/nicedns for DoH"
 msgstr "Неверный формат DNS-сервера. Примеры: 8.8.8.8, dns.example.com или dns.example.com/nicedns для DoH"
 
+msgid "Invalid DNS server port"
+msgstr "Некорректный порт DNS-сервера"
+
 msgid "Invalid domain address"
 msgstr "Неверный домен"
 
@@ -1022,6 +1016,9 @@ msgstr "Неверный формат JSON"
 msgid "Invalid NFQWS2 strategy"
 msgstr "Некорректная стратегия NFQWS2"
 
+msgid "Invalid olcrtc:// URI"
+msgstr "Некорректный olcrtc:// URI"
+
 msgid "Invalid path format. Path must start with \"/\" and contain valid characters"
 msgstr "Неверный формат пути. Путь должен начинаться с \"/\" и содержать допустимые символы"
 
@@ -1030,6 +1027,9 @@ msgstr "Неверный номер порта. Допустимо от 1 до 6
 
 msgid "Invalid port or range. Use 80 or 1000-2000"
 msgstr "Неверный порт или диапазон. Используйте 80 или 1000-2000"
+
+msgid "Invalid qwdtt://config link"
+msgstr "Некорректная ссылка qwdtt://config"
 
 msgid "Invalid regular expression"
 msgstr "Неверное регулярное выражение"
@@ -1066,9 +1066,6 @@ msgstr "Неверный URL Shadowsocks: ошибка разбора"
 
 msgid "Invalid SOCKS URL: invalid host and port"
 msgstr "Некорректный SOCKS URL: некорректные хост и порт"
-
-msgid "Invalid SOCKS URL: invalid host format"
-msgstr "Неверный URL SOCKS: неверный формат хоста"
 
 msgid "Invalid SOCKS URL: invalid port number"
 msgstr "Неверный URL SOCKS: неверный номер порта"
@@ -1211,6 +1208,9 @@ msgstr "Совпадение по IP-адресам или подсетям на
 msgid "Match destination ports. Use a single port or a range"
 msgstr "Совпадение по портам назначения. Используйте одиночный порт или диапазон"
 
+msgid "Matches the wdtt-server -password option (wdtt-openwrt)."
+msgstr "Соответствует опции -password сервера wdtt (wdtt-openwrt)."
+
 msgid "Maximum time to wait for example.com to resolve during a DNS health check."
 msgstr "Максимальное время ожидания разрешения example.com при проверке доступности DNS."
 
@@ -1343,6 +1343,33 @@ msgstr "Обфускация"
 msgid "Obfuscation password"
 msgstr "Пароль обфускации"
 
+msgid "OlcRTC DNS server"
+msgstr "DNS-сервер OlcRTC"
+
+msgid "OlcRTC SOCKS5 host"
+msgstr "SOCKS5-хост OlcRTC"
+
+msgid "OlcRTC SOCKS5 login"
+msgstr "Логин SOCKS5 OlcRTC"
+
+msgid "OlcRTC SOCKS5 password"
+msgstr "Пароль SOCKS5 OlcRTC"
+
+msgid "OlcRTC SOCKS5 port"
+msgstr "Порт SOCKS5 OlcRTC"
+
+msgid "olcrtc:// URI has empty Provider"
+msgstr "в olcrtc:// URI пустой провайдер"
+
+msgid "olcrtc:// URI has empty RoomID"
+msgstr "в olcrtc:// URI пустой RoomID"
+
+msgid "olcrtc:// URI has empty Transport"
+msgstr "в olcrtc:// URI пустой транспорт"
+
+msgid "olcrtc:// URI is missing @<RoomID>"
+msgstr "в olcrtc:// URI отсутствует @<RoomID>"
+
 msgid "Only from the specified countries."
 msgstr "Только из указанных стран."
 
@@ -1368,7 +1395,7 @@ msgid "Only the specified servers."
 msgstr "Только указанные серверы."
 
 msgid "Open"
-msgstr ""
+msgstr "Открыть"
 
 msgid "Open priority settings and enter a display name"
 msgstr "Откройте настройки приоритета и укажите отображаемое имя"
@@ -1387,6 +1414,12 @@ msgstr "Необязательное значение здесь нужно пе
 
 msgid "Optional values must be attached with '=' here; a separate token would be ignored by nfqws2."
 msgstr "Необязательные значения здесь должны задаваться через '='; отдельный токен будет проигнорирован nfqws2."
+
+msgid "Optional; enables RFC 1929 authentication when set."
+msgstr "Необязательно; включает аутентификацию RFC 1929 при задании."
+
+msgid "Optional; required together with the login for non-loopback hosts."
+msgstr "Необязательно; требуется вместе с логином для не-loopback адресов."
 
 msgid "outbounds must be a non-empty array of strings"
 msgstr "outbounds должен быть непустым массивом строк"
@@ -1439,6 +1472,9 @@ msgstr "Порт локального смешанного прокси для �
 msgid "Port must be between 1 and 65535"
 msgstr "Порт должен быть от 1 до 65535"
 
+msgid "Port of the local SOCKS5 proxy (default 1080)."
+msgstr "Порт локального SOCKS5-прокси (по умолчанию 1080)."
+
 msgid "Port range start must be less than or equal to end"
 msgstr "Начало диапазона портов должно быть меньше или равно концу"
 
@@ -1487,6 +1523,18 @@ msgstr "Публичный хост"
 msgid "QR code is too large"
 msgstr "QR-код слишком большой"
 
+msgid "qwdtt:// peer must be HOST:PORT (e.g. server:56000)"
+msgstr "peer в qwdtt:// должен быть HOST:PORT (например server:56000)"
+
+msgid "qwdtt:// port must be a number"
+msgstr "port в qwdtt:// должен быть числом"
+
+msgid "qwdtt:// URI is missing the peer=HOST:PORT parameter"
+msgstr "в qwdtt:// URI отсутствует параметр peer=HOST:PORT"
+
+msgid "qwdtt:// workers must be a number"
+msgstr "workers в qwdtt:// должны быть числом"
+
 msgid "Reality fake site"
 msgstr "Fake-сайт Reality"
 
@@ -1513,6 +1561,9 @@ msgstr "Сброс"
 
 msgid "Regular expression must not contain spaces or commas"
 msgstr "Регулярное выражение не должно содержать пробелы или запятые"
+
+msgid "Remote URLs with domain lists to route through the tunnel."
+msgstr "Внешние URL со списками доменов для маршрутизации через туннель."
 
 msgid "Remove"
 msgstr "Удалить"
@@ -1691,6 +1742,9 @@ msgstr "Выбран"
 msgid "Selected section"
 msgstr "Выбранная секция"
 
+msgid "selective = tunnel only blocked domains (default); lan-all = all LAN client traffic; full = the whole router."
+msgstr "selective = туннелировать только заблокированные домены (по умолчанию); lan-all = весь трафик LAN-клиентов; full = весь роутер."
+
 msgid "Selector and URLTest outbounds must contain a non-empty outbounds array"
 msgstr "Selector и URLTest outbound должны содержать непустой массив outbounds"
 
@@ -1738,6 +1792,9 @@ msgstr "Список сервисов"
 
 msgid "Services info"
 msgstr "Информация о сервисах"
+
+msgid "Services to route through the tunnel from itdoginfo/allow-domains. Ids: russia-inside, russia-outside, ukraine, telegram, meta, youtube, discord, tiktok, twitter, hdrezka, roblox, cloudflare, cloudfront, google_ai, google_meet, google_play, hetzner, ovh, digitalocean, anime, news, geoblock, block, porn, hodca."
+msgstr "Сервисы для маршрутизации через туннель из itdoginfo/allow-domains. Идентификаторы: russia-inside, russia-outside, ukraine, telegram, meta, youtube, discord, tiktok, twitter, hdrezka, roblox, cloudflare, cloudfront, google_ai, google_meet, google_play, hetzner, ovh, digitalocean, anime, news, geoblock, block, porn, hodca."
 
 msgid "Settings"
 msgstr "Настройки"
@@ -1865,6 +1922,9 @@ msgstr "Автообновление подписи"
 msgid "Subscription info:"
 msgstr "Информация о подписке:"
 
+msgid "Subscription links"
+msgstr "Ссылки подписки"
+
 msgid "Subscription update failed"
 msgstr "Обновление подписки завершилось ошибкой"
 
@@ -1873,9 +1933,6 @@ msgstr "Интервал обновления подписки"
 
 msgid "Subscription URL"
 msgstr "URL подписки"
-
-msgid "Subscription URL cannot be empty"
-msgstr "URL подписки не может быть пустым"
 
 msgid "Subscription URL settings"
 msgstr "Настройки URL подписки"
@@ -1930,6 +1987,9 @@ msgstr "URL проверки"
 
 msgid "The desync fwmark is managed by Topkop for loop prevention and must not be overridden here."
 msgstr "Desync fwmark управляется Topkop для защиты от циклов и не должен переопределяться здесь."
+
+msgid "The engine uses 9 workers per call-hash, so set = max_hashes x 9 (36 for 4 hashes) to use all calls in parallel."
+msgstr "Движок использует 9 воркеров на каждый хэш звонка, поэтому задайте = max_hashes x 9 (36 для 4 хэшей), чтобы использовать все звонки параллельно."
 
 msgid "The NFQUEUE number is assigned by Topkop for each rule and must not be overridden here."
 msgstr "Номер NFQUEUE назначается Topkop для каждого правила и не должен переопределяться здесь."
@@ -1988,6 +2048,63 @@ msgstr "Допуск"
 msgid "Top level has the highest priority; lower levels are used as fallback"
 msgstr "Верхний уровень имеет самый высокий приоритет; нижние уровни используются как резерв"
 
+msgid "Topkop Error"
+msgstr "Ошибка Topkop"
+
+msgid "Topkop manages ciadpi pid files itself, so pidfile options are not allowed here."
+msgstr "Topkop сам управляет pid-файлами ciadpi, поэтому параметры pidfile здесь запрещены."
+
+msgid "Topkop manages the ciadpi process lifecycle itself, so daemon mode is not allowed here."
+msgstr "Topkop сам управляет жизненным циклом ciadpi, поэтому режим daemon здесь запрещён."
+
+msgid "Topkop manages the nfqws process lifecycle itself, so daemon mode is not allowed here."
+msgstr "Topkop сам управляет жизненным циклом nfqws, поэтому режим daemon здесь запрещён."
+
+msgid "Topkop manages the nfqws2 process lifecycle itself, so daemon mode is not allowed here."
+msgstr "Topkop сам управляет жизненным циклом nfqws2, поэтому режим daemon здесь запрещён."
+
+msgid "Topkop service is stopped. Start the service to display connections."
+msgstr "Служба Topkop остановлена. Запустите сервис для отображения подключений."
+
+msgid "Topkop service is stopped. Start the service to display the dashboard."
+msgstr "Служба Topkop остановлена. Запустите сервис для отображения дашборда."
+
+msgid "Topkop Settings"
+msgstr "Настройки Topkop"
+
+msgid "Topkop will not modify your DHCP configuration"
+msgstr "Topkop не будет изменять вашу конфигурацию DHCP"
+
+msgid "Topkop-managed ciadpi runtime has restarted"
+msgstr "ciadpi Topkop перезапускался"
+
+msgid "Topkop-managed ciadpi runtime is not ready"
+msgstr "ciadpi Topkop не готов"
+
+msgid "Topkop-managed ciadpi runtime is not running"
+msgstr "ciadpi Topkop не запущен"
+
+msgid "Topkop-managed ciadpi runtime is ready"
+msgstr "ciadpi Topkop готов"
+
+msgid "Topkop-managed nfqws runtime is not ready"
+msgstr "NFQWS Topkop не готов"
+
+msgid "Topkop-managed nfqws runtime is not running"
+msgstr "NFQWS Topkop не запущен"
+
+msgid "Topkop-managed nfqws runtime is ready"
+msgstr "NFQWS Topkop готов"
+
+msgid "Topkop-managed nfqws2 runtime is not ready"
+msgstr "NFQWS2 Topkop не готов"
+
+msgid "Topkop-managed nfqws2 runtime is not running"
+msgstr "NFQWS2 Topkop не запущен"
+
+msgid "Topkop-managed nfqws2 runtime is ready"
+msgstr "NFQWS2 Topkop готов"
+
 msgid "Traffic"
 msgstr "Трафик"
 
@@ -2024,6 +2141,9 @@ msgstr "TTL должно быть положительным числом"
 msgid "TTL value cannot be empty"
 msgstr "Значение TTL не может быть пустым"
 
+msgid "Tunnel subscription links, one per line. For the WDTT action: http://SERVER:56090/TOKEN/links?n=4 — hashes_url of the wdtt-linkd endpoint (add &slot=N for multiple routers); a qwdtt://config link with direct VK hashes (qwdtt://config?peer=HOST:PORT&hashes=H1,H2&pass=...&workers=N); a local token file path like /etc/wdtt/vk-calls.txt; remote domain list URLs like https://example.com/domains.txt. For the OlcRTC action: olcrtc://<Provider>?<Transport>@<RoomID>#<Key>$<MIMO> servers or http(s) sub.md subscription URLs."
+msgstr "Ссылки подписки туннеля, по одной на строку. Для действия WDTT: http://SERVER:56090/TOKEN/links?n=4 — hashes_url эндпоинта wdtt-linkd (добавьте &slot=N для нескольких роутеров); ссылка qwdtt://config с прямыми VK-хэшами (qwdtt://config?peer=HOST:PORT&hashes=H1,H2&pass=...&workers=N); локальный путь к файлу токенов, например /etc/wdtt/vk-calls.txt; URL внешних списков доменов, например https://example.com/domains.txt. Для действия OlcRTC: серверы olcrtc://<Provider>?<Transport>@<RoomID>#<Key>$<MIMO> или http(s) URL подписок sub.md."
+
 msgid "Type"
 msgstr "Тип"
 
@@ -2045,6 +2165,9 @@ msgstr "Таймаут недоступности"
 msgid "Unexpected ByeDPI strategy argument: %s"
 msgstr "Неожиданный аргумент стратегии ByeDPI: %s"
 
+msgid "Unexpected standalone token. Use explicit flags such as --name or --name=value."
+msgstr "Неожиданный отдельный токен. Используйте явные флаги вида --имя или --имя=значение."
+
 msgid "Unexpected Topkop-managed ciadpi runtime is running"
 msgstr "Обнаружен лишний ciadpi Topkop"
 
@@ -2053,9 +2176,6 @@ msgstr "Обнаружен лишний NFQWS Topkop"
 
 msgid "Unexpected Topkop-managed nfqws2 runtime is running"
 msgstr "Обнаружен лишний NFQWS2 Topkop"
-
-msgid "Unexpected standalone token. Use explicit flags such as --name or --name=value."
-msgstr "Неожиданный отдельный токен. Используйте явные флаги вида --имя или --имя=значение."
 
 msgid "unique UCI identifier"
 msgstr "уникальный идентификатор UCI"
@@ -2215,6 +2335,30 @@ msgstr "WAN"
 
 msgid "WAN public IP"
 msgstr "Публичный WAN IP"
+
+msgid "WDTT community lists"
+msgstr "Сообщества WDTT"
+
+msgid "WDTT max call tokens"
+msgstr "Максимум токенов звонков WDTT"
+
+msgid "WDTT owner password"
+msgstr "Пароль владельца WDTT"
+
+msgid "WDTT remote domain lists"
+msgstr "Внешние списки доменов WDTT"
+
+msgid "WDTT routing mode"
+msgstr "Режим маршрутизации WDTT"
+
+msgid "WDTT server endpoint"
+msgstr "Адрес сервера WDTT"
+
+msgid "WDTT server endpoint cannot be empty"
+msgstr "Адрес сервера WDTT не может быть пустым"
+
+msgid "WDTT TURN workers"
+msgstr "Воркеры TURN WDTT"
 
 msgid "What Topkop should do when this section matches"
 msgstr "Что Topkop должен делать при совпадении этой секции"
