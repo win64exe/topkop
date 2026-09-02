@@ -48,6 +48,8 @@ function is_supported_share_link(line) {
     return starts_with(line, "ss://") ||
         starts_with(line, "vmess://") ||
         starts_with(line, "vless://") ||
+        starts_with(line, "wdtt://") ||
+        starts_with(line, "olcrtc://") ||
         starts_with(line, "trojan://") ||
         starts_with(line, "hysteria2://") ||
         starts_with(line, "hy2://") ||
@@ -1083,6 +1085,11 @@ function parse_share_link(line) {
     let url = parse_url(line);
     if (!url)
         return null;
+
+    if (url.scheme == "wdtt")
+        return process_wdtt(line, url);
+    if (url.scheme == "olcrtc")
+        return process_olcrtc(line, url);
 
     if (url.scheme == "vless")
         return process_vless(line, url);
@@ -3005,3 +3012,25 @@ else {
 
 if (!ok)
     exit(1);
+
+function process_wdtt(raw, url) {
+    let outbound = {
+        type: "wdtt",
+        tag: url.fragment != "" ? url.fragment : "wdtt_proxy",
+        share_link: raw,
+        server: url.host,
+        server_port: url.port || 0
+    };
+    return outbound;
+}
+
+function process_olcrtc(raw, url) {
+    let outbound = {
+        type: "olcrtc",
+        tag: url.fragment != "" ? url.fragment : "olcrtc_proxy",
+        share_link: raw,
+        server: url.host,
+        server_port: url.port || 0
+    };
+    return outbound;
+}

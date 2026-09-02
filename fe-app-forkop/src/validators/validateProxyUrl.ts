@@ -5,6 +5,8 @@ import { validateVmessUrl } from './validateVmessUrl';
 import { validateTrojanUrl } from './validateTrojanUrl';
 import { validateSocksUrl } from './validateSocksUrl';
 import { validateHysteria2Url } from './validateHysteriaUrl';
+import { validateWdttUrl } from './validateWdttUrl';
+import { validateOlcrtcUrl } from './validateOlcrtcUrl';
 
 // TODO refactor current validation and add tests
 export function validateProxyUrl(url: string): ValidationResult {
@@ -37,10 +39,18 @@ export function validateProxyUrl(url: string): ValidationResult {
     return validateHysteria2Url(trimmedUrl);
   }
 
+  if (trimmedUrl.startsWith('wdtt://')) {
+    return validateWdttUrl(trimmedUrl);
+  }
+
+  if (trimmedUrl.startsWith('olcrtc://')) {
+    return validateOlcrtcUrl(trimmedUrl);
+  }
+
   return {
     valid: false,
     message: _(
-      'URL must start with vless://, vmess://, ss://, trojan://, socks4://, socks4a://, socks5://, hysteria2://, or hy2://',
+      'URL must start with vless://, vmess://, ss://, trojan://, socks4://, socks4a://, socks5://, hysteria2://, or hy2://, wdtt://, olcrtc://',
     ),
   };
 }
