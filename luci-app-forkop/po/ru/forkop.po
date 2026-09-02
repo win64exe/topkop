@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FORKOP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-01 00:23+0300\n"
-"PO-Revision-Date: 2026-09-01 00:23+0300\n"
+"POT-Creation-Date: 2026-09-02 07:13+0300\n"
+"PO-Revision-Date: 2026-09-02 07:13+0300\n"
 "Last-Translator: win64exe\n"
 "Language-Team: none\n"
 "Language: ru\n"
@@ -33,13 +33,13 @@ msgid "+ Add URLTest"
 msgstr "+ Добавить URLTest"
 
 msgid "⚠ Running"
-msgstr ""
+msgstr "⚠ Работает"
 
 msgid "✔ Running"
 msgstr "✔ Работает"
 
 msgid "✘ Not installed"
-msgstr ""
+msgstr "✘ Не установлен"
 
 msgid "✘ Stopped"
 msgstr "✘ Остановлен"
@@ -153,7 +153,7 @@ msgid "Alter ID"
 msgstr "Идентификатор Alter"
 
 msgid "Anonymous VK TURN path: vkcalls or legacy."
-msgstr ""
+msgstr "Анонимный путь VK TURN: vkcalls или legacy."
 
 msgid "Apply section rules only to the specified local IP addresses"
 msgstr "Применять правила секции только к указанным локальным IP-адресам"
@@ -221,6 +221,9 @@ msgstr "Браузер не использует FakeIP"
 msgid "Browser is using FakeIP correctly"
 msgstr "Браузер использует FakeIP"
 
+msgid "Browser proxy address"
+msgstr "Адрес прокси для браузера"
+
 msgid "Built-in rule sets"
 msgstr "Встроенные наборы правил"
 
@@ -279,7 +282,7 @@ msgid "Cannot save settings"
 msgstr "Не удалось сохранить настройки"
 
 msgid "Captcha bypass mode: auto, wv, or rjs."
-msgstr ""
+msgstr "Режим обхода капчи: auto, wv или rjs."
 
 msgid "Cascade connection"
 msgstr "Каскадное подключение"
@@ -306,7 +309,7 @@ msgid "Checking, please wait"
 msgstr "Проверяем, пожалуйста подождите"
 
 msgid "Checking…"
-msgstr ""
+msgstr "Проверка…"
 
 msgid "checks"
 msgstr "проверки"
@@ -378,7 +381,7 @@ msgid "Connect through"
 msgstr "Подключаться через"
 
 msgid "Connect to the TURN relay over TCP instead of UDP (bypasses UDP throttling on some ISPs)."
-msgstr ""
+msgstr "Подключаться к TURN-релею по TCP вместо UDP (обходит ограничение UDP у некоторых провайдеров)."
 
 msgid "Connection URL"
 msgstr "URL подключения"
@@ -483,7 +486,7 @@ msgid "DNS Check Interval"
 msgstr "Период проверки DNS"
 
 msgid "DNS for VK: yandex, cloudflare, google, doh-yandex/doh-cloudflare/doh-google, custom:IP or doh:URL."
-msgstr ""
+msgstr "DNS для VK: yandex, cloudflare, google, doh-yandex/doh-cloudflare/doh-google, custom:IP или doh:URL."
 
 msgid "DNS inside the tunnel in HOST:PORT form, e.g. 8.8.8.8:53."
 msgstr "DNS внутри туннеля в формате HOST:PORT, например 8.8.8.8:53."
@@ -743,8 +746,8 @@ msgstr "Ожидается: %s"
 msgid "Expires"
 msgstr "Истекает"
 
-msgid "Expose this section as a local HTTP+SOCKS proxy"
-msgstr "Открыть эту секцию как локальный HTTP+SOCKS прокси"
+msgid "Expose this section as a local HTTP+SOCKS proxy. Point your browser at socks5://LAN-IP:port (see 'Mixed Proxy Port') and all browser traffic goes through the tunnel."
+msgstr "Открыть секцию как локальный HTTP+SOCKS прокси. В настройках браузера укажите SOCKS5: хост = LAN-IP роутера, порт = «Mixed Proxy Port» — весь трафик браузера пойдёт через туннель."
 
 msgid "External nfqws config files bypass Topkop queue management and explicit validation."
 msgstr "Внешние конфиги nfqws обходят управление очередями и явную валидацию Topkop."
@@ -910,6 +913,9 @@ msgstr "Добавлять URLTest группы из подписки"
 
 msgid "Import URLTest groups returned by this subscription provider"
 msgstr "Импортировать URLTest группы, если провайдер подписки возвращает их"
+
+msgid "In your browser's proxy settings use SOCKS5 proxy with host = LAN IP of this router and port = the 'Mixed Proxy Port' value above. All browser traffic will go through the tunnel."
+msgstr "В настройках прокси браузера укажите SOCKS5: хост = LAN-IP этого роутера, порт = значение «Mixed Proxy Port» выше. Весь трафик браузера пойдёт через туннель."
 
 msgid "Inbound JSON"
 msgstr "Inbound JSON"
@@ -1173,7 +1179,7 @@ msgid "Keyword must not contain spaces or commas"
 msgstr "Ключевое слово не должно содержать пробелы или запятые"
 
 msgid "Latency probe failed"
-msgstr ""
+msgstr "Проверка задержки не удалась"
 
 msgid "Latency test failed"
 msgstr "Проверка задержки не удалась"
@@ -1218,7 +1224,7 @@ msgid "Loading..."
 msgstr "Загрузка..."
 
 msgid "Local SOCKS5 listen address for qwdtt mode socks (default 127.0.0.1:1080)."
-msgstr ""
+msgstr "Локальный адрес прослушивания SOCKS5 для qwdtt в режиме socks (по умолчанию 127.0.0.1:1080)."
 
 msgid "Log Level"
 msgstr "Уровень логов"
@@ -1269,7 +1275,7 @@ msgid "Must be a number in the range of 0 - 10000"
 msgstr "Должно быть числом в диапазоне 0 - 10000"
 
 msgid "N/A"
-msgstr ""
+msgstr "Н/Д"
 
 msgid "Name displayed on the dashboard"
 msgstr "Имя, которое отображается в дашборде"
@@ -1359,7 +1365,7 @@ msgid "Not public"
 msgstr "Не публичный"
 
 msgid "not ready"
-msgstr ""
+msgstr "не готов"
 
 msgid "Not required for this listen address"
 msgstr "Не требуется для этого адреса прослушивания"
@@ -1437,7 +1443,7 @@ msgid "Open Project Page"
 msgstr "Открыть страницу проекта"
 
 msgid "OpenWrt LAN interface routed through the RAW TUN (default br-lan)."
-msgstr ""
+msgstr "LAN-интерфейс OpenWrt, маршрутизируемый через RAW TUN (по умолчанию br-lan)."
 
 msgid "Operation timed out"
 msgstr "Время ожидания истекло"
@@ -1497,10 +1503,10 @@ msgid "Pin on dashboard"
 msgstr "Закрепить в дашборде"
 
 msgid "Ping"
-msgstr ""
+msgstr "Пинг"
 
 msgid "Ping unavailable"
-msgstr ""
+msgstr "Пинг недоступен"
 
 msgid "Port cannot be empty"
 msgstr "Порт не может быть пустым"
@@ -1566,40 +1572,40 @@ msgid "QR code is too large"
 msgstr "QR-код слишком большой"
 
 msgid "qwdtt captcha mode"
-msgstr ""
+msgstr "Режим капчи qwdtt"
 
 msgid "qwdtt client mode"
-msgstr ""
+msgstr "Режим клиента qwdtt"
 
 msgid "qwdtt device ID"
-msgstr ""
+msgstr "ID устройства qwdtt"
 
 msgid "qwdtt direct mode (no DTLS)"
-msgstr ""
+msgstr "qwdtt прямой режим (без DTLS)"
 
 msgid "qwdtt DNS"
-msgstr ""
+msgstr "DNS qwdtt"
 
 msgid "qwdtt LAN interface"
-msgstr ""
+msgstr "LAN-интерфейс qwdtt"
 
 msgid "qwdtt obfuscation"
-msgstr ""
+msgstr "Обфускация qwdtt"
 
 msgid "qwdtt SOCKS5 listen address"
-msgstr ""
+msgstr "Адрес прослушивания SOCKS5 qwdtt"
 
 msgid "qwdtt TUN interface name"
-msgstr ""
+msgstr "Имя TUN-интерфейса qwdtt"
 
 msgid "qwdtt TURN over TCP"
-msgstr ""
+msgstr "qwdtt TURN по TCP"
 
 msgid "qwdtt VK anon path"
-msgstr ""
+msgstr "Анонимный путь qwdtt VK"
 
 msgid "qwdtt VK auth mode"
-msgstr ""
+msgstr "Режим авторизации qwdtt VK"
 
 msgid "qwdtt:// peer must be HOST:PORT (e.g. server:56000)"
 msgstr "peer в qwdtt:// должен быть HOST:PORT (например server:56000)"
@@ -1614,13 +1620,13 @@ msgid "qwdtt:// workers must be a number"
 msgstr "workers в qwdtt:// должны быть числом"
 
 msgid "RAW TUN interface name (default qwdtt0)."
-msgstr ""
+msgstr "Имя RAW TUN интерфейса (по умолчанию qwdtt0)."
 
 msgid "rawtun = RAW-IP tunnel (default, works with the OpenWrt build); vpn = userspace WireGuard; socks = local SOCKS5 proxy. vpn/socks require the full qwdtt build."
-msgstr ""
+msgstr "rawtun = RAW-IP туннель (по умолчанию, работает со сборкой для OpenWrt); vpn = пользовательский WireGuard; socks = локальный SOCKS5-прокси. Режимы vpn/socks требуют полную сборку qwdtt."
 
 msgid "ready"
-msgstr ""
+msgstr "готов"
 
 msgid "Reality fake site"
 msgstr "Fake-сайт Reality"
@@ -1710,10 +1716,10 @@ msgid "Routing section"
 msgstr "Секция маршрутизации"
 
 msgid "RTP masking mode: audio or video."
-msgstr ""
+msgstr "Режим маскировки RTP: audio или video."
 
 msgid "RTP-obfs AEAD without DTLS over TURN; requires a server with -listen-direct."
-msgstr ""
+msgstr "RTP-obfs AEAD без DTLS через TURN; требует сервер с -listen-direct."
 
 msgid "Rule set must be an HTTP(S) URL or a local .srs / .json path"
 msgstr "Набор правил должен быть HTTP(S) URL или локальным путём .srs / .json"
@@ -1886,8 +1892,8 @@ msgstr "Список сервисов"
 msgid "Services info"
 msgstr "Информация о сервисах"
 
-msgid "Services to route through the tunnel from itdoginfo/allow-domains. Ids: russia-inside, russia-outside, ukraine, telegram, meta, youtube, discord, tiktok, twitter, hdrezka, roblox, cloudflare, cloudfront, google_ai, google_meet, google_play, hetzner, ovh, digitalocean, anime, news, geoblock, block, porn, hodca."
-msgstr "Сервисы для маршрутизации через туннель из itdoginfo/allow-domains. Идентификаторы: russia-inside, russia-outside, ukraine, telegram, meta, youtube, discord, tiktok, twitter, hdrezka, roblox, cloudflare, cloudfront, google_ai, google_meet, google_play, hetzner, ovh, digitalocean, anime, news, geoblock, block, porn, hodca."
+msgid "Services to route through the tunnel from itdoginfo/allow-domains. Ids: russia-inside, russia-outside, ukraine, telegram, meta, youtube, discord, tiktok, twitter, hdrezka, roblox, cloudflare, cloudfront, google_ai, google_meet, google_play, hetzner, ovh, digitalocean, anime, news, geoblock, block, porn, hodca. These lists are also used as routing conditions: enable 'Enable Mixed Proxy' and the traffic of the selected services will go through the tunnel."
+msgstr "Сервисы для маршрутизации через туннель из itdoginfo/allow-domains. ID: russia-inside, russia-outside, ukraine, telegram, meta, youtube, discord, tiktok, twitter, hdrezka, roblox, cloudflare, cloudfront, google_ai, google_meet, google_play, hetzner, ovh, digitalocean, anime, news, geoblock, block, porn, hodca. Эти списки также используются как условия маршрутизации: включите «Enable Mixed Proxy» — трафик выбранных сервисов пойдёт через туннель."
 
 msgid "Settings"
 msgstr "Настройки"
@@ -2001,7 +2007,7 @@ msgid "Start Topkop"
 msgstr "Запустить Topkop"
 
 msgid "Status"
-msgstr ""
+msgstr "Статус"
 
 msgid "Stop checking when URLTest group is not used. Use sing-box duration format like 1d, 12h or 30m."
 msgstr "Останавливать проверку если URLTest группа не используется. Используйте формат длительности sing-box, например 1d, 12h или 30m."
@@ -2274,7 +2280,7 @@ msgid "Unexpected Topkop-managed nfqws2 runtime is running"
 msgstr "Обнаружен лишний NFQWS2 Topkop"
 
 msgid "Unique device ID sent to the server. Empty = auto-generated from the LAN MAC address."
-msgstr ""
+msgstr "Уникальный ID устройства, отправляемый на сервер. Пусто = авто-генерация из MAC-адреса LAN."
 
 msgid "unique UCI identifier"
 msgstr "уникальный идентификатор UCI"
@@ -2424,7 +2430,7 @@ msgid "Visible name of this section"
 msgstr "Видимое имя этой секции"
 
 msgid "VK authorization: anonymous or account."
-msgstr ""
+msgstr "Авторизация VK: anonymous (анонимно) или account (аккаунт)."
 
 msgid "VLESS flow"
 msgstr "VLESS flow"

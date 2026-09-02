@@ -7598,7 +7598,7 @@ function createSectionContent(section) {
     "community_lists",
     _("WDTT community lists"),
     _(
-      "Services to route through the tunnel from itdoginfo/allow-domains. Ids: russia-inside, russia-outside, ukraine, telegram, meta, youtube, discord, tiktok, twitter, hdrezka, roblox, cloudflare, cloudfront, google_ai, google_meet, google_play, hetzner, ovh, digitalocean, anime, news, geoblock, block, porn, hodca.",
+      "Services to route through the tunnel from itdoginfo/allow-domains. Ids: russia-inside, russia-outside, ukraine, telegram, meta, youtube, discord, tiktok, twitter, hdrezka, roblox, cloudflare, cloudfront, google_ai, google_meet, google_play, hetzner, ovh, digitalocean, anime, news, geoblock, block, porn, hodca. These lists are also used as routing conditions: enable 'Enable Mixed Proxy' and the traffic of the selected services will go through the tunnel.",
     ),
   );
   o.depends("action", "wdtt");
@@ -8205,7 +8205,9 @@ function createSectionContent(section) {
     form.Flag,
     "mixed_proxy_enabled",
     _("Enable Mixed Proxy"),
-    _("Expose this section as a local HTTP+SOCKS proxy"),
+    _(
+      "Expose this section as a local HTTP+SOCKS proxy. Point your browser at socks5://LAN-IP:port (see 'Mixed Proxy Port') and all browser traffic goes through the tunnel.",
+    ),
   );
   o.default = "0";
   o.rmempty = false;
@@ -8213,6 +8215,8 @@ function createSectionContent(section) {
   o.depends("action", "byedpi");
   o.depends("action", "zapret");
   o.depends("action", "zapret2");
+  o.depends("action", "wdtt");
+  o.depends("action", "olcrtc");
   o.modalonly = true;
 
   o = section.taboption(
@@ -8227,6 +8231,8 @@ function createSectionContent(section) {
   o.depends({ action: "byedpi", mixed_proxy_enabled: "1" });
   o.depends({ action: "zapret", mixed_proxy_enabled: "1" });
   o.depends({ action: "zapret2", mixed_proxy_enabled: "1" });
+  o.depends({ action: "olcrtc", mixed_proxy_enabled: "1" });
+  o.depends({ action: "wdtt", mixed_proxy_enabled: "1" });
   o.modalonly = true;
   o.validate = function (_section_id, value) {
     if (!value || value.length === 0) {
@@ -8254,6 +8260,8 @@ function createSectionContent(section) {
   o.depends({ action: "byedpi", mixed_proxy_enabled: "1" });
   o.depends({ action: "zapret", mixed_proxy_enabled: "1" });
   o.depends({ action: "zapret2", mixed_proxy_enabled: "1" });
+  o.depends({ action: "wdtt", mixed_proxy_enabled: "1" });
+  o.depends({ action: "olcrtc", mixed_proxy_enabled: "1" });
   o.modalonly = true;
 
   o = section.taboption(
@@ -8280,6 +8288,16 @@ function createSectionContent(section) {
   });
   o.depends({
     action: "zapret2",
+    mixed_proxy_enabled: "1",
+    mixed_proxy_auth_enabled: "1",
+  });
+  o.depends({
+    action: "wdtt",
+    mixed_proxy_enabled: "1",
+    mixed_proxy_auth_enabled: "1",
+  });
+  o.depends({
+    action: "olcrtc",
     mixed_proxy_enabled: "1",
     mixed_proxy_auth_enabled: "1",
   });
@@ -8319,6 +8337,16 @@ function createSectionContent(section) {
     mixed_proxy_enabled: "1",
     mixed_proxy_auth_enabled: "1",
   });
+  o.depends({
+    action: "wdtt",
+    mixed_proxy_enabled: "1",
+    mixed_proxy_auth_enabled: "1",
+  });
+  o.depends({
+    action: "olcrtc",
+    mixed_proxy_enabled: "1",
+    mixed_proxy_auth_enabled: "1",
+  });
   o.modalonly = true;
   o.validate = function (_section_id, value) {
     if (!value || value.length === 0) {
@@ -8327,6 +8355,19 @@ function createSectionContent(section) {
 
     return true;
   };
+
+  o = section.taboption(
+    "settings",
+    form.DummyValue,
+    "_browser_proxy_hint",
+    _("Browser proxy address"),
+  );
+  o.depends({ action: "wdtt", mixed_proxy_enabled: "1" });
+  o.depends({ action: "olcrtc", mixed_proxy_enabled: "1" });
+  o.modalonly = true;
+  o.value = _(
+    "In your browser's proxy settings use SOCKS5 proxy with host = LAN IP of this router and port = the 'Mixed Proxy Port' value above. All browser traffic will go through the tunnel.",
+  );
 
   o = section.taboption(
     "settings",

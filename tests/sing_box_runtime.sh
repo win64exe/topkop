@@ -1121,6 +1121,41 @@ for fixture in manual-xhttp json-xhttp; do
   generate_config "$WORK_DIR/$fixture-fixture.json" "$WORK_DIR/$fixture-extended.json"
 done
 
+cat >"$WORK_DIR/provider-outbound-fixture.json" <<'JSON'
+{
+  "settings": {
+    ".name": "settings",
+    ".type": "settings",
+    "config_path": "/tmp/sing-box/config.json",
+    "dns_server": "1.1.1.1",
+    "service_listen_address": "10.57.31.230"
+  },
+  "section": [
+    {
+      ".name": "olcrtc_site",
+      ".type": "section",
+      "enabled": "1",
+      "action": "olcrtc",
+      "domain": [ "vk.com" ],
+      "community_lists": [ "telegram" ],
+      "socks_host": "127.0.0.1",
+      "socks_port": "1080",
+      "mixed_proxy_enabled": "1",
+      "mixed_proxy_port": "7890"
+    },
+    {
+      ".name": "wdtt_raw",
+      ".type": "section",
+      "enabled": "1",
+      "action": "wdtt",
+      "qwdtt_mode": "rawtun",
+      "domain": [ "2ip.io" ]
+    }
+  ]
+}
+JSON
+generate_config "$WORK_DIR/provider-outbound-fixture.json" "$WORK_DIR/provider-outbound.json"
+
 ucode -e '
 let fs = require("fs");
 let dir = ARGV[0];
@@ -1255,6 +1290,27 @@ let open_socks = inbound(server, "server-open-in");
 assert(open_socks && open_socks.type == "socks" && open_socks.listen_port == 18081, "server open socks inbound");
 assert(open_socks.users == null, "disabled server socks auth omits users");
 assert(route_rule(server, r => r.inbound == "server-edge-in" && r.outbound == "direct-out") != null, "server direct route");
+
+let provider = cfg("provider-outbound");
+let provider_socks = outbound(provider, "olcrtc_site-out");
+assert(provider_socks && provider_socks.type == "socks" &&
+    provider_socks.server == "127.0.0.1" && provider_socks.server_port == 1080 &&
+    provider_socks.version == "5", "olcrtc section exposes its local SOCKS5 as a sing-box outbound");
+assert(outbound(provider, "wdtt_raw-out") == null, "wdtt rawtun section without local SOCKS creates no outbound");
+let provider_mixed = inbound(provider, "olcrtc_site-mixed-in");
+assert(provider_mixed && provider_mixed.type == "mixed" && provider_mixed.listen_port == 7890,
+    "olcrtc section mixed proxy inbound for the browser");
+assert(provider_mixed.listen == "127.0.0.1", "mixed proxy listens on the service address");
+assert(route_rule(provider, r => r.inbound == "olcrtc_site-mixed-in" && r.outbound == "olcrtc_site-out") != null,
+    "mixed proxy routes all browser traffic to the olcrtc tunnel");
+assert(route_rule(provider, r => r.action == "route" && r.outbound == "olcrtc_site-out" &&
+    contains(r.domain_suffix, "vk.com") && contains(r.rule_set, "olcrtc_site-telegram-community-ruleset")) != null,
+    "olcrtc section conditions (domain + WDTT community list) route via tproxy to the tunnel");
+assert(ruleset(provider, "olcrtc_site-telegram-community-ruleset") != null,
+    "WDTT community list is emitted as a sing-box rule set");
+assert(dns_rule(provider, r => (r.action == "route" || r.action == "hijack-dns") &&
+    contains(r.rule_set, "olcrtc_site-telegram-community-ruleset")) != null,
+    "WDTT community list DNS rule routes tunnel destinations to fakeip");
 
 let matchers = cfg("matchers");
 assert(matchers.dns.strategy == "prefer_ipv6", "configured DNS strategy is generated");

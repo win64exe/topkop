@@ -161,28 +161,28 @@
     "call": "Add URLs or local paths to .lst lists containing domains and subnets.",
     "key": "Add URLs or local paths to .lst lists containing domains and subnets.",
     "places": [
-      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8475"
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8516"
     ]
   },
   {
     "call": "Add URLs or local paths to .lst lists containing domains. IP entries are ignored.",
     "key": "Add URLs or local paths to .lst lists containing domains. IP entries are ignored.",
     "places": [
-      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8498"
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8539"
     ]
   },
   {
     "call": "Add URLs or local paths to .srs / .json lists. Only domain rules are supported.",
     "key": "Add URLs or local paths to .srs / .json lists. Only domain rules are supported.",
     "places": [
-      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8450"
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8491"
     ]
   },
   {
     "call": "Add URLs or local paths to .srs / .json lists. Subnets are ignored by default.",
     "key": "Add URLs or local paths to .srs / .json lists. Subnets are ignored by default.",
     "places": [
-      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8421"
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8462"
     ]
   },
   {
@@ -297,7 +297,7 @@
     "call": "All traffic from these IP addresses will be routed through the section unconditionally, ignoring all other conditions.",
     "key": "All traffic from these IP addresses will be routed through the section unconditionally, ignoring all other conditions.",
     "places": [
-      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8530"
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8571"
     ]
   },
   {
@@ -346,7 +346,7 @@
     "call": "Apply section rules only to the specified local IP addresses",
     "key": "Apply section rules only to the specified local IP addresses",
     "places": [
-      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8521"
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8562"
     ]
   },
   {
@@ -501,10 +501,17 @@
     ]
   },
   {
+    "call": "Browser proxy address",
+    "key": "Browser proxy address",
+    "places": [
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8363"
+    ]
+  },
+  {
     "call": "Built-in rule sets",
     "key": "Built-in rule sets",
     "places": [
-      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8400"
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8441"
     ]
   },
   {
@@ -737,17 +744,17 @@
     "call": "Checks failed",
     "key": "Checks failed",
     "places": [
-      "src/forkop/tabs/diagnostic/helpers/getMeta.ts:26",
-      "src/forkop/tabs/diagnostic/checks/getCheckItemsMeta.ts:10"
+      "src/forkop/tabs/diagnostic/checks/getCheckItemsMeta.ts:10",
+      "src/forkop/tabs/diagnostic/helpers/getMeta.ts:26"
     ]
   },
   {
     "call": "Checks passed",
     "key": "Checks passed",
     "places": [
-      "src/forkop/tabs/diagnostic/helpers/getMeta.ts:13",
       "src/forkop/tabs/diagnostic/checks/getCheckItemsMeta.ts:23",
-      "src/forkop/tabs/diagnostic/checks/runFakeIPCheck.ts:43"
+      "src/forkop/tabs/diagnostic/checks/runFakeIPCheck.ts:43",
+      "src/forkop/tabs/diagnostic/helpers/getMeta.ts:13"
     ]
   },
   {
@@ -1064,7 +1071,7 @@
     "call": "Device filter",
     "key": "Device filter",
     "places": [
-      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8520"
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8561"
     ]
   },
   {
@@ -1353,14 +1360,14 @@
     "call": "Domain and IP lists",
     "key": "Domain and IP lists",
     "places": [
-      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8474"
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8515"
     ]
   },
   {
     "call": "Domain lists",
     "key": "Domain lists",
     "places": [
-      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8497"
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8538"
     ]
   },
   {
@@ -1374,7 +1381,7 @@
     "call": "Domains",
     "key": "Domains",
     "places": [
-      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8361"
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8402"
     ]
   },
   {
@@ -1567,7 +1574,7 @@
     "call": "Enable Mixed Proxy Authentication",
     "key": "Enable Mixed Proxy Authentication",
     "places": [
-      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8248"
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8254"
     ]
   },
   {
@@ -1786,8 +1793,8 @@
     ]
   },
   {
-    "call": "Expose this section as a local HTTP+SOCKS proxy",
-    "key": "Expose this section as a local HTTP+SOCKS proxy",
+    "call": "Expose this section as a local HTTP+SOCKS proxy. Point your browser at socks5://LAN-IP:port (see 'Mixed Proxy Port') and all browser traffic goes through the tunnel.",
+    "key": "Expose this section as a local HTTP+SOCKS proxy. Point your browser at socks5://LAN-IP:port (see 'Mixed Proxy Port') and all browser traffic goes through the tunnel.",
     "places": [
       "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8208"
     ]
@@ -1931,7 +1938,7 @@
     "call": "Forced device routing",
     "key": "Forced device routing",
     "places": [
-      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8529"
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8570"
     ]
   },
   {
@@ -2195,6 +2202,13 @@
     "key": "Import URLTest groups returned by this subscription provider",
     "places": [
       "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:2573"
+    ]
+  },
+  {
+    "call": "In your browser's proxy settings use SOCKS5 proxy with host = LAN IP of this router and port = the 'Mixed Proxy Port' value above. All browser traffic will go through the tunnel.",
+    "key": "In your browser's proxy settings use SOCKS5 proxy with host = LAN IP of this router and port = the 'Mixed Proxy Port' value above. All browser traffic will go through the tunnel.",
+    "places": [
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8368"
     ]
   },
   {
@@ -2525,7 +2539,7 @@
     "call": "Invalid port number. Must be between 1 and 65535",
     "key": "Invalid port number. Must be between 1 and 65535",
     "places": [
-      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8241",
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8247",
       "src/validators/validateShadowsocksUrl.ts:91"
     ]
   },
@@ -2731,7 +2745,7 @@
     "call": "IPs",
     "key": "IPs",
     "places": [
-      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8390"
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8431"
     ]
   },
   {
@@ -2752,8 +2766,8 @@
     "call": "Issues detected",
     "key": "Issues detected",
     "places": [
-      "src/forkop/tabs/diagnostic/helpers/getMeta.ts:20",
-      "src/forkop/tabs/diagnostic/checks/getCheckItemsMeta.ts:17"
+      "src/forkop/tabs/diagnostic/checks/getCheckItemsMeta.ts:17",
+      "src/forkop/tabs/diagnostic/helpers/getMeta.ts:20"
     ]
   },
   {
@@ -2975,14 +2989,14 @@
     "call": "Match destination IPs or subnets",
     "key": "Match destination IPs or subnets",
     "places": [
-      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8391"
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8432"
     ]
   },
   {
     "call": "Match destination ports. Use a single port or a range",
     "key": "Match destination ports. Use a single port or a range",
     "places": [
-      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8541"
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8582"
     ]
   },
   {
@@ -3024,21 +3038,21 @@
     "call": "Mixed Proxy Password",
     "key": "Mixed Proxy Password",
     "places": [
-      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8299"
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8317"
     ]
   },
   {
     "call": "Mixed Proxy Port",
     "key": "Mixed Proxy Port",
     "places": [
-      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8222"
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8226"
     ]
   },
   {
     "call": "Mixed Proxy Username",
     "key": "Mixed Proxy Username",
     "places": [
-      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8263"
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8271"
     ]
   },
   {
@@ -3568,7 +3582,7 @@
     "call": "Password cannot be empty",
     "key": "Password cannot be empty",
     "places": [
-      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8325"
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8353"
     ]
   },
   {
@@ -3649,7 +3663,7 @@
     "call": "Port cannot be empty",
     "key": "Port cannot be empty",
     "places": [
-      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8233"
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8239"
     ]
   },
   {
@@ -3663,7 +3677,7 @@
     "call": "Port for the local mixed proxy of this section",
     "key": "Port for the local mixed proxy of this section",
     "places": [
-      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8223"
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8227"
     ]
   },
   {
@@ -3692,7 +3706,7 @@
     "call": "Ports",
     "key": "Ports",
     "places": [
-      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8540"
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8581"
     ]
   },
   {
@@ -4036,21 +4050,21 @@
     "call": "Require a username and password for the local mixed proxy",
     "key": "Require a username and password for the local mixed proxy",
     "places": [
-      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8249"
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8255"
     ]
   },
   {
     "call": "Resolve domain names before routing so sing-box can use real destination IPs.",
     "key": "Resolve domain names before routing so sing-box can use real destination IPs.",
     "places": [
-      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8336"
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8377"
     ]
   },
   {
     "call": "Resolve real IP for routing",
     "key": "Resolve real IP for routing",
     "places": [
-      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8335"
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8376"
     ]
   },
   {
@@ -4172,8 +4186,8 @@
     "call": "Rule sets",
     "key": "Rule sets",
     "places": [
-      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8420",
-      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8449"
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8461",
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8490"
     ]
   },
   {
@@ -4307,7 +4321,7 @@
     "call": "Select a predefined domain list",
     "key": "Select a predefined domain list",
     "places": [
-      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8401"
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8442"
     ]
   },
   {
@@ -4552,7 +4566,7 @@
     "call": "Service list",
     "key": "Service list",
     "places": [
-      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8404"
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8445"
     ]
   },
   {
@@ -4563,8 +4577,8 @@
     ]
   },
   {
-    "call": "Services to route through the tunnel from itdoginfo/allow-domains. Ids: russia-inside, russia-outside, ukraine, telegram, meta, youtube, discord, tiktok, twitter, hdrezka, roblox, cloudflare, cloudfront, google_ai, google_meet, google_play, hetzner, ovh, digitalocean, anime, news, geoblock, block, porn, hodca.",
-    "key": "Services to route through the tunnel from itdoginfo/allow-domains. Ids: russia-inside, russia-outside, ukraine, telegram, meta, youtube, discord, tiktok, twitter, hdrezka, roblox, cloudflare, cloudfront, google_ai, google_meet, google_play, hetzner, ovh, digitalocean, anime, news, geoblock, block, porn, hodca.",
+    "call": "Services to route through the tunnel from itdoginfo/allow-domains. Ids: russia-inside, russia-outside, ukraine, telegram, meta, youtube, discord, tiktok, twitter, hdrezka, roblox, cloudflare, cloudfront, google_ai, google_meet, google_play, hetzner, ovh, digitalocean, anime, news, geoblock, block, porn, hodca. These lists are also used as routing conditions: enable 'Enable Mixed Proxy' and the traffic of the selected services will go through the tunnel.",
+    "key": "Services to route through the tunnel from itdoginfo/allow-domains. Ids: russia-inside, russia-outside, ukraine, telegram, meta, youtube, discord, tiktok, twitter, hdrezka, roblox, cloudflare, cloudfront, google_ai, google_meet, google_play, hetzner, ovh, digitalocean, anime, news, geoblock, block, porn, hodca. These lists are also used as routing conditions: enable 'Enable Mixed Proxy' and the traffic of the selected services will go through the tunnel.",
     "places": [
       "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:7600"
     ]
@@ -5053,7 +5067,7 @@
     "call": "The rule applies to the domain and all its subdomains. Use full:, keyword:, or regex: prefixes for exact match, keyword match, or regular expression.",
     "key": "The rule applies to the domain and all its subdomains. Use full:, keyword:, or regex: prefixes for exact match, keyword match, or regular expression.",
     "places": [
-      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8362"
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8403"
     ]
   },
   {
@@ -5829,7 +5843,7 @@
     "call": "Username cannot be empty",
     "key": "Username cannot be empty",
     "places": [
-      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8289"
+      "../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:8307"
     ]
   },
   {

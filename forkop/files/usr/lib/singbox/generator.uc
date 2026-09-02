@@ -1471,7 +1471,34 @@ function apply_section_detour_to_connection_outbounds(config, start_index, detou
 
 function mixed_proxy_enabled_action(action) {
     return action == "connection" || action == "proxy" || action == "outbound" || action == "vpn" ||
-        action == "byedpi" || action == "zapret" || action == "zapret2";
+        action == "byedpi" || action == "zapret" || action == "zapret2" ||
+        action == "wdtt" || action == "olcrtc";
+}
+
+// Локальный SOCKS5-эндпоинт standalone-провайдера (olcrtc или qwdtt mode socks).
+// Возвращает null, если у провайдерской секции нет локального SOCKS-сервера
+// (например qwdtt в режиме rawtun) — тогда sing-box outbound не создаётся.
+function provider_socks_endpoint(section) {
+    let action = option(section, "action", "");
+    if (action == "olcrtc") {
+        let host = option(section, "socks_host", "127.0.0.1");
+        let port_value = option(section, "socks_port", "1080");
+        if (match(port_value, /^[0-9]+$/) == null)
+            return null;
+        return [ host, int(port_value, 10) ];
+    }
+    if (action == "wdtt" && option(section, "qwdtt_mode", "rawtun") == "socks") {
+        let addr = option(section, "socks_addr", "127.0.0.1:1080");
+        let separator = index(addr, ":");
+        if (separator < 0)
+            return null;
+        let host = substr(addr, 0, separator);
+        let port_value = substr(addr, separator + 1);
+        if (match(port_value, /^[0-9]+$/) == null)
+            return null;
+        return [ host, int(port_value, 10) ];
+    }
+    return null;
 }
 
 function add_mixed_proxy_for_section(config, section, service_address) {
@@ -1481,6 +1508,8 @@ function add_mixed_proxy_for_section(config, section, service_address) {
     let action = option(section, "action", "");
     if (!mixed_proxy_enabled_action(action))
         runtime_generate_unsupported("mixed proxy inbound is not supported for action " + action);
+    if ((action == "wdtt" || action == "olcrtc") && provider_socks_endpoint(section) == null)
+        runtime_generate_unsupported("mixed proxy for action " + action + " requires a local SOCKS5 endpoint (qwdtt_mode socks)");
 
     let listen_port_value = option(section, "mixed_proxy_port", "");
     if (match(listen_port_value, /^[0-9]+$/) == null)
@@ -2866,7 +2895,18 @@ function add_outbound_for_section(config, section, taken, sections) {
         /* route-only action */
     }
     else if (action == "wdtt" || action == "olcrtc") {
-        /* standalone tunnel provider; no sing-box outbound */
+        /* standalone tunnel provider: expose its local SOCKS5 as sing-box outbound
+         * so mixed proxy and section conditions can route through the tunnel. */
+        let endpoint = provider_socks_endpoint(section);
+        if (endpoint != null) {
+            push(config.outbounds, {
+                type: "socks",
+                tag: outbound_tag(section_name),
+                server: endpoint[0],
+                server_port: endpoint[1],
+                version: "5"
+            });
+        }
     }
     else if (action == "dns") {
         add_dns_server_for_section(config, section);
@@ -2897,9 +2937,13 @@ function add_route_for_section(config, section) {
     let action = option(section, "action", "");
     if (action == "dns")
         add_dns_action_rules_for_section(config, section);
-    else if (action == "wdtt" || action == "olcrtc")
-        /* standalone tunnel provider; interception handled by its own runtime */
-        return;
+    else if (action == "wdtt" || action == "olcrtc") {
+        /* Route section conditions (domain, WDTT community lists, rule sets,
+         * IP lists) through the provider tunnel when a local SOCKS endpoint
+         * exists. rawtun-mode wdtt keeps standalone interception. */
+        if (provider_socks_endpoint(section) != null)
+            add_combined_route_for_section(config, section);
+    }
     else
         add_combined_route_for_section(config, section);
 }
