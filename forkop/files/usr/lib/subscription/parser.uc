@@ -1076,6 +1076,28 @@ function process_vmess(raw) {
     return process_vmess_json(raw, trimmed);
 }
 
+function process_wdtt(raw, url) {
+    let outbound = {
+        type: "wdtt",
+        tag: url.fragment != "" ? url.fragment : "wdtt_proxy",
+        share_link: raw,
+        server: url.host,
+        server_port: url.port || 0
+    };
+    return outbound;
+}
+
+function process_olcrtc(raw, url) {
+    let outbound = {
+        type: "olcrtc",
+        tag: url.fragment != "" ? url.fragment : "olcrtc_proxy",
+        share_link: raw,
+        server: url.host,
+        server_port: url.port || 0
+    };
+    return outbound;
+}
+
 function parse_share_link(line) {
     if (starts_with(line, "vmess://"))
         return process_vmess(line);
@@ -3012,25 +3034,3 @@ else {
 
 if (!ok)
     exit(1);
-
-function process_wdtt(raw, url) {
-    let outbound = {
-        type: "wdtt",
-        tag: url.fragment != "" ? url.fragment : "wdtt_proxy",
-        share_link: raw,
-        server: url.host,
-        server_port: url.port || 0
-    };
-    return outbound;
-}
-
-function process_olcrtc(raw, url) {
-    let outbound = {
-        type: "olcrtc",
-        tag: url.fragment != "" ? url.fragment : "olcrtc_proxy",
-        share_link: raw,
-        server: url.host,
-        server_port: url.port || 0
-    };
-    return outbound;
-}
