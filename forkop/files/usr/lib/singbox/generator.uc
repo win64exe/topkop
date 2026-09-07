@@ -2106,8 +2106,69 @@ function add_connection_subscriptions(config, state, section, taken, selector_ta
         );
 }
 
+function tunnel_interface_section_name(value) {
+    value = as_string(value);
+    return substr(value, 0, 7) == "tunnel:" ? substr(value, 7) : "";
+}
+
+function add_tunnel_interface_connection_outbound(config, state, section, interface_index, interface_name, tunnel_section_name, taken, selector_tags, urltest_candidate_tags) {
+    let section_name = section[".name"];
+    let tag_name = connection_item_tag(section_name, "interface", interface_index);
+    if (taken[tag_name])
+        tag_name = unique_tag(tag_name, taken);
+    taken[tag_name] = true;
+
+    let tunnel_section = object_or_empty(uci_cursor().get_all(CONFIG_NAME, tunnel_section_name));
+    let endpoint = provider_socks_endpoint(tunnel_section);
+    if (endpoint == null)
+        runtime_generate_unsupported("tunnel interface '" + interface_name + "' requires a local SOCKS5 endpoint (wdtt qwdtt_mode socks or olcrtc)");
+
+    let outbound = {
+        type: "socks",
+        tag: tag_name,
+        server: endpoint[0],
+        server_port: endpoint[1],
+        version: "5"
+    };
+
+    if (connections.interface_domain_resolver_enabled(section, interface_name)) {
+        let domain_resolver = runtime_constants.domain_resolver_tag(section_name + "-interface-" + interface_index);
+        let dns_server = runtime_dns.server_from_options(
+            domain_resolver,
+            connections.interface_domain_resolver_dns_type(section, interface_name),
+            connections.interface_domain_resolver_dns_server(section, interface_name),
+            tag_name
+        );
+        if (dns_server.unsupported)
+            runtime_generate_unsupported(dns_server.unsupported);
+        push(config.dns.servers, dns_server);
+        outbound.domain_resolver = domain_resolver;
+    }
+
+    push(config.outbounds, outbound);
+    push(selector_tags, tag_name);
+    push(urltest_candidate_tags, tag_name);
+    runtime_subscription.remember_outbound_metadata(state, tag_name, interface_name, outbound);
+}
+
 function add_interface_connection_outbound(config, state, section, interface_index, interface_name, taken, selector_tags, urltest_candidate_tags) {
     let section_name = section[".name"];
+    let tunnel_section_name = tunnel_interface_section_name(interface_name);
+    if (tunnel_section_name != "") {
+        add_tunnel_interface_connection_outbound(
+            config,
+            state,
+            section,
+            interface_index,
+            interface_name,
+            tunnel_section_name,
+            taken,
+            selector_tags,
+            urltest_candidate_tags
+        );
+        return;
+    }
+
     let tag_name = connection_item_tag(section_name, "interface", interface_index);
     if (taken[tag_name])
         tag_name = unique_tag(tag_name, taken);

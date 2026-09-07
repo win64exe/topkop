@@ -20,6 +20,9 @@ msgstr ""
 msgid "-- Select --"
 msgstr "-- Выберите --"
 
+msgid "Tunnel"
+msgstr "Туннель"
+
 msgid "+ Add JSON outbound"
 msgstr "+ Добавить JSON outbound"
 
@@ -1892,9 +1895,6 @@ msgstr "Список сервисов"
 msgid "Services info"
 msgstr "Информация о сервисах"
 
-msgid "Services to route through the tunnel from itdoginfo/allow-domains. Ids: russia-inside, russia-outside, ukraine, telegram, meta, youtube, discord, tiktok, twitter, hdrezka, roblox, cloudflare, cloudfront, google_ai, google_meet, google_play, hetzner, ovh, digitalocean, anime, news, geoblock, block, porn, hodca. These lists are also used as routing conditions: enable 'Enable Mixed Proxy' and the traffic of the selected services will go through the tunnel."
-msgstr "Сервисы для маршрутизации через туннель из itdoginfo/allow-domains. ID: russia-inside, russia-outside, ukraine, telegram, meta, youtube, discord, tiktok, twitter, hdrezka, roblox, cloudflare, cloudfront, google_ai, google_meet, google_play, hetzner, ovh, digitalocean, anime, news, geoblock, block, porn, hodca. Эти списки также используются как условия маршрутизации: включите «Enable Mixed Proxy» — трафик выбранных сервисов пойдёт через туннель."
-
 msgid "Settings"
 msgstr "Настройки"
 
@@ -2443,9 +2443,6 @@ msgstr "WAN"
 
 msgid "WAN public IP"
 msgstr "Публичный WAN IP"
-
-msgid "WDTT community lists"
-msgstr "Сообщества WDTT"
 
 msgid "WDTT max call tokens"
 msgstr "Максимум токенов звонков WDTT"

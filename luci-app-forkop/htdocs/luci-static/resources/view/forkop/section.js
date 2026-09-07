@@ -1980,16 +1980,56 @@ function renderNetworkInterfaceChoice(device) {
 
 function renderNetworkInterfaceListItem(device, fallbackName) {
   const name = device ? device.getName() : fallbackName;
-  const type = device ? device.getType() : "ethernet";
-  const up = device ? device.isUp() : false;
+
+  // Virtual/runtime entries (tunnel:<section> or a TUN interface without a
+  // LuCI device object) are rendered without an icon.
+  if (!device) {
+    return E("span", { class: "fkp-interface-dynlist-label" }, [
+      E("span", {}, [name]),
+    ]);
+  }
+
+  const type = device.getType();
+  const up = device.isUp();
 
   return E("span", { class: "fkp-interface-dynlist-label" }, [
     E("img", {
-      title: device ? device.getI18n() : _("Network Interface"),
+      title: device.getI18n(),
       src: L.resource("icons/%s%s.svg".format(type, up ? "" : "_disabled")),
     }),
     E("span", {}, [name]),
   ]);
+}
+
+function isTunnelInterfaceValue(value) {
+  return typeof value === "string" && value.indexOf("tunnel:") === 0;
+}
+
+function getTunnelSectionChoices() {
+  const result = [];
+
+  (uci.sections(UCI_PACKAGE, "section") || []).forEach((section) => {
+    const action = section.action;
+
+    if (action !== "wdtt" && action !== "olcrtc") {
+      return;
+    }
+
+    if (section.enabled === "0") {
+      return;
+    }
+
+    const name = getUciSectionName(section);
+    const mode =
+      action === "wdtt" && section.qwdtt_mode
+        ? ` · ${section.qwdtt_mode}`
+        : "";
+    const label = `${_("Tunnel")}: ${getActionOptionLabel(action)}${mode} (${name})`;
+
+    result.push({ value: `tunnel:${name}`, label });
+  });
+
+  return result;
 }
 
 function refreshNetworkInterfaceOptionValues(option) {
@@ -2014,13 +2054,43 @@ function refreshNetworkInterfaceOptionValues(option) {
     option.interfaceChoiceMap[name] = true;
     option.interfaceDeviceMap[name] = device;
   });
+
+  // Runtime TUN/WG interfaces (e.g. qwdtt0 from rawtun mode) that LuCI's
+  // network.getDevices() may not list.
+  (option.runtimeInterfaces || []).forEach((iface) => {
+    if (
+      option.interfaceChoiceMap[iface.name] ||
+      CONNECTIONS_BLOCKED_INTERFACES.includes(iface.name)
+    ) {
+      return;
+    }
+
+    option.value(iface.name, iface.name);
+    option.interfaceChoiceMap[iface.name] = true;
+    option.interfaceDeviceMap[iface.name] = null;
+  });
+
+  // Enabled tunnel sections (wdtt/olcrtc) as virtual interfaces.
+  getTunnelSectionChoices().forEach((entry) => {
+    option.value(entry.value, entry.label);
+    option.interfaceChoiceMap[entry.value] = true;
+    option.interfaceDeviceMap[entry.value] = null;
+  });
 }
 
 const InterfaceSettingsDynamicList = SettingsDynamicList.extend({
   load(section_id) {
-    return network.getDevices().then(
-      L.bind(function (devices) {
-        this.devices = devices || [];
+    return Promise.all([
+      network.getDevices(),
+      main.ForkopShellMethods.getNetworkInterfaces()
+        .then((response) =>
+          response && response.success ? response.data.interfaces || [] : [],
+        )
+        .catch(() => []),
+    ]).then(
+      L.bind(function (results) {
+        this.devices = results[0] || [];
+        this.runtimeInterfaces = results[1] || [];
         refreshNetworkInterfaceOptionValues(this);
 
         return this.super("load", section_id);
@@ -7591,20 +7661,6 @@ function createSectionContent(section) {
   o.datatype = "uinteger";
   o.rmempty = true;
   o.modalonly = true;
-
-  o = section.taboption(
-    "settings",
-    form.DynamicList,
-    "community_lists",
-    _("WDTT community lists"),
-    _(
-      "Services to route through the tunnel from itdoginfo/allow-domains. Ids: russia-inside, russia-outside, ukraine, telegram, meta, youtube, discord, tiktok, twitter, hdrezka, roblox, cloudflare, cloudfront, google_ai, google_meet, google_play, hetzner, ovh, digitalocean, anime, news, geoblock, block, porn, hodca. These lists are also used as routing conditions: enable 'Enable Mixed Proxy' and the traffic of the selected services will go through the tunnel.",
-    ),
-  );
-  o.depends("action", "wdtt");
-  o.rmempty = true;
-  o.modalonly = true;
-  o.placeholder = "telegram";
 
   o = section.taboption(
     "settings",

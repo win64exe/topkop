@@ -237,6 +237,10 @@ export const ForkopShellMethods = {
     callBaseMethod<Forkop.OlcrtcCheckResult>(
       Forkop.AvailableMethods.CHECK_OLCRTC_RUNTIME,
     ),
+  getNetworkInterfaces: async () =>
+    callBaseMethod<Forkop.GetNetworkInterfaces>(
+      Forkop.AvailableMethods.GET_NETWORK_INTERFACES,
+    ),
   checkInboundsConfig: async () =>
     callBaseMethod<Forkop.InboundsConfigCheckResult>(
       Forkop.AvailableMethods.CHECK_INBOUNDS_CONFIG,

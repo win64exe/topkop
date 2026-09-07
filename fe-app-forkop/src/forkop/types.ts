@@ -81,6 +81,7 @@ export namespace Forkop {
     GET_SERVER_CAPABILITIES = 'get_server_capabilities',
     GET_UI_CAPABILITIES = 'get_ui_capabilities',
     GET_UI_STATE = 'get_ui_state',
+    GET_NETWORK_INTERFACES = 'get_network_interfaces',
     SERVICE_ACTION_ASYNC = 'service_action_async',
     SERVICE_ACTION_STATUS = 'service_action_status',
     LATENCY_TEST_ASYNC = 'latency_test_async',
@@ -470,6 +471,16 @@ export namespace Forkop {
     enabled: number;
     status: string;
     dns_configured?: number;
+  }
+
+  export interface NetworkInterfaceInfo {
+    name: string;
+    type: string;
+    up: number;
+  }
+
+  export interface GetNetworkInterfaces {
+    interfaces: NetworkInterfaceInfo[];
   }
 
   export interface GetOutboundMetadata {

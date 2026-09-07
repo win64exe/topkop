@@ -2672,6 +2672,7 @@ var Forkop;
     AvailableMethods2["GET_SERVER_CAPABILITIES"] = "get_server_capabilities";
     AvailableMethods2["GET_UI_CAPABILITIES"] = "get_ui_capabilities";
     AvailableMethods2["GET_UI_STATE"] = "get_ui_state";
+    AvailableMethods2["GET_NETWORK_INTERFACES"] = "get_network_interfaces";
     AvailableMethods2["SERVICE_ACTION_ASYNC"] = "service_action_async";
     AvailableMethods2["SERVICE_ACTION_STATUS"] = "service_action_status";
     AvailableMethods2["LATENCY_TEST_ASYNC"] = "latency_test_async";
@@ -2876,6 +2877,9 @@ var ForkopShellMethods = {
   ),
   checkOlcrtcRuntime: async () => callBaseMethod(
     Forkop.AvailableMethods.CHECK_OLCRTC_RUNTIME
+  ),
+  getNetworkInterfaces: async () => callBaseMethod(
+    Forkop.AvailableMethods.GET_NETWORK_INTERFACES
   ),
   checkInboundsConfig: async () => callBaseMethod(
     Forkop.AvailableMethods.CHECK_INBOUNDS_CONFIG

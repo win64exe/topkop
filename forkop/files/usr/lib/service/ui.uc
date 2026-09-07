@@ -1087,6 +1087,44 @@ function ui_capabilities_json() {
     write_json(capability_flags());
 }
 
+// Runtime network interfaces (/sys/class/net): нужны для выбора TUN/WG-
+// интерфейсов (например qwdtt0) в поле «Network Interface» connection-секции.
+// Возвращает { interfaces: [ { name, type, up } ] }.
+function network_interfaces_json() {
+    let result = [];
+    let entries = fs.lsdir("/sys/class/net");
+    for (let entry in entries) {
+        let name = as_string(entry);
+        if (name == "" || name == "." || name == ".." || name == "lo")
+            continue;
+
+        let flags_raw = trim(as_string(fs.readfile("/sys/class/net/" + name + "/flags") || "0"));
+        let flags = 0;
+        if (match(flags_raw, /^0x[0-9a-fA-F]+$/) != null)
+            flags = int(flags_raw, 16);
+        else if (match(flags_raw, /^[0-9]+$/) != null)
+            flags = int(flags_raw, 10);
+
+        let lower = lc(name);
+        let type = "net";
+        if (match(lower, /^(tun|tap|utun|n2n)/) != null)
+            type = "tun";
+        else if (match(lower, /^(wg|warp|qwdtt)/) != null)
+            type = "wg";
+        else if (match(lower, /^(ppp|pppoe)/) != null)
+            type = "ppp";
+        else if (match(lower, /^docker/) != null)
+            type = "docker";
+
+        push(result, {
+            name,
+            type,
+            up: flags & 1 ? 1 : 0
+        });
+    }
+    write_json({ interfaces: result });
+}
+
 // Статус туннельного провайдера (qwdtt/wdtt, olcrtc) из его runtime-модуля.
 // Каждый runtime поддерживает режим "status" и возвращает JSON с полями
 // installed/ready/service_running/service_enabled/enabled_rule_count.
@@ -1630,6 +1668,8 @@ else if (mode == "get-ui-capabilities")
     ui_capabilities_json();
 else if (mode == "get-ui-state")
     current_ui_state_json();
+else if (mode == "network-interfaces-json")
+    network_interfaces_json();
 else if (mode == "service-status-text")
     print_service_status_text(ARGV[1], ARGV[2]);
 else if (mode == "action-start-response")
