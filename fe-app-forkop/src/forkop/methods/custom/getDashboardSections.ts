@@ -1465,6 +1465,10 @@ export async function getDashboardSections(
             sectionName,
             displayName,
             action: sectionAction,
+            providerMode:
+              sectionAction === 'wdtt'
+                ? String(section.qwdtt_mode || 'rawtun')
+                : undefined,
             outbounds: [],
           };
         }

@@ -462,6 +462,13 @@ function renderDefaultState({
   );
 
   if (isProviderSection(section)) {
+    const dot = getProviderStatusDot(section.providerStatus);
+    const typeLabel = getProviderTypeLabel(section);
+    const latency = getProviderLatencyView(
+      providerLatencyMs,
+      providerLatencyError,
+    );
+
     return E('div', { class: 'fkp_dashboard-page__outbound-section' }, [
       E(
         'div',
@@ -469,10 +476,24 @@ function renderDefaultState({
         [
           E(
             'div',
-            {
-              class: 'fkp_dashboard-page__outbound-section__title-section__title',
-            },
-            section.displayName,
+            { class: 'fkp_dashboard-page__provider-title' },
+            [
+              E('span', {
+                class: [
+                  'fkp_dashboard-page__provider-status__dot',
+                  dot.className,
+                ].join(' '),
+                title: dot.label,
+              }),
+              E(
+                'div',
+                {
+                  class:
+                    'fkp_dashboard-page__outbound-section__title-section__title',
+                },
+                section.displayName,
+              ),
+            ],
           ),
           E(
             'div',
@@ -522,15 +543,23 @@ function renderDefaultState({
           ),
         ],
       ),
-      E(
-        'div',
-        { class: 'fkp_dashboard-page__provider-status' },
-        renderProviderStatus(
-          section.providerStatus,
-          providerLatencyMs,
-          providerLatencyError,
+      E('div', { class: 'fkp_dashboard-page__provider-status' }, [
+        E(
+          'span',
+          { class: 'fkp_dashboard-page__provider-status__type' },
+          typeLabel,
         ),
-      ),
+        E(
+          'span',
+          {
+            class: [
+              'fkp_dashboard-page__provider-status__ping',
+              latency.className,
+            ].join(' '),
+          },
+          latency.text,
+        ),
+      ]),
     ]);
   }
 
@@ -597,59 +626,77 @@ function renderDefaultState({
   ]);
 }
 
-function renderProviderStatus(
+function getProviderStatusDot(
   status?: Forkop.OutboundGroup['providerStatus'],
-  latencyMs?: number | null,
-  latencyError?: boolean,
 ) {
   const installed = Number(status?.installed ?? 0);
   const running = Number(status?.running ?? 0);
   const ready = Number(status?.ready ?? 0);
 
-  const statusLabel = !installed
-    ? _('✘ Not installed')
-    : running
-      ? ready
-        ? _('✔ Running')
-        : _('⚠ Running')
-      : _('✘ Stopped');
-  const statusClass = !installed
-    ? 'fkp_dashboard-page__provider-status__item--error'
-    : running
-      ? 'fkp_dashboard-page__provider-status__item--success'
-      : 'fkp_dashboard-page__provider-status__item--error';
+  if (!installed) {
+    return {
+      className: 'fkp_dashboard-page__provider-status__dot--error',
+      label: _('✘ Not installed'),
+    };
+  }
 
+  if (!running) {
+    return {
+      className: 'fkp_dashboard-page__provider-status__dot--error',
+      label: _('✘ Stopped'),
+    };
+  }
+
+  if (!ready) {
+    return {
+      className: 'fkp_dashboard-page__provider-status__dot--warn',
+      label: _('⚠ Running'),
+    };
+  }
+
+  return {
+    className: 'fkp_dashboard-page__provider-status__dot--success',
+    label: _('✔ Running'),
+  };
+}
+
+function getProviderTypeLabel(section: Forkop.OutboundGroup) {
+  if (section.action === 'wdtt') {
+    const mode = section.providerMode || 'rawtun';
+    return `WDTT · ${mode}`;
+  }
+
+  if (section.action === 'olcrtc') {
+    return 'OlcRTC';
+  }
+
+  return String(section.action || section.code || '').toUpperCase();
+}
+
+function getProviderLatencyView(
+  latencyMs?: number | null,
+  latencyError?: boolean,
+) {
   const hasLatency = typeof latencyMs === 'number' && Number.isFinite(latencyMs);
-  const latencyLabel = hasLatency
-    ? `${_('Ping')}: ${Math.round(latencyMs)}ms`
-    : latencyError
-      ? _('Ping unavailable')
-      : `${_('Ping')}: ${_('N/A')}`;
-  const latencyClass = hasLatency
-    ? getProviderLatencyClass(latencyMs)
-    : 'fkp_dashboard-page__outbound-grid__item__latency--empty';
 
-  return E('div', { class: 'fkp_dashboard-page__provider-status__row' }, [
-    E(
-      'span',
-      { class: statusClass },
-      statusLabel,
-    ),
-    E(
-      'span',
-      { class: 'fkp_dashboard-page__provider-status__item' },
-      `${_('Status')}: ${
-        installed && running && ready
-          ? _('ready')
-          : _('not ready')
-      }`,
-    ),
-    E(
-      'span',
-      { class: ['fkp_dashboard-page__outbound-grid__item__latency', latencyClass].join(' ') },
-      latencyLabel,
-    ),
-  ]);
+  if (hasLatency) {
+    return {
+      text: `${Math.round(latencyMs)}ms`,
+      className: getProviderLatencyClass(latencyMs),
+    };
+  }
+
+  if (latencyError) {
+    return {
+      text: _('Ping unavailable'),
+      className: 'fkp_dashboard-page__outbound-grid__item__latency--red',
+    };
+  }
+
+  return {
+    text: 'N/A',
+    className: 'fkp_dashboard-page__outbound-grid__item__latency--empty',
+  };
 }
 
 export function renderSections(props: IRenderSectionsProps) {

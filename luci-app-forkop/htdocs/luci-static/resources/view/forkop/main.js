@@ -809,6 +809,46 @@ function validateHysteria2Url(url) {
   }
 }
 
+// src/validators/validateWdttUrl.ts
+function validateWdttUrl(url) {
+  if (!url || typeof url !== "string") {
+    return { valid: false, message: "URL is required" };
+  }
+  const trimmed = url.trim();
+  if (!trimmed.startsWith("wdtt://")) {
+    return { valid: false, message: "URL must start with wdtt://" };
+  }
+  try {
+    const parsed = new URL(trimmed);
+    if (!parsed.hostname) {
+      return { valid: false, message: "Invalid host in WDTT URL" };
+    }
+  } catch (e) {
+    return { valid: false, message: "Invalid WDTT URL format" };
+  }
+  return { valid: true, message: "" };
+}
+
+// src/validators/validateOlcrtcUrl.ts
+function validateOlcrtcUrl(url) {
+  if (!url || typeof url !== "string") {
+    return { valid: false, message: "URL is required" };
+  }
+  const trimmed = url.trim();
+  if (!trimmed.startsWith("olcrtc://")) {
+    return { valid: false, message: "URL must start with olcrtc://" };
+  }
+  try {
+    const parsed = new URL(trimmed);
+    if (!parsed.hostname) {
+      return { valid: false, message: "Invalid host in OlcRTC URL" };
+    }
+  } catch (e) {
+    return { valid: false, message: "Invalid OlcRTC URL format" };
+  }
+  return { valid: true, message: "" };
+}
+
 // src/validators/validateProxyUrl.ts
 function validateProxyUrl(url) {
   const trimmedUrl = url.trim();
@@ -830,10 +870,16 @@ function validateProxyUrl(url) {
   if (trimmedUrl.startsWith("hysteria2://") || trimmedUrl.startsWith("hy2://")) {
     return validateHysteria2Url(trimmedUrl);
   }
+  if (trimmedUrl.startsWith("wdtt://")) {
+    return validateWdttUrl(trimmedUrl);
+  }
+  if (trimmedUrl.startsWith("olcrtc://")) {
+    return validateOlcrtcUrl(trimmedUrl);
+  }
   return {
     valid: false,
     message: _(
-      "URL must start with vless://, vmess://, ss://, trojan://, socks4://, socks4a://, socks5://, hysteria2://, or hy2://"
+      "URL must start with vless://, vmess://, ss://, trojan://, socks4://, socks4a://, socks5://, hysteria2://, or hy2://, wdtt://, olcrtc://"
     )
   };
 }
@@ -1115,7 +1161,7 @@ function insertIf(condition, elements) {
 }
 
 // src/helpers/isCopyableProxyLink.ts
-var COPYABLE_PROXY_URI_RE = /^(vless|vmess|trojan|ss|ssr|hysteria2|hy2|tuic|socks4|socks4a|socks5):\/\//i;
+var COPYABLE_PROXY_URI_RE = /^(wdtt|olcrtc|vless|vmess|trojan|ss|ssr|hysteria2|hy2|tuic|socks4|socks4a|socks5):\/\//i;
 function isCopyableProxyLink(link) {
   return COPYABLE_PROXY_URI_RE.test((link || "").trim());
 }
@@ -2100,6 +2146,12 @@ function renderDefaultState({
     onUpdateSubscription
   );
   if (isProviderSection(section)) {
+    const dot = getProviderStatusDot(section.providerStatus);
+    const typeLabel = getProviderTypeLabel(section);
+    const latency = getProviderLatencyView(
+      providerLatencyMs,
+      providerLatencyError
+    );
     return E("div", { class: "fkp_dashboard-page__outbound-section" }, [
       E(
         "div",
@@ -2107,10 +2159,23 @@ function renderDefaultState({
         [
           E(
             "div",
-            {
-              class: "fkp_dashboard-page__outbound-section__title-section__title"
-            },
-            section.displayName
+            { class: "fkp_dashboard-page__provider-title" },
+            [
+              E("span", {
+                class: [
+                  "fkp_dashboard-page__provider-status__dot",
+                  dot.className
+                ].join(" "),
+                title: dot.label
+              }),
+              E(
+                "div",
+                {
+                  class: "fkp_dashboard-page__outbound-section__title-section__title"
+                },
+                section.displayName
+              )
+            ]
           ),
           E(
             "div",
@@ -2154,15 +2219,23 @@ function renderDefaultState({
           )
         ]
       ),
-      E(
-        "div",
-        { class: "fkp_dashboard-page__provider-status" },
-        renderProviderStatus(
-          section.providerStatus,
-          providerLatencyMs,
-          providerLatencyError
+      E("div", { class: "fkp_dashboard-page__provider-status" }, [
+        E(
+          "span",
+          { class: "fkp_dashboard-page__provider-status__type" },
+          typeLabel
+        ),
+        E(
+          "span",
+          {
+            class: [
+              "fkp_dashboard-page__provider-status__ping",
+              latency.className
+            ].join(" ")
+          },
+          latency.text
         )
-      )
+      ])
     ]);
   }
   return E("div", { class: "fkp_dashboard-page__outbound-section" }, [
@@ -2224,32 +2297,61 @@ function renderDefaultState({
     ])
   ]);
 }
-function renderProviderStatus(status, latencyMs, latencyError) {
+function getProviderStatusDot(status) {
   const installed = Number(status?.installed ?? 0);
   const running = Number(status?.running ?? 0);
   const ready = Number(status?.ready ?? 0);
-  const statusLabel = !installed ? _("\u2718 Not installed") : running ? ready ? _("\u2714 Running") : _("\u26A0 Running") : _("\u2718 Stopped");
-  const statusClass = !installed ? "fkp_dashboard-page__provider-status__item--error" : running ? "fkp_dashboard-page__provider-status__item--success" : "fkp_dashboard-page__provider-status__item--error";
+  if (!installed) {
+    return {
+      className: "fkp_dashboard-page__provider-status__dot--error",
+      label: _("\u2718 Not installed")
+    };
+  }
+  if (!running) {
+    return {
+      className: "fkp_dashboard-page__provider-status__dot--error",
+      label: _("\u2718 Stopped")
+    };
+  }
+  if (!ready) {
+    return {
+      className: "fkp_dashboard-page__provider-status__dot--warn",
+      label: _("\u26A0 Running")
+    };
+  }
+  return {
+    className: "fkp_dashboard-page__provider-status__dot--success",
+    label: _("\u2714 Running")
+  };
+}
+function getProviderTypeLabel(section) {
+  if (section.action === "wdtt") {
+    const mode = section.providerMode || "rawtun";
+    return `WDTT \xB7 ${mode}`;
+  }
+  if (section.action === "olcrtc") {
+    return "OlcRTC";
+  }
+  return String(section.action || section.code || "").toUpperCase();
+}
+function getProviderLatencyView(latencyMs, latencyError) {
   const hasLatency = typeof latencyMs === "number" && Number.isFinite(latencyMs);
-  const latencyLabel = hasLatency ? `${_("Ping")}: ${Math.round(latencyMs)}ms` : latencyError ? _("Ping unavailable") : `${_("Ping")}: ${_("N/A")}`;
-  const latencyClass = hasLatency ? getProviderLatencyClass(latencyMs) : "fkp_dashboard-page__outbound-grid__item__latency--empty";
-  return E("div", { class: "fkp_dashboard-page__provider-status__row" }, [
-    E(
-      "span",
-      { class: statusClass },
-      statusLabel
-    ),
-    E(
-      "span",
-      { class: "fkp_dashboard-page__provider-status__item" },
-      `${_("Status")}: ${installed && running && ready ? _("ready") : _("not ready")}`
-    ),
-    E(
-      "span",
-      { class: ["fkp_dashboard-page__outbound-grid__item__latency", latencyClass].join(" ") },
-      latencyLabel
-    )
-  ]);
+  if (hasLatency) {
+    return {
+      text: `${Math.round(latencyMs)}ms`,
+      className: getProviderLatencyClass(latencyMs)
+    };
+  }
+  if (latencyError) {
+    return {
+      text: _("Ping unavailable"),
+      className: "fkp_dashboard-page__outbound-grid__item__latency--red"
+    };
+  }
+  return {
+    text: "N/A",
+    className: "fkp_dashboard-page__outbound-grid__item__latency--empty"
+  };
 }
 function renderSections(props) {
   if (props.failed) {
@@ -4147,6 +4249,7 @@ async function getDashboardSections(options = {}) {
           sectionName,
           displayName,
           action: sectionAction,
+          providerMode: sectionAction === "wdtt" ? String(section.qwdtt_mode || "rawtun") : void 0,
           outbounds: []
         };
       }
@@ -7358,6 +7461,61 @@ var styles = `
 .fkp_dashboard-page .btn.dashboard-sections-grid-item-test-latency[disabled] {
     cursor: not-allowed;
     opacity: 0.65;
+}
+
+.fkp_dashboard-page__provider-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+}
+
+.fkp_dashboard-page__provider-status__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex: 0 0 auto;
+    background: var(--background-color-low, gray);
+}
+
+.fkp_dashboard-page__provider-status__dot--success {
+    background: var(--success-color-medium, green);
+}
+
+.fkp_dashboard-page__provider-status__dot--warn {
+    background: var(--warn-color-medium, orange);
+}
+
+.fkp_dashboard-page__provider-status__dot--error {
+    background: var(--error-color-medium, red);
+}
+
+.fkp_dashboard-page__provider-status {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    margin-top: 8px;
+    min-width: 0;
+}
+
+.fkp_dashboard-page__provider-status__type,
+.fkp_dashboard-page__provider-status__ping {
+    border: 1px solid var(--background-color-low, lightgray);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.fkp_dashboard-page__provider-status__type {
+    color: var(--text-color-medium);
+    font-weight: 600;
+}
+
+.fkp_dashboard-page__provider-status__ping {
+    font-weight: 600;
+    white-space: nowrap;
 }
 
 .fkp_dashboard-page__outbound-grid {

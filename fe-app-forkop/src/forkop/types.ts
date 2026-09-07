@@ -177,6 +177,7 @@ export namespace Forkop {
     proxyConfigType?: ProxyConfigType;
     subscriptionSourceCount?: number;
     subscriptionMetadata?: SubscriptionMetadata[];
+    providerMode?: string;
     providerStatus?: {
       installed: number;
       running: number;
@@ -261,6 +262,7 @@ export namespace Forkop {
     label?: string;
     enabled?: string;
     action?: RuleAction;
+    qwdtt_mode?: string;
     connection_type?: LegacyConnectionType;
     proxy_config_type?: ProxyConfigType;
     node?: string;
