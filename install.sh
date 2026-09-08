@@ -1396,12 +1396,14 @@ function asset_matches(name, kind, ext, version) {
     if (!release_version_valid(version))
         return false;
 
+    // Пакеты архитектурно-независимы: ipk -> _all, apk -> _noarch.
+    let suffix = ext == "apk" ? "_noarch" : "_all";
     if (kind == "backend")
-        return name == "topkop_" + version + "." + ext;
+        return name == "topkop_" + version + suffix + "." + ext;
     if (kind == "app")
-        return name == "luci-app-topkop_" + version + "." + ext;
+        return name == "luci-app-topkop_" + version + suffix + "." + ext;
     if (kind == "i18n")
-        return name == "luci-i18n-topkop-ru_" + version + "." + ext;
+        return name == "luci-i18n-topkop-ru_" + version + suffix + "." + ext;
     return false;
 }
 
@@ -1774,7 +1776,7 @@ resolve_forkop_release() {
 
     FORKOP_BACKEND_NAME="$(basename "$FORKOP_BACKEND_URL")"
     FORKOP_APP_NAME="$(basename "$FORKOP_APP_URL")"
-    FORKOP_PACKAGE_VERSION="$(printf '%s\n' "$FORKOP_BACKEND_NAME" | sed 's/^topkop_//;s/\.ipk$//;s/\.apk$//')"
+    FORKOP_PACKAGE_VERSION="$(printf '%s\n' "$FORKOP_BACKEND_NAME" | sed 's/^topkop_//;s/_all\.ipk$//;s/_noarch\.apk$//;s/\.ipk$//;s/\.apk$//')"
 
     FORKOP_I18N_URL=""
     FORKOP_I18N_NAME=""

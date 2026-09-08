@@ -193,12 +193,12 @@ grep -Fq 'legacy_config_present=0' "$detect_legacy_block" ||
 
 printf '%s\n' '{"tag_name":"0.0.1"}' | ucode "$helper" release-tag | grep -Fxq '0.0.1' ||
   fail "embedded helper release-tag mode must parse release JSON"
-release_json='{"tag_name":"0.0.1","assets":[{"name":"forkop_0.0.1.ipk","browser_download_url":"https://example.com/forkop.ipk"}]}'
-printf '%s' "$release_json" | ucode "$helper" release-asset-url backend ipk | grep -Fxq 'https://example.com/forkop.ipk' ||
-  fail "embedded helper must resolve the exact three-part Forkop package name"
-if printf '%s' '{"tag_name":"0.0.1","assets":[{"name":"forkop_0.0.1_all.ipk","browser_download_url":"https://example.com/old.ipk"}]}' |
+release_json='{"tag_name":"0.0.1","assets":[{"name":"topkop_0.0.1_all.ipk","browser_download_url":"https://example.com/topkop.ipk"}]}'
+printf '%s' "$release_json" | ucode "$helper" release-asset-url backend ipk | grep -Fxq 'https://example.com/topkop.ipk' ||
+  fail "embedded helper must resolve the exact arch-suffixed Topkop package name"
+if printf '%s' '{"tag_name":"0.0.1","assets":[{"name":"topkop_0.0.1.ipk","browser_download_url":"https://example.com/old.ipk"}]}' |
   ucode "$helper" release-asset-url backend ipk | grep -q .; then
-  fail "embedded helper must reject package names outside the Forkop release format"
+  fail "embedded helper must reject package names without the arch suffix"
 fi
 
 cat >"$WORK_DIR/opkg" <<'SH'

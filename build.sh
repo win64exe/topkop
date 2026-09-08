@@ -690,21 +690,21 @@ main() {
     "topkop" \
     "$backend_root" \
     "$backend_control" \
-    "$output_dir/topkop_${RELEASE_VERSION}.ipk"
+    "$output_dir/topkop_${RELEASE_VERSION}_all.ipk"
 
   build_ipk_package \
     "$ipkg_build_bin" \
     "luci-app-topkop" \
     "$app_root" \
     "$app_control" \
-    "$output_dir/luci-app-topkop_${RELEASE_VERSION}.ipk"
+    "$output_dir/luci-app-topkop_${RELEASE_VERSION}_all.ipk"
 
   build_ipk_package \
     "$ipkg_build_bin" \
     "luci-i18n-topkop-ru" \
     "$i18n_root" \
     "$i18n_control" \
-    "$output_dir/luci-i18n-topkop-ru_${RELEASE_VERSION}.ipk"
+    "$output_dir/luci-i18n-topkop-ru_${RELEASE_VERSION}_all.ipk"
 
   generate_apk_metadata_files "topkop" "$backend_root" "/etc/config/forkop"
   generate_apk_metadata_files "luci-app-topkop" "$app_root"
@@ -722,7 +722,7 @@ main() {
     "$backend_root" \
     "$apk_scripts" \
     "backend" \
-    "$output_dir/topkop_${RELEASE_VERSION}.apk" \
+    "$output_dir/topkop_${RELEASE_VERSION}_noarch.apk" \
     "$MAINTAINER"
 
   build_apk_package \
@@ -734,7 +734,7 @@ main() {
     "$app_root" \
     "$apk_scripts" \
     "app" \
-    "$output_dir/luci-app-topkop_${RELEASE_VERSION}.apk" \
+    "$output_dir/luci-app-topkop_${RELEASE_VERSION}_noarch.apk" \
     "$MAINTAINER"
 
   build_apk_package \
@@ -746,15 +746,15 @@ main() {
     "$i18n_root" \
     "$apk_scripts" \
     "i18n" \
-    "$output_dir/luci-i18n-topkop-ru_${RELEASE_VERSION}.apk" \
+    "$output_dir/luci-i18n-topkop-ru_${RELEASE_VERSION}_noarch.apk" \
     "$MAINTAINER"
 
-  verify_ipk_metadata "$output_dir/topkop_${RELEASE_VERSION}.ipk" "topkop" "$RELEASE_VERSION"
-  verify_ipk_metadata "$output_dir/luci-app-topkop_${RELEASE_VERSION}.ipk" "luci-app-topkop" "$RELEASE_VERSION"
-  verify_ipk_metadata "$output_dir/luci-i18n-topkop-ru_${RELEASE_VERSION}.ipk" "luci-i18n-topkop-ru" "$RELEASE_VERSION"
-  verify_apk_metadata "$apk_bin" "$output_dir/topkop_${RELEASE_VERSION}.apk" "topkop" "$APK_INTERNAL_VERSION"
-  verify_apk_metadata "$apk_bin" "$output_dir/luci-app-topkop_${RELEASE_VERSION}.apk" "luci-app-topkop" "$APK_INTERNAL_VERSION"
-  verify_apk_metadata "$apk_bin" "$output_dir/luci-i18n-topkop-ru_${RELEASE_VERSION}.apk" "luci-i18n-topkop-ru" "$APK_INTERNAL_VERSION"
+  verify_ipk_metadata "$output_dir/topkop_${RELEASE_VERSION}_all.ipk" "topkop" "$RELEASE_VERSION"
+  verify_ipk_metadata "$output_dir/luci-app-topkop_${RELEASE_VERSION}_all.ipk" "luci-app-topkop" "$RELEASE_VERSION"
+  verify_ipk_metadata "$output_dir/luci-i18n-topkop-ru_${RELEASE_VERSION}_all.ipk" "luci-i18n-topkop-ru" "$RELEASE_VERSION"
+  verify_apk_metadata "$apk_bin" "$output_dir/topkop_${RELEASE_VERSION}_noarch.apk" "topkop" "$APK_INTERNAL_VERSION"
+  verify_apk_metadata "$apk_bin" "$output_dir/luci-app-topkop_${RELEASE_VERSION}_noarch.apk" "luci-app-topkop" "$APK_INTERNAL_VERSION"
+  verify_apk_metadata "$apk_bin" "$output_dir/luci-i18n-topkop-ru_${RELEASE_VERSION}_noarch.apk" "luci-i18n-topkop-ru" "$APK_INTERNAL_VERSION"
 
   cleanup_work_dir
   print_summary "$output_dir"
