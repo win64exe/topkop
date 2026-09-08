@@ -382,11 +382,41 @@ function write_wdtt_config(section) {
     log_message("WDTT section '" + name + "' written to " + WDTT_CONFIG, "info");
 }
 
+// Внутренний UDP-порт qwdtt (WG-endpoint для socks-режима). Дефолт клиента —
+// 127.0.0.1:9000 (флаг -listen в client/main.go), init-скрипт его не меняет.
+const QWDTT_LISTEN_PORT = getenv("QWDTT_LISTEN_PORT") || "9000";
+
+// Занят ли UDP-порт (в т.ч. чужим/зависшим процессом). Читаем /proc/net/udp
+// и /proc/net/udp6 напрямую — netstat/ss на busybox не всегда есть, а
+// формат стабилен: "0100007F:2328" (IP little-endian:hex-port).
+function udp_port_in_use(port) {
+    port = as_string(port);
+    let hex_port = sprintf("%X", int(port, 10));
+    for (let path in [ "/proc/net/udp", "/proc/net/udp6" ]) {
+        let data = fs.readfile(path);
+        if (data == null)
+            continue;
+        for (let line in split(data, "\n")) {
+            let fields = split(trim(line), /[ \t]+/);
+            if (length(fields) < 3)
+                continue;
+            let local = as_string(fields[1]);
+            let sep = rindex(local, ":");
+            if (sep < 0)
+                continue;
+            if (substr(local, sep + 1) == hex_port)
+                return true;
+        }
+    }
+    return false;
+}
+
 // Безопасный перезапуск qwdtt-клиента: старый процесс держит UDP
-// 127.0.0.1:9000 (внутренний WG-endpoint для socks-режима). Если порт не
-// освобождён, новый процесс не поднимает userspace WireGuard и SOCKS5-listener
-// (1081) не стартует, а procd убивает зависший процесс по SIGKILL — цикл
-// рестартов. Поэтому: stop -> ждём выхода процесса -> добиваем остатки -> start.
+// 127.0.0.1:<QWDTT_LISTEN_PORT> (внутренний WG-endpoint для socks-режима). Если
+// порт не освобождён, новый процесс не поднимает userspace WireGuard и
+// SOCKS5-listener (1081) не стартует, а procd убивает зависший процесс по
+// SIGKILL — цикл рестартов. Поэтому: stop -> ждём выхода процесса -> добиваем
+// остатки -> ждём освобождения UDP-порта -> start.
 function restart_qwdtt_service() {
     if (fs.stat(QWDTT_SERVICE_INIT) == null) {
         log_message("qwdtt service init script " + QWDTT_SERVICE_INIT + " is missing", "fatal");
@@ -406,6 +436,16 @@ function restart_qwdtt_service() {
         if (pid != "")
             command_success_from_args([ "kill", "-9", pid ]);
     }
+    // Ждём, пока ядро освободит UDP-порт: даже после kill -9 сокет может
+    // оставаться занятым мгновение, и новый клиент не сможет забиндить его —
+    // userspace WireGuard не поднимется и SOCKS5-listener не стартует.
+    let port_waited = 0;
+    while (udp_port_in_use(QWDTT_LISTEN_PORT) && port_waited < 10000) {
+        sleep(0.2);
+        port_waited += 200;
+    }
+    if (udp_port_in_use(QWDTT_LISTEN_PORT))
+        log_message("qwdtt UDP port " + QWDTT_LISTEN_PORT + " still in use after stop; starting anyway", "warn");
     sleep(0.5);
     return command_success_from_args([ QWDTT_SERVICE_INIT, "start" ]);
 }
