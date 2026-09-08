@@ -1205,51 +1205,6 @@ function provider_status_with_socks(action, runtime_uc) {
     return status;
 }
 
-function current_ui_state_json() {
-    refresh_action_dirs();
-
-    let capabilities = capability_flags();
-    let forkop_is_running = forkop_running() ? 1 : 0;
-    let forkop_is_enabled = service_enabled() ? 1 : 0;
-    let sing_box_is_running = forkop_is_running ? 1 : (sing_box_running() ? 1 : 0);
-    let sing_box_is_enabled = sing_box_enabled() ? 1 : 0;
-    let forkop_status = service_status_text(forkop_is_running, forkop_is_enabled);
-    let sing_box_status = service_status_text(sing_box_is_running, sing_box_is_enabled);
-    let active_action = active_service_action_value();
-
-    if (active_action == "start")
-        forkop_status = "starting";
-    else if (active_action == "stop")
-        forkop_status = "stopping";
-    else if (active_action == "restart")
-        forkop_status = "restarting";
-    else if (active_action == "reload")
-        forkop_status = "reloading";
-
-    write_json({
-        service: {
-            forkop: {
-                running: forkop_is_running,
-                enabled: forkop_is_enabled,
-                status: forkop_status,
-                dns_configured: dns_configured() ? 1 : 0
-            },
-            sing_box: {
-                running: sing_box_is_running,
-                enabled: sing_box_is_enabled,
-                status: sing_box_status
-            }
-        },
-        capabilities,
-        providers: {
-            wdtt: provider_status_with_socks("wdtt", LIB_DIR + "/providers/wdtt/runtime.uc"),
-            olcrtc: provider_status_with_socks("olcrtc", LIB_DIR + "/providers/olcrtc/runtime.uc")
-        },
-        wdtt_captcha: wdtt_captcha_status()
-        actions: action_state_from_dirs()
-    });
-}
-
 // ── WDTT капча: ручной обход через файл-токен ───────────────────────────
 // Клиент qwdtt печатает CAPTCHA_SOLVE|mode|url|session_token в stdout (лог),
 // а токен решения принимает либо по stdin (Android-приложение), либо из файла
@@ -1296,7 +1251,7 @@ function wdtt_captcha_submit(token) {
     if (match(token, /[\r\n]/) != null)
         return { success: 0, error: "invalid token" };
     let path = wdtt_captcha_token_file();
-    if (!command_success_from_args([ "mkdir", "-p", dirname(path) ]))
+    if (!command_success_from_args([ "mkdir", "-p", fs.dirname(path) ]))
         return { success: 0, error: "failed to create directory" };
     let handle = fs.open(path, "w");
     if (!handle)
@@ -1305,6 +1260,51 @@ function wdtt_captcha_submit(token) {
     handle.close();
     command_success_from_args([ "chmod", "0600", path ]);
     return { success: 1, path: path };
+}
+
+function current_ui_state_json() {
+    refresh_action_dirs();
+
+    let capabilities = capability_flags();
+    let forkop_is_running = forkop_running() ? 1 : 0;
+    let forkop_is_enabled = service_enabled() ? 1 : 0;
+    let sing_box_is_running = forkop_is_running ? 1 : (sing_box_running() ? 1 : 0);
+    let sing_box_is_enabled = sing_box_enabled() ? 1 : 0;
+    let forkop_status = service_status_text(forkop_is_running, forkop_is_enabled);
+    let sing_box_status = service_status_text(sing_box_is_running, sing_box_is_enabled);
+    let active_action = active_service_action_value();
+
+    if (active_action == "start")
+        forkop_status = "starting";
+    else if (active_action == "stop")
+        forkop_status = "stopping";
+    else if (active_action == "restart")
+        forkop_status = "restarting";
+    else if (active_action == "reload")
+        forkop_status = "reloading";
+
+    write_json({
+        service: {
+            forkop: {
+                running: forkop_is_running,
+                enabled: forkop_is_enabled,
+                status: forkop_status,
+                dns_configured: dns_configured() ? 1 : 0
+            },
+            sing_box: {
+                running: sing_box_is_running,
+                enabled: sing_box_is_enabled,
+                status: sing_box_status
+            }
+        },
+        capabilities,
+        providers: {
+            wdtt: provider_status_with_socks("wdtt", LIB_DIR + "/providers/wdtt/runtime.uc"),
+            olcrtc: provider_status_with_socks("olcrtc", LIB_DIR + "/providers/olcrtc/runtime.uc")
+        },
+        wdtt_captcha: wdtt_captcha_status(),
+        actions: action_state_from_dirs()
+    });
 }
 
 function service_action_expected_running_value(action) {
