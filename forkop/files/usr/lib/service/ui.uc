@@ -1163,10 +1163,13 @@ function uci_option(section_id, key) {
 function provider_socks_address(section_id) {
     let action = uci_option(section_id, "action");
     if (action == "wdtt") {
+        // qwdtt-client поднимает SOCKS5 только в режиме "socks" (-mode socks):
+        // в rawtun/vpn режимах socks-слушателя нет, поэтому без config.socks
+        // адрес не возвращаем (иначе виджет/пинг показывали бы фиктивный 1080).
         let data = read_json_file("/etc/qwdtt/config.json");
         if (type(data) == "object" && type(data.socks) == "string" && data.socks != "")
             return as_string(data.socks);
-        return "127.0.0.1:1080";
+        return "";
     }
     if (action == "olcrtc") {
         let host = as_string(uci_core.get("olcrtc.config.socks_host"));

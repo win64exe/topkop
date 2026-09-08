@@ -151,7 +151,7 @@ fi
 
 awk '
   /^[[:space:]]*main\(\)[[:space:]]*\{/ { in_main = 1 }
-  in_main && /select_sing_box_installation/ { select_sing_box = NR }
+  in_main && /select_components_installation/ { select_sing_box = NR }
   in_main && /decide_i18n_installation/ { i18n = NR }
   in_main && /pkg_list_update/ { update = NR }
   in_main && /ensure_bootstrap_ucode_runtime/ { ensure = NR }
@@ -160,7 +160,7 @@ awk '
   in_main && /install_backend_package/ { backend = NR }
   in_main && /migrate_legacy_configuration/ { migration = NR }
   in_main && /install_ui_packages/ { ui = NR }
-  in_main && /install_selected_sing_box/ { sing_box = NR }
+  in_main && /install_selected_components/ { sing_box = NR }
   in_main && /^[[:space:]]*\}/ { in_main = 0 }
   END {
     if (detect > 0 && i18n > detect && select_sing_box > i18n &&
