@@ -214,11 +214,27 @@ TUN-интерфейсов в текущей конфигурации **нет**
    (или список `.list`/`.hash`-файлов + поля peer/password/workers).
 2. `providers/wdtt/runtime.uc` → парсит ссылку, собирает `config.json`
    (peer, hashes, password, device_id, workers, dns, obfs, captcha_mode,
-   vk_auth, vk_anon_path, no_dtls, turn_tcp, tun_name, lan_interface,
-   `qwdtt_mode`, `socks_addr`) → `/etc/qwdtt/config.json` →
+   vk_auth, vk_anon_path, `vk_creds_file`, no_dtls, turn_tcp, tun_name,
+   lan_interface, `qwdtt_mode`, `socks_addr`) → `/etc/qwdtt/config.json` →
    `restart /etc/init.d/qwdtt`.
 3. `qwdtt-client` поднимает выбранный режим; в режиме `socks` sing-box
    получает outbound на `socks_addr` (раздел 3).
+
+#### Капча VK (обход)
+
+VK периодически требует капчу при получении WG-кредов. Способы обхода
+(см. источники):
+
+| Режим (`captcha_mode`) | Как работает | Источник |
+|---|---|---|
+| `auto` / `rjs` | Авторешение Go v2 Smart Captcha (2 попытки → WBV auto → …) | [qwdtt-openwrt `captcha_v2.go`](https://github.com/SpaceNeuroX/qwdtt-openwrt/blob/main/client/captcha_v2.go), [xDarkOne/wdtt-openwrt `third_party/wg-turn-client/core/captcha_v2.go`](https://github.com/xDarkOne/wdtt-openwrt/blob/main/third_party/wg-turn-client/core/captcha_v2.go) |
+| `wv` (ручной) | Клиент печатает URL капчи в лог (`CAPTCHA_SOLVE … url`), пользователь решает её в браузере и вставляет токен (или файл `/var/run/qwdtt/captcha.token`) — на Дашборде виджет «Капча VK» | [RSokolovRS watcher.go](https://github.com/RSokolovRS/WDTT-Cudy-TR3000-256mb/blob/main/etc/qwdtt/watcher.go) (файловый механизм), [qwdtt-android CaptchaWebViewManager.kt](https://github.com/SpaceNeuroX/proxy-turn-vk-android) |
+| `vk_creds_file` (аккаунт) | Путь к файлу с кредами VK-аккаунта (`username`/`password`) — клиент логинится сам | [qwdtt-openwrt `vk_account.go`](https://github.com/SpaceNeuroX/qwdtt-openwrt/blob/main/client/vk_account.go) |
+
+Виджет «Капча VK» на Дашборде: при `pending=1` показывает URL из лога
+(`/var/log/qwdtt.log`), поле ввода токена и кнопку «Отправить» — токен
+пишется в `/var/run/qwdtt/captcha.token`, watcher клиента подаёт его в
+процесс решения (`CAPTCHA_RESULT`).
 
 ### OlcRTC
 1. LuCI-секция `action=olcrtc` + подписка `olcrtc://…`.

@@ -266,6 +266,8 @@ function write_qwdtt_json_config(section, name, peer, password, device_id, worke
         captcha_mode: as_string(option(section, "captcha_mode", "auto")),
         vk_auth: as_string(option(section, "vk_auth", "anonymous")),
         vk_anon_path: as_string(option(section, "vk_anon_path", "vkcalls")),
+        vk_creds_file: as_string(option(section, "vk_creds_file", "")),
+        captcha_token_file: as_string(option(section, "captcha_token_file", "/var/run/qwdtt/captcha.token")),
         no_dtls: bool_option(section, "no_dtls", false),
         turn_tcp: bool_option(section, "turn_tcp", false),
         tun_name: tun_name,

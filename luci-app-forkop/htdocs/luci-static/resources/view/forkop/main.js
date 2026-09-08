@@ -2486,6 +2486,16 @@ function render() {
               title: "",
               items: []
             })
+          ),
+          E(
+            "div",
+            { id: "dashboard-widget-captcha" },
+            renderWidget({
+              loading: true,
+              failed: false,
+              title: "",
+              items: []
+            })
           )
         ]),
         // All outbounds
@@ -2678,6 +2688,7 @@ var Forkop;
     AvailableMethods2["LATENCY_TEST_ASYNC"] = "latency_test_async";
     AvailableMethods2["LATENCY_TEST_STATUS"] = "latency_test_status";
     AvailableMethods2["PROVIDER_LATENCY"] = "provider_latency";
+    AvailableMethods2["WDTT_CAPTCHA_SUBMIT"] = "wdtt_captcha_submit";
     AvailableMethods2["UI_ACTION_ACK"] = "ui_action_ack";
     AvailableMethods2["COMPONENT_ACTION_ASYNC"] = "component_action_async";
     AvailableMethods2["COMPONENT_ACTION_STATUS"] = "component_action_status";
@@ -3071,6 +3082,26 @@ var ForkopShellMethods = {
       return {
         success: false,
         error: response.stderr || _("Latency probe failed")
+      };
+    }
+    return {
+      success: true,
+      data: parsed
+    };
+  },
+  wdttCaptchaSubmit: async (token) => {
+    const response = await executeShellCommand({
+      command: "/usr/bin/forkop",
+      args: [Forkop.AvailableMethods.WDTT_CAPTCHA_SUBMIT, token],
+      timeout: 1e4
+    });
+    const parsed = parseJsonObjectOutput(
+      response.stdout
+    );
+    if ((response.code ?? 0) !== 0 || !parsed) {
+      return {
+        success: false,
+        error: response.stderr || _("Failed to submit captcha token")
       };
     }
     return {
@@ -4786,6 +4817,7 @@ var initialStore = {
       wdttInstalled: 0,
       wdttRuleCount: 0,
       wdttSocksAddress: "",
+      wdttCaptcha: { pending: 0 },
       olcrtcRunning: 0,
       olcrtcReady: 0,
       olcrtcInstalled: 0,
@@ -5196,6 +5228,7 @@ function applyServiceState(uiState) {
         wdttInstalled: Number(wdtt?.installed ?? 0),
         wdttRuleCount: Number(wdtt?.enabled_rule_count ?? 0),
         wdttSocksAddress: wdtt?.socks_address ?? "",
+        wdttCaptcha: uiState.wdtt_captcha ?? { pending: 0 },
         olcrtcRunning: Number(olcrtc?.running ?? 0),
         olcrtcReady: Number(olcrtc?.ready ?? 0),
         olcrtcInstalled: Number(olcrtc?.installed ?? 0),
@@ -5773,6 +5806,7 @@ async function fetchServicesInfo() {
         wdttInstalled: previousData.wdttInstalled,
         wdttRuleCount: previousData.wdttRuleCount,
         wdttSocksAddress: previousData.wdttSocksAddress,
+        wdttCaptcha: previousData.wdttCaptcha,
         olcrtcRunning: previousData.olcrtcRunning,
         olcrtcReady: previousData.olcrtcReady,
         olcrtcInstalled: previousData.olcrtcInstalled,
@@ -7240,6 +7274,173 @@ function providerSocksAddressValue(running, address) {
   }
   return address;
 }
+async function renderCaptchaWidget() {
+  logger.debug("[DASHBOARD]", "renderCaptchaWidget");
+  const container = document.getElementById("dashboard-widget-captcha");
+  if (!container) {
+    return;
+  }
+  const servicesInfoWidget = store.get().servicesInfoWidget;
+  if (servicesInfoWidget.loading || servicesInfoWidget.failed) {
+    container.replaceChildren(
+      renderWidget({
+        loading: servicesInfoWidget.loading,
+        failed: servicesInfoWidget.failed,
+        title: "",
+        items: []
+      })
+    );
+    return;
+  }
+  const wdttRunning = Number(servicesInfoWidget.data.wdttRunning ?? 0);
+  const captcha = servicesInfoWidget.data.wdttCaptcha;
+  const pending = wdttRunning === 1 && Number(captcha?.pending ?? 0) === 1;
+  if (!pending) {
+    container.replaceChildren(
+      renderWidget({
+        loading: false,
+        failed: false,
+        title: _("WDTT captcha"),
+        items: [
+          {
+            key: _("WDTT captcha"),
+            value: wdttRunning === 1 ? _("not pending") : _("\u2014")
+          }
+        ]
+      })
+    );
+    return;
+  }
+  const url = captcha?.url || "";
+  const tokenFile = captcha?.token_file || "/var/run/qwdtt/captcha.token";
+  container.replaceChildren(
+    E("div", { class: "fkp_dashboard-page__widgets-section__item" }, [
+      E(
+        "b",
+        { class: "fkp_dashboard-page__widgets-section__item__title" },
+        _("WDTT captcha")
+      ),
+      E(
+        "div",
+        {
+          class: "fkp_dashboard-page__widgets-section__item__row fkp_dashboard-page__widgets-section__item__row--error"
+        },
+        [
+          E(
+            "span",
+            { class: "fkp_dashboard-page__widgets-section__item__row__key" },
+            `${_("WDTT captcha")}: `
+          ),
+          E(
+            "span",
+            { class: "fkp_dashboard-page__widgets-section__item__row__value" },
+            _("solve required")
+          )
+        ]
+      ),
+      E(
+        "div",
+        { class: "fkp_dashboard-page__widgets-section__item__row" },
+        [
+          E(
+            "span",
+            { class: "fkp_dashboard-page__widgets-section__item__row__key" },
+            `${_("Captcha URL")}: `
+          ),
+          url ? E(
+            "a",
+            {
+              class: "fkp_dashboard-page__widgets-section__item__row__value",
+              href: url,
+              target: "_blank",
+              rel: "noreferrer"
+            },
+            _("Open captcha page")
+          ) : E(
+            "span",
+            { class: "fkp_dashboard-page__widgets-section__item__row__value" },
+            _("\u2014")
+          )
+        ]
+      ),
+      E(
+        "div",
+        {
+          class: "fkp_dashboard-page__widgets-section__item__row",
+          style: "flex-wrap: wrap; gap: 6px"
+        },
+        [
+          E("input", {
+            id: "wdtt-captcha-token-input",
+            type: "text",
+            placeholder: _("success_token (captchaNotRobot.check)"),
+            style: "flex: 1 1 220px; min-width: 0"
+          }),
+          E(
+            "button",
+            {
+              id: "wdtt-captcha-submit-btn",
+              class: "cbi-button cbi-button-action"
+            },
+            _("Submit captcha token")
+          )
+        ]
+      ),
+      E(
+        "div",
+        { class: "fkp_dashboard-page__widgets-section__item__row" },
+        [
+          E(
+            "span",
+            {
+              class: "fkp_dashboard-page__widgets-section__item__row__value",
+              style: "font-size: smaller"
+            },
+            _(
+              "Solve the captcha in the opened page, then copy success_token from the captchaNotRobot.check response (browser devtools \u2192 Network) and submit it."
+            )
+          )
+        ]
+      )
+    ])
+  );
+  const input = document.getElementById(
+    "wdtt-captcha-token-input"
+  );
+  const submitBtn = document.getElementById(
+    "wdtt-captcha-submit-btn"
+  );
+  if (input && submitBtn) {
+    submitBtn.addEventListener("click", () => {
+      void (async () => {
+        const token = input.value.trim();
+        if (!token) {
+          showToast(_("Captcha token is empty"), "error");
+          return;
+        }
+        submitBtn.disabled = true;
+        try {
+          const response = await ForkopShellMethods.wdttCaptchaSubmit(token);
+          if (response.success) {
+            showToast(
+              _("Captcha token submitted to ") + tokenFile,
+              "success"
+            );
+            input.value = "";
+            void refreshRuntimeUiState({ force: true });
+          } else {
+            showToast(
+              response.error || _("Failed to submit captcha token"),
+              "error"
+            );
+          }
+        } finally {
+          submitBtn.disabled = false;
+        }
+      })();
+    });
+  }
+}
 async function onStoreUpdate(next, prev, diff) {
   if (diff.sectionsWidget) {
     const inlineUpdated = canUpdateLatencyProgressInline(
@@ -7262,6 +7463,7 @@ async function onStoreUpdate(next, prev, diff) {
   if (diff.servicesInfoWidget) {
     syncDashboardServiceAvailability();
     renderServicesInfoWidget();
+    renderCaptchaWidget();
   }
 }
 async function onPageMount() {
@@ -7286,6 +7488,7 @@ async function onPageMount() {
   void renderTrafficTotalWidget();
   void renderSystemInfoWidget();
   void renderServicesInfoWidget();
+  void renderCaptchaWidget();
   syncDashboardServiceAvailability();
   if (hasRuntimeSnapshot) {
     void refreshRuntimeUiState({ force: true });

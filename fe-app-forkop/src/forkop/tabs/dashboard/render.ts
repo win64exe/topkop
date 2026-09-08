@@ -61,6 +61,16 @@ export function render() {
               items: [],
             }),
           ),
+          E(
+            'div',
+            { id: 'dashboard-widget-captcha' },
+            renderWidget({
+              loading: true,
+              failed: false,
+              title: '',
+              items: [],
+            }),
+          ),
         ]),
         // All outbounds
         E(

@@ -166,6 +166,7 @@ export interface StoreType {
       wdttInstalled: number;
       wdttRuleCount: number;
       wdttSocksAddress: string;
+      wdttCaptcha: Forkop.WdttCaptchaStatus;
       olcrtcRunning: number;
       olcrtcReady: number;
       olcrtcInstalled: number;
@@ -294,6 +295,7 @@ const initialStore: StoreType = {
       wdttInstalled: 0,
       wdttRuleCount: 0,
       wdttSocksAddress: '',
+      wdttCaptcha: { pending: 0 },
       olcrtcRunning: 0,
       olcrtcReady: 0,
       olcrtcInstalled: 0,

@@ -1577,8 +1577,38 @@ msgstr "Публичный хост"
 msgid "QR code is too large"
 msgstr "QR-код слишком большой"
 
+msgid "Captcha URL"
+msgstr "URL капчи"
+
+msgid "Captcha token is empty"
+msgstr "Токен капчи пуст"
+
+msgid "Captcha token submitted to "
+msgstr "Токен капчи отправлен в "
+
+msgid "Open captcha page"
+msgstr "Открыть страницу капчи"
+
 msgid "Qwdtt port"
 msgstr "Порт Qwdtt"
+
+msgid "not pending"
+msgstr "не требуется"
+
+msgid "solve required"
+msgstr "требуется решение"
+
+msgid "Submit captcha token"
+msgstr "Отправить токен капчи"
+
+msgid "success_token (captchaNotRobot.check)"
+msgstr "success_token (captchaNotRobot.check)"
+
+msgid "Solve the captcha in the opened page, then copy success_token from the captchaNotRobot.check response (browser devtools → Network) and submit it."
+msgstr "Решите капчу на открытой странице, затем скопируйте success_token из ответа captchaNotRobot.check (инструменты разработчика браузера → Сеть) и отправьте его."
+
+msgid "WDTT captcha"
+msgstr "Капча WDTT"
 
 msgid "qwdtt captcha mode"
 msgstr "Режим капчи qwdtt"
@@ -1609,6 +1639,9 @@ msgstr "Имя TUN-интерфейса qwdtt"
 
 msgid "qwdtt TURN over TCP"
 msgstr "qwdtt TURN по TCP"
+
+msgid "qwdtt VK account creds file"
+msgstr "Файл кредов аккаунта VK qwdtt"
 
 msgid "qwdtt VK anon path"
 msgstr "Анонимный путь qwdtt VK"

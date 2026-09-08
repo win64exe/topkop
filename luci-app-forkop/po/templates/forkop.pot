@@ -2283,7 +2283,47 @@ msgid "QR code is too large"
 msgstr ""
 
 #: dashboard services widget
+msgid "Captcha URL"
+msgstr ""
+
+#: dashboard services widget
+msgid "Captcha token is empty"
+msgstr ""
+
+#: dashboard services widget
+msgid "Captcha token submitted to "
+msgstr ""
+
+#: dashboard services widget
+msgid "Open captcha page"
+msgstr ""
+
+#: dashboard services widget
 msgid "Qwdtt port"
+msgstr ""
+
+#: dashboard services widget
+msgid "not pending"
+msgstr ""
+
+#: dashboard services widget
+msgid "solve required"
+msgstr ""
+
+#: dashboard services widget
+msgid "Submit captcha token"
+msgstr ""
+
+#: dashboard services widget
+msgid "success_token (captchaNotRobot.check)"
+msgstr ""
+
+#: dashboard services widget
+msgid "Solve the captcha in the opened page, then copy success_token from the captchaNotRobot.check response (browser devtools → Network) and submit it."
+msgstr ""
+
+#: dashboard services widget
+msgid "WDTT captcha"
 msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:7729
@@ -2324,6 +2364,10 @@ msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:7784
 msgid "qwdtt TURN over TCP"
+msgstr ""
+
+#: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:7758
+msgid "qwdtt VK account creds file"
 msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:7758

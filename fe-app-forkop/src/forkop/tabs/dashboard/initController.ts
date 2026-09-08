@@ -1837,6 +1837,185 @@ function providerSocksAddressValue(running: number, address: string) {
   return address;
 }
 
+async function renderCaptchaWidget() {
+  logger.debug('[DASHBOARD]', 'renderCaptchaWidget');
+  const container = document.getElementById('dashboard-widget-captcha');
+
+  if (!container) {
+    return;
+  }
+
+  const servicesInfoWidget = store.get().servicesInfoWidget;
+
+  if (servicesInfoWidget.loading || servicesInfoWidget.failed) {
+    container.replaceChildren(
+      renderWidget({
+        loading: servicesInfoWidget.loading,
+        failed: servicesInfoWidget.failed,
+        title: '',
+        items: [],
+      }),
+    );
+    return;
+  }
+
+  const wdttRunning = Number(servicesInfoWidget.data.wdttRunning ?? 0);
+  const captcha = servicesInfoWidget.data.wdttCaptcha;
+  const pending = wdttRunning === 1 && Number(captcha?.pending ?? 0) === 1;
+
+  if (!pending) {
+    container.replaceChildren(
+      renderWidget({
+        loading: false,
+        failed: false,
+        title: _('WDTT captcha'),
+        items: [
+          {
+            key: _('WDTT captcha'),
+            value: wdttRunning === 1 ? _('not pending') : _('—'),
+          },
+        ],
+      }),
+    );
+    return;
+  }
+
+  const url = captcha?.url || '';
+  const tokenFile = captcha?.token_file || '/var/run/qwdtt/captcha.token';
+
+  container.replaceChildren(
+    E('div', { class: 'fkp_dashboard-page__widgets-section__item' }, [
+      E(
+        'b',
+        { class: 'fkp_dashboard-page__widgets-section__item__title' },
+        _('WDTT captcha'),
+      ),
+      E(
+        'div',
+        {
+          class: 'fkp_dashboard-page__widgets-section__item__row fkp_dashboard-page__widgets-section__item__row--error',
+        },
+        [
+          E(
+            'span',
+            { class: 'fkp_dashboard-page__widgets-section__item__row__key' },
+            `${_('WDTT captcha')}: `,
+          ),
+          E(
+            'span',
+            { class: 'fkp_dashboard-page__widgets-section__item__row__value' },
+            _('solve required'),
+          ),
+        ],
+      ),
+      E(
+        'div',
+        { class: 'fkp_dashboard-page__widgets-section__item__row' },
+        [
+          E(
+            'span',
+            { class: 'fkp_dashboard-page__widgets-section__item__row__key' },
+            `${_('Captcha URL')}: `,
+          ),
+          url
+            ? E(
+                'a',
+                {
+                  class: 'fkp_dashboard-page__widgets-section__item__row__value',
+                  href: url,
+                  target: '_blank',
+                  rel: 'noreferrer',
+                },
+                _('Open captcha page'),
+              )
+            : E(
+                'span',
+                { class: 'fkp_dashboard-page__widgets-section__item__row__value' },
+                _('—'),
+              ),
+        ],
+      ),
+      E(
+        'div',
+        {
+          class: 'fkp_dashboard-page__widgets-section__item__row',
+          style: 'flex-wrap: wrap; gap: 6px',
+        },
+        [
+          E('input', {
+            id: 'wdtt-captcha-token-input',
+            type: 'text',
+            placeholder: _('success_token (captchaNotRobot.check)'),
+            style: 'flex: 1 1 220px; min-width: 0',
+          }),
+          E(
+            'button',
+            {
+              id: 'wdtt-captcha-submit-btn',
+              class: 'cbi-button cbi-button-action',
+            },
+            _('Submit captcha token'),
+          ),
+        ],
+      ),
+      E(
+        'div',
+        { class: 'fkp_dashboard-page__widgets-section__item__row' },
+        [
+          E(
+            'span',
+            {
+              class: 'fkp_dashboard-page__widgets-section__item__row__value',
+              style: 'font-size: smaller',
+            },
+            _(
+              'Solve the captcha in the opened page, then copy success_token from the captchaNotRobot.check response (browser devtools → Network) and submit it.',
+            ),
+          ),
+        ],
+      ),
+    ]),
+  );
+
+  const input = document.getElementById(
+    'wdtt-captcha-token-input',
+  ) as HTMLInputElement | null;
+  const submitBtn = document.getElementById(
+    'wdtt-captcha-submit-btn',
+  ) as HTMLButtonElement | null;
+
+  if (input && submitBtn) {
+    submitBtn.addEventListener('click', () => {
+      void (async () => {
+        const token = input.value.trim();
+        if (!token) {
+          showToast(_('Captcha token is empty'), 'error');
+          return;
+        }
+        submitBtn.disabled = true;
+        try {
+          const response = await ForkopShellMethods.wdttCaptchaSubmit(token);
+          if (response.success) {
+            showToast(
+              _('Captcha token submitted to ') + tokenFile,
+              'success',
+            );
+            input.value = '';
+            void refreshRuntimeUiState({ force: true });
+          } else {
+            showToast(
+              response.error || _('Failed to submit captcha token'),
+              'error',
+            );
+          }
+        } finally {
+          submitBtn.disabled = false;
+        }
+      })();
+    });
+  }
+}
+
 async function onStoreUpdate(
   next: StoreType,
   prev: StoreType,
@@ -1869,6 +2048,7 @@ async function onStoreUpdate(
   if (diff.servicesInfoWidget) {
     syncDashboardServiceAvailability();
     renderServicesInfoWidget();
+    renderCaptchaWidget();
   }
 }
 
@@ -1901,6 +2081,7 @@ async function onPageMount() {
   void renderTrafficTotalWidget();
   void renderSystemInfoWidget();
   void renderServicesInfoWidget();
+  void renderCaptchaWidget();
   syncDashboardServiceAvailability();
 
   if (hasRuntimeSnapshot) {

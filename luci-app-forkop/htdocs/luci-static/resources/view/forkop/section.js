@@ -7862,6 +7862,22 @@ function createSectionContent(section) {
 
   o = section.taboption(
     "settings",
+    form.Value,
+    "vk_creds_file",
+    _("qwdtt VK account creds file"),
+    _(
+      "Path to a JSON file with TURN credentials of a VK account " +
+        "({\"hashes\":{\"<link>\":{\"u\":\"user\",\"p\":\"pass\",\"urls\":[\"turn:...\"]}}}). " +
+        'Used when VK auth mode is \"account\". See qwdtt-client -vk-creds-file.',
+    ),
+  );
+  o.depends("action", "wdtt");
+  o.rmempty = true;
+  o.modalonly = true;
+  o.placeholder = "/etc/qwdtt/vk-creds.json";
+
+  o = section.taboption(
+    "settings",
     form.Flag,
     "no_dtls",
     _("qwdtt direct mode (no DTLS)"),

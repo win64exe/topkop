@@ -496,6 +496,30 @@ export const ForkopShellMethods = {
       data: parsed,
     } as Forkop.MethodSuccessResponse<Forkop.ProviderLatencyResult>;
   },
+  wdttCaptchaSubmit: async (
+    token: string,
+  ): Promise<Forkop.MethodResponse<Forkop.WdttCaptchaSubmitResult>> => {
+    const response = await executeShellCommand({
+      command: '/usr/bin/forkop',
+      args: [Forkop.AvailableMethods.WDTT_CAPTCHA_SUBMIT, token],
+      timeout: 10000,
+    });
+    const parsed = parseJsonObjectOutput<Forkop.WdttCaptchaSubmitResult>(
+      response.stdout,
+    );
+
+    if ((response.code ?? 0) !== 0 || !parsed) {
+      return {
+        success: false,
+        error: response.stderr || _('Failed to submit captcha token'),
+      } as Forkop.MethodFailureResponse;
+    }
+
+    return {
+      success: true,
+      data: parsed,
+    } as Forkop.MethodSuccessResponse<Forkop.WdttCaptchaSubmitResult>;
+  },
   latencyTestStatus: async (jobId: string) => {
     const response = await executeShellCommand({
       command: '/usr/bin/forkop',

@@ -1245,8 +1245,66 @@ function current_ui_state_json() {
             wdtt: provider_status_with_socks("wdtt", LIB_DIR + "/providers/wdtt/runtime.uc"),
             olcrtc: provider_status_with_socks("olcrtc", LIB_DIR + "/providers/olcrtc/runtime.uc")
         },
+        wdtt_captcha: wdtt_captcha_status()
         actions: action_state_from_dirs()
     });
+}
+
+// ── WDTT капча: ручной обход через файл-токен ───────────────────────────
+// Клиент qwdtt печатает CAPTCHA_SOLVE|mode|url|session_token в stdout (лог),
+// а токен решения принимает либо по stdin (Android-приложение), либо из файла
+// /var/run/qwdtt/captcha.token (watcher в клиенте, как RSokolovRS/WDTT-Cudy
+// wdtt-client/src/internal/captcha/watcher.go). На роутере stdin закрыт, поэтому
+// токен подаётся через файл.
+
+const WDTT_CAPTCHA_TOKEN_FILE_DEFAULT = "/var/run/qwdtt/captcha.token";
+
+function wdtt_captcha_token_file() {
+    let config = read_json_file("/etc/qwdtt/config.json");
+    if (type(config) == "object" && config.captcha_token_file != null) {
+        let path = trim(as_string(config.captcha_token_file));
+        if (path != "")
+            return path;
+    }
+    return WDTT_CAPTCHA_TOKEN_FILE_DEFAULT;
+}
+
+function wdtt_captcha_status() {
+    if (!file_exists("/usr/bin/qwdtt-client"))
+        return { pending: 0 };
+    let log = as_string(command_output_from_args([ "logread" ]));
+    let lines = split(log, /\n/);
+    for (let i = length(lines) - 1; i >= 0; i--) {
+        let matched = match(lines[i], /CAPTCHA_SOLVE\|([a-z]+)\|([^|\s]+)\|(\S+)/);
+        if (matched != null && length(matched) >= 4) {
+            return {
+                pending: 1,
+                mode: as_string(matched[1]),
+                url: as_string(matched[2]),
+                session_token: as_string(matched[3]),
+                token_file: wdtt_captcha_token_file()
+            };
+        }
+    }
+    return { pending: 0 };
+}
+
+function wdtt_captcha_submit(token) {
+    token = trim(as_string(token));
+    if (token == "")
+        return { success: 0, error: "empty token" };
+    if (match(token, /[\r\n]/) != null)
+        return { success: 0, error: "invalid token" };
+    let path = wdtt_captcha_token_file();
+    if (!command_success_from_args([ "mkdir", "-p", dirname(path) ]))
+        return { success: 0, error: "failed to create directory" };
+    let handle = fs.open(path, "w");
+    if (!handle)
+        return { success: 0, error: "failed to open token file" };
+    handle.write(token, "\n");
+    handle.close();
+    command_success_from_args([ "chmod", "0600", path ]);
+    return { success: 1, path: path };
 }
 
 function service_action_expected_running_value(action) {
@@ -1755,6 +1813,8 @@ else if (mode == "latency-test-status")
     latency_test_status(ARGV[1]);
 else if (mode == "provider-latency")
     provider_latency_json(ARGV[1]);
+else if (mode == "wdtt-captcha-submit")
+    write_json(wdtt_captcha_submit(ARGV[1]));
 else if (mode == "action-ack")
     action_ack(ARGV[1], ARGV[2]);
 else if (mode == "cleanup-action-dir-fixture")

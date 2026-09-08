@@ -87,6 +87,7 @@ export namespace Forkop {
     LATENCY_TEST_ASYNC = 'latency_test_async',
     LATENCY_TEST_STATUS = 'latency_test_status',
     PROVIDER_LATENCY = 'provider_latency',
+    WDTT_CAPTCHA_SUBMIT = 'wdtt_captcha_submit',
     UI_ACTION_ACK = 'ui_action_ack',
     COMPONENT_ACTION_ASYNC = 'component_action_async',
     COMPONENT_ACTION_STATUS = 'component_action_status',
@@ -581,6 +582,22 @@ export namespace Forkop {
     socks_address?: string;
   }
 
+  // Последняя капча VK от qwdtt-клиента (CAPTCHA_SOLVE из лога) и путь
+  // файла-токена для ручного обхода (/var/run/qwdtt/captcha.token).
+  export interface WdttCaptchaStatus {
+    pending: 0 | 1;
+    mode?: string;
+    url?: string;
+    session_token?: string;
+    token_file?: string;
+  }
+
+  export interface WdttCaptchaSubmitResult {
+    success: 0 | 1;
+    path?: string;
+    error?: string;
+  }
+
   export interface UiState {
     service: {
       forkop: GetStatus;
@@ -591,6 +608,7 @@ export namespace Forkop {
       wdtt?: ProviderStatus;
       olcrtc?: ProviderStatus;
     };
+    wdtt_captcha?: WdttCaptchaStatus;
     actions: {
       service: ServiceActionState[];
       latency: LatencyActionState[];

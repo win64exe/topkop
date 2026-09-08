@@ -107,6 +107,7 @@ function applyServiceState(uiState: Forkop.UiState) {
         wdttInstalled: Number(wdtt?.installed ?? 0),
         wdttRuleCount: Number(wdtt?.enabled_rule_count ?? 0),
         wdttSocksAddress: wdtt?.socks_address ?? '',
+        wdttCaptcha: uiState.wdtt_captcha ?? { pending: 0 },
         olcrtcRunning: Number(olcrtc?.running ?? 0),
         olcrtcReady: Number(olcrtc?.ready ?? 0),
         olcrtcInstalled: Number(olcrtc?.installed ?? 0),

@@ -67,6 +67,7 @@ export async function fetchServicesInfo() {
         wdttInstalled: previousData.wdttInstalled,
         wdttRuleCount: previousData.wdttRuleCount,
         wdttSocksAddress: previousData.wdttSocksAddress,
+        wdttCaptcha: previousData.wdttCaptcha,
         olcrtcRunning: previousData.olcrtcRunning,
         olcrtcReady: previousData.olcrtcReady,
         olcrtcInstalled: previousData.olcrtcInstalled,
