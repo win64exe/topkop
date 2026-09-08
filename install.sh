@@ -18,6 +18,10 @@ FORKOP_LEGACY_DETECTED=0
 FORKOP_I18N_REQUESTED=0
 INSTALLER_LANG="en"
 SING_BOX_INSTALL_VARIANT=""
+SING_BOX_OPTION_SET=0
+WDTT_INSTALL_REQUESTED=0
+OLCRTC_INSTALL_REQUESTED=0
+SKIP_COMPONENTS_REQUESTED=0
 
 FORKOP_RELEASE_JSON=""
 FORKOP_RELEASE_TAG=""
@@ -56,16 +60,27 @@ fail() {
 
 usage() {
     cat <<EOF
-Usage: $0
+Usage: $0 [options]
 
 Installs or updates Topkop packages:
   - topkop
   - luci-app-topkop
   - luci-i18n-topkop-ru when requested or when LuCI language is Russian
 
-Can also install or switch sing-box variant:
-  - stable sing-box from OpenWrt feeds
-  - sing-box-extended from GitHub OpenWrt packages (for xHTTP support)
+Can also install or switch additional tunnel components (interactively
+selectable, or forced via options):
+  - sing-box variant: stable | extended (xHTTP) | extended-compressed
+  - WDTT (qwdtt-client) tunnel component
+  - OlcRTC tunnel component
+
+Options:
+  -h, --help                       Show this help
+  --sing-box <variant>             Skip the menu; install the given sing-box
+                                   variant (stable, extended, extended-compressed
+                                   or skip)
+  --wdtt                           Skip the menu; install/update the WDTT client
+  --olcrtc                         Skip the menu; install/update the OlcRTC client
+  --skip-components                Do not install any tunnel components
 EOF
 }
 
@@ -75,6 +90,27 @@ parse_args() {
             -h|--help)
                 usage
                 exit 0
+                ;;
+            --sing-box)
+                shift
+                case "${1:-}" in
+                    stable|extended|extended-compressed|skip)
+                        SING_BOX_INSTALL_VARIANT="$1"
+                        SING_BOX_OPTION_SET=1
+                        ;;
+                    *)
+                        fail "Unknown sing-box variant: ${1:-<missing>}"
+                        ;;
+                esac
+                ;;
+            --wdtt)
+                WDTT_INSTALL_REQUESTED=1
+                ;;
+            --olcrtc)
+                OLCRTC_INSTALL_REQUESTED=1
+                ;;
+            --skip-components)
+                SKIP_COMPONENTS_REQUESTED=1
                 ;;
             *)
                 fail "Unknown installer option: $1"
@@ -1615,6 +1651,11 @@ installer_text() {
             sing_box_stable) printf '%s\n' "singbox stable" ;;
             sing_box_extended) printf '%s\n' "singbox extended (если нужен xhttp)" ;;
             sing_box_skip_msg) printf '%s\n' "Пропускаю установку sing-box." ;;
+            components_menu_title) printf '%s\n' "Какие компоненты установить? (номера через пробел, пусто — пропустить)" ;;
+            components_skip_choice) printf '%s\n' "пропустить" ;;
+            components_choose) printf '%s\n' "Номера" ;;
+            components_skip_msg) printf '%s\n' "Туннельные компоненты не устанавливаю (--skip-components)." ;;
+            components_all_present_msg) printf '%s\n' "Требуемые компоненты уже установлены." ;;
             *) printf '%s\n' "$key" ;;
         esac
         return 0
@@ -1633,6 +1674,11 @@ installer_text() {
         sing_box_stable) printf '%s\n' "singbox stable" ;;
         sing_box_extended) printf '%s\n' "singbox extended (if xhttp is needed)" ;;
         sing_box_skip_msg) printf '%s\n' "Skipping sing-box installation." ;;
+        components_menu_title) printf '%s\n' "Which components should be installed? (space-separated numbers, empty = skip)" ;;
+        components_skip_choice) printf '%s\n' "skip" ;;
+        components_choose) printf '%s\n' "Numbers" ;;
+        components_skip_msg) printf '%s\n' "Tunnel components will not be installed (--skip-components)." ;;
+        components_all_present_msg) printf '%s\n' "Required components are already installed." ;;
         *) printf '%s\n' "$key" ;;
     esac
 }
@@ -1747,28 +1793,48 @@ sing_box_is_present() {
         pkg_is_installed "sing-box-extended"
 }
 
-select_sing_box_installation() {
+qwdtt_client_is_present() {
+    command_exists qwdtt-client || [ -x /usr/bin/qwdtt-client ]
+}
+
+olcrtc_is_present() {
+    command_exists olcrtc || [ -x /usr/bin/olcrtc ]
+}
+
+component_is_present() {
+    case "$1" in
+        sing_box)
+            sing_box_is_present
+            ;;
+        wdtt)
+            qwdtt_client_is_present
+            ;;
+        olcrtc)
+            olcrtc_is_present
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
+
+component_menu_label() {
+    case "$1" in
+        sing_box)
+            printf '%s' "$(installer_text sing_box_stable)"
+            ;;
+        wdtt)
+            printf 'WDTT'
+            ;;
+        olcrtc)
+            printf 'OlcRTC'
+            ;;
+    esac
+}
+
+select_sing_box_variant() {
     answer=""
     default_choice=1
-
-    if [ "$FORKOP_LEGACY_DETECTED" -eq 1 ] &&
-        [ -r /etc/init.d/sing-box ] &&
-        grep -Fq 'managed sing-box service for binary variants' /etc/init.d/sing-box; then
-        SING_BOX_INSTALL_VARIANT="extended-compressed"
-        msg "The legacy binary-managed sing-box variant will be reinstalled for Topkop"
-        return 0
-    fi
-
-    if sing_box_is_present; then
-        SING_BOX_INSTALL_VARIANT=""
-        return 0
-    fi
-
-    if [ ! -t 0 ]; then
-        SING_BOX_INSTALL_VARIANT="stable"
-        msg "$(installer_text sing_box_prompt): $default_choice ($(installer_text sing_box_stable), non-interactive)"
-        return 0
-    fi
 
     while :; do
         printf '\n%s\n' "$(installer_text sing_box_prompt)"
@@ -1791,13 +1857,133 @@ select_sing_box_installation() {
     done
 }
 
+select_components_installation() {
+    if [ "$SKIP_COMPONENTS_REQUESTED" -eq 1 ]; then
+        SING_BOX_INSTALL_VARIANT=""
+        WDTT_INSTALL_REQUESTED=0
+        OLCRTC_INSTALL_REQUESTED=0
+        msg "$(installer_text components_skip_msg)"
+        return 0
+    fi
+
+    # The sing-box variant may already be fixed by an explicit --sing-box option.
+    if [ "$SING_BOX_OPTION_SET" -eq 1 ]; then
+        if [ "$SING_BOX_INSTALL_VARIANT" = "skip" ]; then
+            SING_BOX_INSTALL_VARIANT=""
+            msg "$(installer_text sing_box_skip_msg)"
+        fi
+    elif [ "$FORKOP_LEGACY_DETECTED" -eq 1 ] &&
+        [ -r /etc/init.d/sing-box ] &&
+        grep -Fq 'managed sing-box service for binary variants' /etc/init.d/sing-box; then
+        SING_BOX_INSTALL_VARIANT="extended-compressed"
+        msg "The legacy binary-managed sing-box variant will be reinstalled for Topkop"
+    elif sing_box_is_present; then
+        SING_BOX_INSTALL_VARIANT=""
+    fi
+
+    # WDTT / OlcRTC are installed only when requested (explicit option or menu).
+    if [ "$WDTT_INSTALL_REQUESTED" -eq 1 ] && qwdtt_client_is_present; then
+        msg "WDTT client is already installed; it will be updated"
+    fi
+    if [ "$OLCRTC_INSTALL_REQUESTED" -eq 1 ] && olcrtc_is_present; then
+        msg "OlcRTC client is already installed; it will be updated"
+    fi
+
+    # Non-interactive default keeps the sing-box behaviour: when sing-box is
+    # missing, no --sing-box option was given and no legacy variant was fixed,
+    # fall back to stable. This applies both to plain runs and to runs with
+    # --wdtt/--olcrtc options.
+    if [ ! -t 0 ] && [ "$SING_BOX_OPTION_SET" -eq 0 ]; then
+        if [ -z "$SING_BOX_INSTALL_VARIANT" ] && ! sing_box_is_present; then
+            SING_BOX_INSTALL_VARIANT="stable"
+            msg "$(installer_text sing_box_prompt): 1 ($(installer_text sing_box_stable), non-interactive)"
+        fi
+    fi
+
+    # Explicit options disable the interactive menu.
+    if [ "$SING_BOX_OPTION_SET" -eq 1 ] ||
+        [ "$WDTT_INSTALL_REQUESTED" -eq 1 ] ||
+        [ "$OLCRTC_INSTALL_REQUESTED" -eq 1 ]; then
+        return 0
+    fi
+
+    if [ ! -t 0 ]; then
+        return 0
+    fi
+
+    # Interactive single components menu (multiple numbers accepted).
+    menu_components=""
+    for component in sing_box wdtt olcrtc; do
+        if ! component_is_present "$component"; then
+            if [ -n "$menu_components" ]; then
+                menu_components="$menu_components $component"
+            else
+                menu_components="$component"
+            fi
+        fi
+    done
+
+    if [ -z "$menu_components" ]; then
+        [ -n "$SING_BOX_INSTALL_VARIANT" ] || msg "$(installer_text components_all_present_msg)"
+        return 0
+    fi
+
+    printf '\n%s\n' "$(installer_text components_menu_title)"
+    index=1
+    for component in $menu_components; do
+        printf '  %s) %s\n' "$index" "$(component_menu_label "$component")"
+        index=$((index + 1))
+    done
+    printf '  %s) %s\n' "$index" "$(installer_text components_skip_choice)"
+    printf '%s: ' "$(installer_text components_choose)"
+
+    read -r answer || return 1
+    [ -n "$answer" ] || answer="$index"
+
+    want_sing_box=0
+    selected_index=1
+    for component in $menu_components; do
+        case " $answer " in
+            *" $selected_index "*)
+                if [ "$component" = "sing_box" ]; then
+                    want_sing_box=1
+                elif [ "$component" = "wdtt" ]; then
+                    WDTT_INSTALL_REQUESTED=1
+                elif [ "$component" = "olcrtc" ]; then
+                    OLCRTC_INSTALL_REQUESTED=1
+                fi
+                ;;
+        esac
+        selected_index=$((selected_index + 1))
+    done
+
+    if [ "$want_sing_box" -eq 1 ] && ! sing_box_is_present; then
+        select_sing_box_variant || SING_BOX_INSTALL_VARIANT="stable"
+    fi
+
+    return 0
+}
+
+install_selected_component() {
+    component="$1"
+    backend_component="$2"
+    label="$3"
+    output_file="$TMP_DIR/${component}-component-action.json"
+
+    [ -x /usr/bin/forkop ] || fail "topkop backend must be installed before $label component action"
+    msg "Installing $label through Topkop ucode backend"
+    if ! /usr/bin/forkop component_action "$backend_component" install >"$output_file" 2>&1; then
+        cat "$output_file" >&2 2>/dev/null || true
+        fail "Failed to install $label"
+    fi
+}
+
 install_selected_sing_box() {
     action=""
     output_file="$TMP_DIR/sing-box-component-action.json"
 
     case "$SING_BOX_INSTALL_VARIANT" in
         "")
-            msg "$(installer_text sing_box_skip_msg)"
             return 0
             ;;
         stable)
@@ -1819,6 +2005,18 @@ install_selected_sing_box() {
     if ! /usr/bin/forkop component_action sing_box "$action" >"$output_file" 2>&1; then
         cat "$output_file" >&2 2>/dev/null || true
         fail "Failed to install selected sing-box variant"
+    fi
+}
+
+install_selected_components() {
+    install_selected_sing_box
+
+    if [ "$WDTT_INSTALL_REQUESTED" -eq 1 ]; then
+        install_selected_component wdtt qwdtt "WDTT client"
+    fi
+
+    if [ "$OLCRTC_INSTALL_REQUESTED" -eq 1 ]; then
+        install_selected_component olcrtc olcrtc "OlcRTC client"
     fi
 }
 
@@ -2013,7 +2211,7 @@ main() {
     detect_legacy_installation
     detect_old_brand_packages
     decide_i18n_installation
-    select_sing_box_installation
+    select_components_installation
 
     pkg_list_update || fail "Failed to update package lists"
     ensure_bootstrap_ucode_runtime
@@ -2028,7 +2226,7 @@ main() {
     restore_old_brand_config
     migrate_legacy_configuration
     install_ui_packages
-    install_selected_sing_box
+    install_selected_components
     post_install
 
     msg "Topkop $FORKOP_PACKAGE_VERSION has been installed successfully"
