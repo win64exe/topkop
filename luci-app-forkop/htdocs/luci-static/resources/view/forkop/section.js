@@ -2005,6 +2005,40 @@ function isTunnelInterfaceValue(value) {
   return typeof value === "string" && value.indexOf("tunnel:") === 0;
 }
 
+function getTunnelSectionDisplayName(section) {
+  if (!section) {
+    return "";
+  }
+
+  const action = section.action;
+  const actionLabel = getActionOptionLabel(action);
+  const label = `${section.label || ""}`.trim();
+
+  // Prefer a custom display name (label), but if it only repeats the protocol
+  // name (e.g. label "OlcRTC" for action olcrtc) fall back to the section's
+  // own name option, then to the UCI section id.
+  if (label && label !== actionLabel) {
+    return label;
+  }
+
+  const name = `${section.name || ""}`.trim();
+  if (name) {
+    return name;
+  }
+
+  return getUciSectionName(section);
+}
+
+function getTunnelSectionLabel(section) {
+  const action = section.action;
+  const mode =
+    action === "wdtt" && section.qwdtt_mode
+      ? ` · ${section.qwdtt_mode}`
+      : "";
+
+  return `${_("Tunnel")}: ${getActionOptionLabel(action)}${mode} (${getTunnelSectionDisplayName(section)})`;
+}
+
 function getTunnelSectionChoices() {
   const result = [];
 
@@ -2019,17 +2053,26 @@ function getTunnelSectionChoices() {
       return;
     }
 
-    const name = getUciSectionName(section);
-    const mode =
-      action === "wdtt" && section.qwdtt_mode
-        ? ` · ${section.qwdtt_mode}`
-        : "";
-    const label = `${_("Tunnel")}: ${getActionOptionLabel(action)}${mode} (${name})`;
-
-    result.push({ value: `tunnel:${name}`, label });
+    result.push({
+      value: `tunnel:${getUciSectionName(section)}`,
+      label: getTunnelSectionLabel(section),
+    });
   });
 
   return result;
+}
+
+function getTunnelSectionLabelForValue(value) {
+  if (!isTunnelInterfaceValue(value)) {
+    return "";
+  }
+
+  const sectionId = `${value}`.slice("tunnel:".length);
+  const section = (uci.sections(UCI_PACKAGE, "section") || []).find(
+    (candidate) => getUciSectionName(candidate) === sectionId,
+  );
+
+  return section ? getTunnelSectionLabel(section) : "";
 }
 
 function refreshNetworkInterfaceOptionValues(option) {
@@ -2115,9 +2158,14 @@ const InterfaceSettingsDynamicList = SettingsDynamicList.extend({
   renderListItemLabel(section_id, value, text) {
     value = childItemInputValue(section_id, value, "section_interface", "name");
 
+    // Tunnel entries are stored as tunnel:<section-id>; render the section's
+    // current display name instead of the raw stored string (which survives
+    // renames and stays readable after the section is renamed).
+    const tunnelLabel = getTunnelSectionLabelForValue(value);
+
     return renderNetworkInterfaceListItem(
       this.interfaceDeviceMap ? this.interfaceDeviceMap[value] : null,
-      value || text,
+      tunnelLabel || value || text,
     );
   },
 });
