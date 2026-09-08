@@ -3490,6 +3490,61 @@ function getConnectionInterfaces(section) {
   const values = getListValues(section.interfaces);
   return values.length ? values : getListValues(section.interface);
 }
+function getActionOptionLabel(action) {
+  switch (`${action || ""}`) {
+    case "wdtt":
+      return "WDTT";
+    case "olcrtc":
+      return "OlcRTC";
+    case "connection":
+      return "Connection";
+    case "vpn":
+      return "VPN";
+    case "outbound":
+      return _("JSON outbound");
+    default:
+      return "Proxy";
+  }
+}
+function getTunnelSectionDisplayName(section) {
+  const actionLabel = getActionOptionLabel(section.action);
+  const label = `${section.label || ""}`.trim();
+  if (label && label !== actionLabel) {
+    return label;
+  }
+  const name = `${section.name || ""}`.trim();
+  if (name) {
+    return name;
+  }
+  return section[".name"] || "";
+}
+function getTunnelSectionLabel(section) {
+  const action = section.action;
+  const mode = action === "wdtt" && section.qwdtt_mode ? ` \xB7 ${section.qwdtt_mode}` : "";
+  return `${_("Tunnel")}: ${getActionOptionLabel(action)}${mode} (${getTunnelSectionDisplayName(section)})`;
+}
+function buildInterfaceOutboundNames(section, configSections) {
+  const sectionName = section[".name"];
+  const interfaces = getConnectionInterfaces(section);
+  const map = /* @__PURE__ */ new Map();
+  interfaces.forEach((value, index) => {
+    const code = getOutboundTagBySection(
+      `${sectionName}-interface-${index + 1}`
+    );
+    let name = value;
+    if (typeof value === "string" && value.startsWith("tunnel:")) {
+      const sectionId = value.slice("tunnel:".length);
+      const tunnel = configSections.find(
+        (item) => item[".type"] === "section" && item[".name"] === sectionId
+      );
+      if (tunnel) {
+        name = getTunnelSectionLabel(tunnel);
+      }
+    }
+    map.set(code, name);
+  });
+  return map;
+}
 function getJsonOutbounds(section) {
   const values = getListValues(section.outbound_jsons);
   return values.length ? values : getListValues(section.outbound_json);
@@ -3970,7 +4025,7 @@ function buildPriorityInfo({
     outbounds
   };
 }
-function buildProxyGroupOutbounds(section, proxies, outboundMetadata, urltestGroups = {}, priorityGroups = {}, cachedProxyLinks = /* @__PURE__ */ new Map()) {
+function buildProxyGroupOutbounds(section, proxies, outboundMetadata, urltestGroups = {}, priorityGroups = {}, cachedProxyLinks = /* @__PURE__ */ new Map(), interfaceOutboundNames = /* @__PURE__ */ new Map()) {
   const sectionName = section[".name"];
   const proxyByCode = getProxyEntryByCode(proxies);
   const selectorTag = getOutboundTagBySection(sectionName);
@@ -4017,7 +4072,7 @@ function buildProxyGroupOutbounds(section, proxies, outboundMetadata, urltestGro
     }
     const link = manualLinkByCode.get(code) || cachedProxyLinks.get(code) || "";
     const canCopyLink = isCopyableProxyLink(link);
-    const displayName = priorityConfig?.displayName || urlTestConfig?.displayName || getOutboundDisplayName(
+    const displayName = interfaceOutboundNames.get(code) || priorityConfig?.displayName || urlTestConfig?.displayName || getOutboundDisplayName(
       code,
       item,
       link,
@@ -4201,13 +4256,18 @@ async function getDashboardSections(options = {}) {
         const cachedProxyLinks = includeSubscriptionCopyState ? getCachedProxyLinks(dashboardCache) : /* @__PURE__ */ new Map();
         const urltestGroups = getUrlTestGroups(dashboardCache);
         const priorityGroups = getPriorityGroups(dashboardCache);
+        const interfaceOutboundNames = buildInterfaceOutboundNames(
+          section,
+          configSections
+        );
         const { selector, latencyTestCode, latencyTestCodes, outbounds } = buildProxyGroupOutbounds(
           section,
           proxies,
           outboundMetadata,
           urltestGroups,
           priorityGroups,
-          cachedProxyLinks
+          cachedProxyLinks,
+          interfaceOutboundNames
         );
         return {
           withTagSelect: true,

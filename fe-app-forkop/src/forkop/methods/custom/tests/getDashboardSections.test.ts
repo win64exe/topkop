@@ -995,6 +995,79 @@ describe('getDashboardSections', () => {
     });
   });
 
+  it('shows friendly tunnel interface names instead of raw outbound tags', async () => {
+    mocks.getConfigSections.mockResolvedValue([
+      {
+        '.name': 'SingBox',
+        '.type': 'section',
+        enabled: '1',
+        action: 'connection',
+      },
+      {
+        '.name': 'cfg01',
+        '.type': 'section_interface',
+        section: 'SingBox',
+        name: 'tunnel:cfg01',
+      },
+      {
+        '.name': 'cfg02',
+        '.type': 'section_interface',
+        section: 'SingBox',
+        name: 'tunnel:cfg02',
+      },
+      {
+        '.name': 'cfg01',
+        '.type': 'section',
+        enabled: '1',
+        action: 'wdtt',
+        qwdtt_mode: 'socks',
+        name: 'qwdtt-test2',
+        label: 'WDTT',
+      },
+      {
+        '.name': 'cfg02',
+        '.type': 'section',
+        enabled: '1',
+        action: 'olcrtc',
+        label: 'OlcRTC',
+      },
+    ]);
+    mocks.getClashApiProxies.mockResolvedValue({
+      success: true,
+      data: {
+        proxies: {
+          'SingBox-out': proxy('Selector', {
+            name: 'SingBox-out',
+            now: 'SingBox-interface-1-out',
+            all: ['SingBox-interface-1-out', 'SingBox-interface-2-out'],
+          }),
+          'SingBox-interface-1-out': proxy('Socks', {
+            name: 'SingBox-interface-1-out',
+            history: [{ time: '2026-07-13T00:00:00Z', delay: 445 }],
+          }),
+          'SingBox-interface-2-out': proxy('Socks', {
+            name: 'SingBox-interface-2-out',
+            history: [{ time: '2026-07-13T00:00:00Z', delay: 120 }],
+          }),
+        },
+      },
+    });
+
+    const result = await getDashboardSections();
+    const [section] = result.data;
+
+    expect(result.success).toBe(true);
+    expect(section.proxyConfigType).toBe('interface');
+    expect(section.outbounds.map((item) => item.displayName)).toEqual([
+      'Tunnel: WDTT \u00b7 socks (qwdtt-test2)',
+      'Tunnel: OlcRTC (cfg02)',
+    ]);
+    expect(section.outbounds.map((item) => item.code)).toEqual([
+      'SingBox-interface-1-out',
+      'SingBox-interface-2-out',
+    ]);
+  });
+
   it('does not expose ByeDPI sections on the dashboard', async () => {
     mocks.getConfigSections.mockResolvedValue([
       proxySection(),

@@ -358,6 +358,81 @@ function getConnectionInterfaces(section: Forkop.ConfigSection) {
   return values.length ? values : getListValues(section.interface);
 }
 
+function getActionOptionLabel(action?: string) {
+  switch (`${action || ''}`) {
+    case 'wdtt':
+      return 'WDTT';
+    case 'olcrtc':
+      return 'OlcRTC';
+    case 'connection':
+      return 'Connection';
+    case 'vpn':
+      return 'VPN';
+    case 'outbound':
+      return _('JSON outbound');
+    default:
+      return 'Proxy';
+  }
+}
+
+function getTunnelSectionDisplayName(section: Forkop.ConfigSection) {
+  const actionLabel = getActionOptionLabel(section.action);
+  const label = `${section.label || ''}`.trim();
+
+  if (label && label !== actionLabel) {
+    return label;
+  }
+
+  const name = `${section.name || ''}`.trim();
+  if (name) {
+    return name;
+  }
+
+  return section['.name'] || '';
+}
+
+function getTunnelSectionLabel(section: Forkop.ConfigSection) {
+  const action = section.action;
+  const mode =
+    action === 'wdtt' && section.qwdtt_mode
+      ? ` \u00b7 ${section.qwdtt_mode}`
+      : '';
+
+  return `${_('Tunnel')}: ${getActionOptionLabel(action)}${mode} (${getTunnelSectionDisplayName(section)})`;
+}
+
+function buildInterfaceOutboundNames(
+  section: Forkop.ConfigSection,
+  configSections: Forkop.ConfigSection[],
+) {
+  const sectionName = section['.name'];
+  const interfaces = getConnectionInterfaces(section);
+  const map = new Map<string, string>();
+
+  interfaces.forEach((value, index) => {
+    const code = getOutboundTagBySection(
+      `${sectionName}-interface-${index + 1}`,
+    );
+    let name = value;
+
+    if (typeof value === 'string' && value.startsWith('tunnel:')) {
+      const sectionId = value.slice('tunnel:'.length);
+      const tunnel = configSections.find(
+        (item) =>
+          item['.type'] === 'section' && item['.name'] === sectionId,
+      );
+
+      if (tunnel) {
+        name = getTunnelSectionLabel(tunnel);
+      }
+    }
+
+    map.set(code, name);
+  });
+
+  return map;
+}
+
 function getJsonOutbounds(section: Forkop.ConfigSection) {
   const values = getListValues(section.outbound_jsons);
   return values.length ? values : getListValues(section.outbound_json);
@@ -1071,6 +1146,7 @@ function buildProxyGroupOutbounds(
   urltestGroups: Record<string, UrlTestCacheGroup> = {},
   priorityGroups: Record<string, PriorityCacheGroup> = {},
   cachedProxyLinks: Map<string, string> = new Map(),
+  interfaceOutboundNames: Map<string, string> = new Map(),
 ) {
   const sectionName = section['.name'];
   const proxyByCode = getProxyEntryByCode(proxies);
@@ -1124,6 +1200,7 @@ function buildProxyGroupOutbounds(
     const link = manualLinkByCode.get(code) || cachedProxyLinks.get(code) || '';
     const canCopyLink = isCopyableProxyLink(link);
     const displayName =
+      interfaceOutboundNames.get(code) ||
       priorityConfig?.displayName ||
       urlTestConfig?.displayName ||
       getOutboundDisplayName(
@@ -1408,6 +1485,10 @@ export async function getDashboardSections(
             : new Map<string, string>();
           const urltestGroups = getUrlTestGroups(dashboardCache);
           const priorityGroups = getPriorityGroups(dashboardCache);
+          const interfaceOutboundNames = buildInterfaceOutboundNames(
+            section,
+            configSections,
+          );
           const { selector, latencyTestCode, latencyTestCodes, outbounds } =
             buildProxyGroupOutbounds(
               section,
@@ -1416,6 +1497,7 @@ export async function getDashboardSections(
               urltestGroups,
               priorityGroups,
               cachedProxyLinks,
+              interfaceOutboundNames,
             );
 
           return {
