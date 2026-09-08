@@ -165,10 +165,12 @@ export interface StoreType {
       wdttReady: number;
       wdttInstalled: number;
       wdttRuleCount: number;
+      wdttSocksAddress: string;
       olcrtcRunning: number;
       olcrtcReady: number;
       olcrtcInstalled: number;
       olcrtcRuleCount: number;
+      olcrtcSocksAddress: string;
     };
   };
   sectionsWidget: {
@@ -291,10 +293,12 @@ const initialStore: StoreType = {
       wdttReady: 0,
       wdttInstalled: 0,
       wdttRuleCount: 0,
+      wdttSocksAddress: '',
       olcrtcRunning: 0,
       olcrtcReady: 0,
       olcrtcInstalled: 0,
       olcrtcRuleCount: 0,
+      olcrtcSocksAddress: '',
     },
   },
   sectionsWidget: {

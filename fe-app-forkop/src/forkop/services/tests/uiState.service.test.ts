@@ -13,6 +13,7 @@ import {
 function createUiState(
   actions: Partial<Forkop.UiState['actions']> = {},
   capabilities: Partial<Forkop.UiState['capabilities']> = {},
+  providers: Partial<Forkop.UiState['providers']> = {},
 ): Forkop.UiState {
   return {
     service: {
@@ -47,6 +48,23 @@ function createUiState(
       component: [],
       subscription: [],
       ...actions,
+    },
+    providers: {
+      wdtt: {
+        installed: 0,
+        running: 0,
+        ready: 0,
+        enabled_rule_count: 0,
+        socks_address: '',
+      },
+      olcrtc: {
+        installed: 0,
+        running: 0,
+        ready: 0,
+        enabled_rule_count: 0,
+        socks_address: '',
+      },
+      ...providers,
     },
   };
 }
@@ -144,6 +162,53 @@ describe('applyUiStateToStore', () => {
       },
     });
     expect(state.updatesActions.zapretInstall.loading).toBe(true);
+  });
+
+  it('passes provider socks addresses into the services info widget', () => {
+    store.set({
+      servicesInfoWidget: {
+        ...store.get().servicesInfoWidget,
+        loading: false,
+        failed: false,
+        data: {
+          ...store.get().servicesInfoWidget.data,
+          wdttSocksAddress: '127.0.0.1:1081',
+          olcrtcSocksAddress: '127.0.0.1:1080',
+        },
+      },
+    });
+
+    applyUiStateToStore(
+      createUiState(
+        {},
+        {},
+        {
+          wdtt: {
+            installed: 1,
+            running: 1,
+            ready: 1,
+            enabled_rule_count: 2,
+            socks_address: '127.0.0.1:1081',
+          },
+          olcrtc: {
+            installed: 1,
+            running: 1,
+            ready: 1,
+            enabled_rule_count: 1,
+            socks_address: '127.0.0.1:1080',
+          },
+        },
+      ),
+    );
+
+    expect(store.get().servicesInfoWidget.data).toMatchObject({
+      wdttRunning: 1,
+      wdttInstalled: 1,
+      wdttSocksAddress: '127.0.0.1:1081',
+      olcrtcRunning: 1,
+      olcrtcInstalled: 1,
+      olcrtcSocksAddress: '127.0.0.1:1080',
+    });
   });
 
   it('clears finished persisted action flags while preserving local enable actions', () => {

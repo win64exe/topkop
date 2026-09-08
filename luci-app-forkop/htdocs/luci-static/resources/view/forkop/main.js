@@ -4744,10 +4744,12 @@ var initialStore = {
       wdttReady: 0,
       wdttInstalled: 0,
       wdttRuleCount: 0,
+      wdttSocksAddress: "",
       olcrtcRunning: 0,
       olcrtcReady: 0,
       olcrtcInstalled: 0,
-      olcrtcRuleCount: 0
+      olcrtcRuleCount: 0,
+      olcrtcSocksAddress: ""
     }
   },
   sectionsWidget: {
@@ -5152,10 +5154,12 @@ function applyServiceState(uiState) {
         wdttReady: Number(wdtt?.ready ?? 0),
         wdttInstalled: Number(wdtt?.installed ?? 0),
         wdttRuleCount: Number(wdtt?.enabled_rule_count ?? 0),
+        wdttSocksAddress: wdtt?.socks_address ?? "",
         olcrtcRunning: Number(olcrtc?.running ?? 0),
         olcrtcReady: Number(olcrtc?.ready ?? 0),
         olcrtcInstalled: Number(olcrtc?.installed ?? 0),
-        olcrtcRuleCount: Number(olcrtc?.enabled_rule_count ?? 0)
+        olcrtcRuleCount: Number(olcrtc?.enabled_rule_count ?? 0),
+        olcrtcSocksAddress: olcrtc?.socks_address ?? ""
       }
     },
     diagnosticsSystemInfo: normalizeSingBoxVariantFields(nextSystemInfo)
@@ -5727,10 +5731,12 @@ async function fetchServicesInfo() {
         wdttReady: previousData.wdttReady,
         wdttInstalled: previousData.wdttInstalled,
         wdttRuleCount: previousData.wdttRuleCount,
+        wdttSocksAddress: previousData.wdttSocksAddress,
         olcrtcRunning: previousData.olcrtcRunning,
         olcrtcReady: previousData.olcrtcReady,
         olcrtcInstalled: previousData.olcrtcInstalled,
-        olcrtcRuleCount: previousData.olcrtcRuleCount
+        olcrtcRuleCount: previousData.olcrtcRuleCount,
+        olcrtcSocksAddress: previousData.olcrtcSocksAddress
       }
     }
   });
@@ -7141,6 +7147,13 @@ async function renderServicesInfoWidget() {
         }
       },
       {
+        key: "Qwdtt port",
+        value: providerSocksAddressValue(
+          servicesInfoWidget.data.wdttRunning,
+          servicesInfoWidget.data.wdttSocksAddress
+        )
+      },
+      {
         key: "Olcrtc",
         value: providerStatusLabel(
           servicesInfoWidget.data.olcrtcInstalled,
@@ -7153,6 +7166,13 @@ async function renderServicesInfoWidget() {
             servicesInfoWidget.data.olcrtcRunning
           )
         }
+      },
+      {
+        key: "Olcrtc port",
+        value: providerSocksAddressValue(
+          servicesInfoWidget.data.olcrtcRunning,
+          servicesInfoWidget.data.olcrtcSocksAddress
+        )
       }
     ]
   });
@@ -7172,6 +7192,12 @@ function providerStatusClass(installed, running) {
     return "fkp_dashboard-page__widgets-section__item__row--error";
   }
   return "fkp_dashboard-page__widgets-section__item__row--success";
+}
+function providerSocksAddressValue(running, address) {
+  if (!running || !address) {
+    return "\u2014";
+  }
+  return address;
 }
 async function onStoreUpdate(next, prev, diff) {
   if (diff.sectionsWidget) {

@@ -85,10 +85,12 @@ describe('fetchServicesInfo', () => {
           wdttReady: 0,
           wdttInstalled: 0,
           wdttRuleCount: 0,
+          wdttSocksAddress: '',
           olcrtcRunning: 0,
           olcrtcReady: 0,
           olcrtcInstalled: 0,
           olcrtcRuleCount: 0,
+          olcrtcSocksAddress: '',
         },
       },
     });
@@ -128,10 +130,12 @@ describe('fetchServicesInfo', () => {
       wdttReady: 0,
       wdttInstalled: 0,
       wdttRuleCount: 0,
+      wdttSocksAddress: '',
       olcrtcRunning: 0,
       olcrtcReady: 0,
       olcrtcInstalled: 0,
       olcrtcRuleCount: 0,
+      olcrtcSocksAddress: '',
     });
   });
 });

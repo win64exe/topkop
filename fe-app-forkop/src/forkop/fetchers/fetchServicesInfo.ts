@@ -66,10 +66,12 @@ export async function fetchServicesInfo() {
         wdttReady: previousData.wdttReady,
         wdttInstalled: previousData.wdttInstalled,
         wdttRuleCount: previousData.wdttRuleCount,
+        wdttSocksAddress: previousData.wdttSocksAddress,
         olcrtcRunning: previousData.olcrtcRunning,
         olcrtcReady: previousData.olcrtcReady,
         olcrtcInstalled: previousData.olcrtcInstalled,
         olcrtcRuleCount: previousData.olcrtcRuleCount,
+        olcrtcSocksAddress: previousData.olcrtcSocksAddress,
       },
     },
   });

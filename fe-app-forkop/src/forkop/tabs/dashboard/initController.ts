@@ -1775,6 +1775,13 @@ async function renderServicesInfoWidget() {
         },
       },
       {
+        key: 'Qwdtt port',
+        value: providerSocksAddressValue(
+          servicesInfoWidget.data.wdttRunning,
+          servicesInfoWidget.data.wdttSocksAddress,
+        ),
+      },
+      {
         key: 'Olcrtc',
         value: providerStatusLabel(
           servicesInfoWidget.data.olcrtcInstalled,
@@ -1787,6 +1794,13 @@ async function renderServicesInfoWidget() {
             servicesInfoWidget.data.olcrtcRunning,
           ),
         },
+      },
+      {
+        key: 'Olcrtc port',
+        value: providerSocksAddressValue(
+          servicesInfoWidget.data.olcrtcRunning,
+          servicesInfoWidget.data.olcrtcSocksAddress,
+        ),
       },
     ],
   });
@@ -1813,6 +1827,14 @@ function providerStatusClass(installed: number, running: number) {
     return 'fkp_dashboard-page__widgets-section__item__row--error';
   }
   return 'fkp_dashboard-page__widgets-section__item__row--success';
+}
+
+function providerSocksAddressValue(running: number, address: string) {
+  if (!running || !address) {
+    return '—';
+  }
+
+  return address;
 }
 
 async function onStoreUpdate(

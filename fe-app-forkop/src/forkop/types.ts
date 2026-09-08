@@ -578,6 +578,7 @@ export namespace Forkop {
     running: 0 | 1;
     ready: 0 | 1;
     enabled_rule_count: number;
+    socks_address?: string;
   }
 
   export interface UiState {

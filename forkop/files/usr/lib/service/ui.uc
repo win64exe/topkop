@@ -1153,6 +1153,55 @@ function provider_status_brief(runtime_uc) {
     };
 }
 
+// Опция секции через core.uci (get принимает один путь вида pkg.section.option).
+function uci_option(section_id, key) {
+    return as_string(uci_core.get(CONFIG_NAME + "." + as_string(section_id) + "." + as_string(key)));
+}
+
+// SOCKS5-адрес standalone-туннеля секции (action=wdtt/olcrtc):
+// читаем из config.json клиента qwdtt или из uci olcrtc.
+function provider_socks_address(section_id) {
+    let action = uci_option(section_id, "action");
+    if (action == "wdtt") {
+        let data = read_json_file("/etc/qwdtt/config.json");
+        if (type(data) == "object" && type(data.socks) == "string" && data.socks != "")
+            return as_string(data.socks);
+        return "127.0.0.1:1080";
+    }
+    if (action == "olcrtc") {
+        let host = as_string(uci_core.get("olcrtc.config.socks_host"));
+        if (host == "")
+            host = "127.0.0.1";
+        let port = as_string(uci_core.get("olcrtc.config.socks_port"));
+        if (match(port, /^[0-9]+$/) == null || int(port, 10) < 1 || int(port, 10) > 65535)
+            port = "1080";
+        return host + ":" + port;
+    }
+    return "";
+}
+
+// SOCKS5-адрес первого включённого туннеля заданного действия (wdtt/olcrtc).
+function provider_action_socks_address(action) {
+    for (let section in uci_core.section_objects(CONFIG_NAME, "section")) {
+        if (as_string(section.action) != as_string(action))
+            continue;
+        let enabled = section.enabled == null ? "1" : as_string(section.enabled);
+        if (enabled == "0")
+            continue;
+        let address = provider_socks_address(section[".name"]);
+        if (address != "")
+            return address;
+    }
+    return "";
+}
+
+// Статус провайдера + SOCKS5-адрес первого включённого туннеля этого действия.
+function provider_status_with_socks(action, runtime_uc) {
+    let status = provider_status_brief(runtime_uc);
+    status.socks_address = provider_action_socks_address(action);
+    return status;
+}
+
 function current_ui_state_json() {
     refresh_action_dirs();
 
@@ -1190,8 +1239,8 @@ function current_ui_state_json() {
         },
         capabilities,
         providers: {
-            wdtt: provider_status_brief(LIB_DIR + "/providers/wdtt/runtime.uc"),
-            olcrtc: provider_status_brief(LIB_DIR + "/providers/olcrtc/runtime.uc")
+            wdtt: provider_status_with_socks("wdtt", LIB_DIR + "/providers/wdtt/runtime.uc"),
+            olcrtc: provider_status_with_socks("olcrtc", LIB_DIR + "/providers/olcrtc/runtime.uc")
         },
         actions: action_state_from_dirs()
     });
@@ -1496,33 +1545,6 @@ function latency_milliseconds(value) {
     let whole_ms = (whole == "" ? 0 : int(whole, 10)) * 1000;
     let frac_ms = int(substr(frac + "000", 0, 3), 10);
     return whole_ms + frac_ms;
-}
-
-// Опция секции через core.uci (get принимает один путь вида pkg.section.option).
-function uci_option(section_id, key) {
-    return as_string(uci_core.get(CONFIG_NAME + "." + as_string(section_id) + "." + as_string(key)));
-}
-
-// SOCKS5-адрес standalone-туннеля секции (action=wdtt/olcrtc):
-// читаем из config.json клиента qwdtt или из uci olcrtc.
-function provider_socks_address(section_id) {
-    let action = uci_option(section_id, "action");
-    if (action == "wdtt") {
-        let data = read_json_file("/etc/qwdtt/config.json");
-        if (type(data) == "object" && type(data.socks) == "string" && data.socks != "")
-            return as_string(data.socks);
-        return "127.0.0.1:1080";
-    }
-    if (action == "olcrtc") {
-        let host = as_string(uci_core.get("olcrtc.config.socks_host"));
-        if (host == "")
-            host = "127.0.0.1";
-        let port = as_string(uci_core.get("olcrtc.config.socks_port"));
-        if (match(port, /^[0-9]+$/) == null || int(port, 10) < 1 || int(port, 10) > 65535)
-            port = "1080";
-        return host + ":" + port;
-    }
-    return "";
 }
 
 // Измеряет латентность туннельной секции через её SOCKS5-порт
