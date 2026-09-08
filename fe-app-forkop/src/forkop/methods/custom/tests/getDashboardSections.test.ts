@@ -1059,8 +1059,8 @@ describe('getDashboardSections', () => {
     expect(result.success).toBe(true);
     expect(section.proxyConfigType).toBe('interface');
     expect(section.outbounds.map((item) => item.displayName)).toEqual([
-      'Tunnel: WDTT \u00b7 socks (qwdtt-test2)',
-      'Tunnel: OlcRTC (cfg02)',
+      'Tunnel: qwdtt-test2',
+      'Tunnel: OlcRTC',
     ]);
     expect(section.outbounds.map((item) => item.code)).toEqual([
       'SingBox-interface-1-out',

@@ -3490,38 +3490,19 @@ function getConnectionInterfaces(section) {
   const values = getListValues(section.interfaces);
   return values.length ? values : getListValues(section.interface);
 }
-function getActionOptionLabel(action) {
-  switch (`${action || ""}`) {
-    case "wdtt":
-      return "WDTT";
-    case "olcrtc":
-      return "OlcRTC";
-    case "connection":
-      return "Connection";
-    case "vpn":
-      return "VPN";
-    case "outbound":
-      return _("JSON outbound");
-    default:
-      return "Proxy";
-  }
-}
 function getTunnelSectionDisplayName(section) {
-  const actionLabel = getActionOptionLabel(section.action);
-  const label = `${section.label || ""}`.trim();
-  if (label && label !== actionLabel) {
-    return label;
-  }
   const name = `${section.name || ""}`.trim();
   if (name) {
     return name;
   }
+  const label = `${section.label || ""}`.trim();
+  if (label) {
+    return label;
+  }
   return section[".name"] || "";
 }
 function getTunnelSectionLabel(section) {
-  const action = section.action;
-  const mode = action === "wdtt" && section.qwdtt_mode ? ` \xB7 ${section.qwdtt_mode}` : "";
-  return `${_("Tunnel")}: ${getActionOptionLabel(action)}${mode} (${getTunnelSectionDisplayName(section)})`;
+  return `${_("Tunnel")}: ${getTunnelSectionDisplayName(section)}`;
 }
 function buildInterfaceOutboundNames(section, configSections) {
   const sectionName = section[".name"];
@@ -7207,7 +7188,7 @@ async function renderServicesInfoWidget() {
         }
       },
       {
-        key: "Qwdtt port",
+        key: _("Qwdtt port"),
         value: providerSocksAddressValue(
           servicesInfoWidget.data.wdttRunning,
           servicesInfoWidget.data.wdttSocksAddress
@@ -7228,7 +7209,7 @@ async function renderServicesInfoWidget() {
         }
       },
       {
-        key: "Olcrtc port",
+        key: _("Olcrtc port"),
         value: providerSocksAddressValue(
           servicesInfoWidget.data.olcrtcRunning,
           servicesInfoWidget.data.olcrtcSocksAddress

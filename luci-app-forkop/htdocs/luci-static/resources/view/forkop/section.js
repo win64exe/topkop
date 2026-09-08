@@ -2010,33 +2010,24 @@ function getTunnelSectionDisplayName(section) {
     return "";
   }
 
-  const action = section.action;
-  const actionLabel = getActionOptionLabel(action);
-  const label = `${section.label || ""}`.trim();
-
-  // Prefer a custom display name (label), but if it only repeats the protocol
-  // name (e.g. label "OlcRTC" for action olcrtc) fall back to the section's
-  // own name option, then to the UCI section id.
-  if (label && label !== actionLabel) {
-    return label;
-  }
-
+  // Имя секции как её называет пользователь: name, затем label, затем UCI-id.
+  // Без обёртки «протокол · режим (id)» — имена интерфейсов должны
+  // соответствовать именам секций.
   const name = `${section.name || ""}`.trim();
   if (name) {
     return name;
+  }
+
+  const label = `${section.label || ""}`.trim();
+  if (label) {
+    return label;
   }
 
   return getUciSectionName(section);
 }
 
 function getTunnelSectionLabel(section) {
-  const action = section.action;
-  const mode =
-    action === "wdtt" && section.qwdtt_mode
-      ? ` · ${section.qwdtt_mode}`
-      : "";
-
-  return `${_("Tunnel")}: ${getActionOptionLabel(action)}${mode} (${getTunnelSectionDisplayName(section)})`;
+  return `${_("Tunnel")}: ${getTunnelSectionDisplayName(section)}`;
 }
 
 function getTunnelSectionChoices() {

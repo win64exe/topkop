@@ -2027,6 +2027,10 @@ msgstr ""
 msgid "OlcRTC SOCKS5 port"
 msgstr ""
 
+#: dashboard services widget
+msgid "Olcrtc port"
+msgstr ""
+
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:244
 msgid "olcrtc:// URI has empty Provider"
 msgstr ""
@@ -2276,6 +2280,10 @@ msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/server.js:1609
 msgid "QR code is too large"
+msgstr ""
+
+#: dashboard services widget
+msgid "Qwdtt port"
 msgstr ""
 
 #: ../luci-app-forkop/htdocs/luci-static/resources/view/forkop/section.js:7729

@@ -332,13 +332,10 @@ function write_wdtt_config(section) {
     let workers = option(section, "workers", qwdtt && qwdtt.workers || WDTT_DEFAULT_WORKERS);
 
     // Установлен qwdtt RAW-IP клиент — управляем им, а не wdtt-openwrt.
+    // Рестарт не делаем здесь: start_runtime() перезапускает сервис ровно
+    // один раз через restart_qwdtt_service() (безопасный рестарт).
     if (qwdtt_installed()) {
-        if (write_qwdtt_json_config(section, name, peer, password, device_id, workers, qwdtt, hashes_file)) {
-            if (fs.stat(QWDTT_SERVICE_INIT) != null)
-                command_success_from_args([ QWDTT_SERVICE_INIT, "restart" ]);
-            else
-                log_message("qwdtt service init script " + QWDTT_SERVICE_INIT + " is missing", "fatal");
-        }
+        write_qwdtt_json_config(section, name, peer, password, device_id, workers, qwdtt, hashes_file);
         return;
     }
 
@@ -383,6 +380,34 @@ function write_wdtt_config(section) {
     log_message("WDTT section '" + name + "' written to " + WDTT_CONFIG, "info");
 }
 
+// Безопасный перезапуск qwdtt-клиента: старый процесс держит UDP
+// 127.0.0.1:9000 (внутренний WG-endpoint для socks-режима). Если порт не
+// освобождён, новый процесс не поднимает userspace WireGuard и SOCKS5-listener
+// (1081) не стартует, а procd убивает зависший процесс по SIGKILL — цикл
+// рестартов. Поэтому: stop -> ждём выхода процесса -> добиваем остатки -> start.
+function restart_qwdtt_service() {
+    if (fs.stat(QWDTT_SERVICE_INIT) == null) {
+        log_message("qwdtt service init script " + QWDTT_SERVICE_INIT + " is missing", "fatal");
+        return false;
+    }
+    command_success_from_args([ QWDTT_SERVICE_INIT, "stop" ]);
+    let waited = 0;
+    let pids = trim(as_string(command_output_from_args([ "pidof", "qwdtt-client" ])));
+    while (pids != "" && waited < 5000) {
+        sleep(0.2);
+        waited += 200;
+        pids = trim(as_string(command_output_from_args([ "pidof", "qwdtt-client" ])));
+    }
+    // Страховка: зависшие процессы добиваем явно (busybox без pkill).
+    for (let pid in split(pids, /[ \t\r\n]+/)) {
+        pid = as_string(pid);
+        if (pid != "")
+            command_success_from_args([ "kill", "-9", pid ]);
+    }
+    sleep(0.5);
+    return command_success_from_args([ QWDTT_SERVICE_INIT, "start" ]);
+}
+
 function start_runtime() {
     let sections = enabled_wdtt_sections();
     if (length(sections) == 0) {
@@ -414,10 +439,7 @@ function start_runtime() {
     write_wdtt_config(section);
 
     if (qwdtt_installed()) {
-        if (fs.stat(QWDTT_SERVICE_INIT) != null)
-            command_success_from_args([ QWDTT_SERVICE_INIT, "restart" ]);
-        else
-            log_message("qwdtt service init script " + QWDTT_SERVICE_INIT + " is missing", "fatal");
+        restart_qwdtt_service();
         return;
     }
 

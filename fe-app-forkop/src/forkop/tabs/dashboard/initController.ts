@@ -1775,7 +1775,7 @@ async function renderServicesInfoWidget() {
         },
       },
       {
-        key: 'Qwdtt port',
+        key: _('Qwdtt port'),
         value: providerSocksAddressValue(
           servicesInfoWidget.data.wdttRunning,
           servicesInfoWidget.data.wdttSocksAddress,
@@ -1796,7 +1796,7 @@ async function renderServicesInfoWidget() {
         },
       },
       {
-        key: 'Olcrtc port',
+        key: _('Olcrtc port'),
         value: providerSocksAddressValue(
           servicesInfoWidget.data.olcrtcRunning,
           servicesInfoWidget.data.olcrtcSocksAddress,

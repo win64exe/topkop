@@ -1400,6 +1400,9 @@ msgstr "Пароль SOCKS5 OlcRTC"
 msgid "OlcRTC SOCKS5 port"
 msgstr "Порт SOCKS5 OlcRTC"
 
+msgid "Olcrtc port"
+msgstr "Порт OlcRTC"
+
 msgid "olcrtc:// URI has empty Provider"
 msgstr "в olcrtc:// URI пустой провайдер"
 
@@ -1573,6 +1576,9 @@ msgstr "Публичный хост"
 
 msgid "QR code is too large"
 msgstr "QR-код слишком большой"
+
+msgid "Qwdtt port"
+msgstr "Порт Qwdtt"
 
 msgid "qwdtt captcha mode"
 msgstr "Режим капчи qwdtt"

@@ -375,30 +375,25 @@ function getActionOptionLabel(action?: string) {
   }
 }
 
+// Имя секции как её называет пользователь: опция name (если задана),
+// затем label, затем UCI-id. Без обёртки «протокол · режим (id)» —
+// имена интерфейсов в дашборде должны соответствовать именам секций.
 function getTunnelSectionDisplayName(section: Forkop.ConfigSection) {
-  const actionLabel = getActionOptionLabel(section.action);
-  const label = `${section.label || ''}`.trim();
-
-  if (label && label !== actionLabel) {
-    return label;
-  }
-
   const name = `${section.name || ''}`.trim();
   if (name) {
     return name;
+  }
+
+  const label = `${section.label || ''}`.trim();
+  if (label) {
+    return label;
   }
 
   return section['.name'] || '';
 }
 
 function getTunnelSectionLabel(section: Forkop.ConfigSection) {
-  const action = section.action;
-  const mode =
-    action === 'wdtt' && section.qwdtt_mode
-      ? ` \u00b7 ${section.qwdtt_mode}`
-      : '';
-
-  return `${_('Tunnel')}: ${getActionOptionLabel(action)}${mode} (${getTunnelSectionDisplayName(section)})`;
+  return `${_('Tunnel')}: ${getTunnelSectionDisplayName(section)}`;
 }
 
 function buildInterfaceOutboundNames(
