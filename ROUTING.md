@@ -190,14 +190,14 @@ wdtt — только `qwdtt_mode=socks`), иначе генератор отк�
 
 ---
 
-## 4. Порт-карта (проверено на роутере 10.57.31.230, релиз 1.0.18)
+## 4. Порт-карта (проверено на роутере 10.57.31.230, релиз 1.0.23)
 
 | Порт | Кто слушает | Что это |
 |---|---|---|
 | `127.0.0.1:1080` | `olcrtc` | SOCKS5-порт OlcRTC (секция `123`, `socks_port=1080`) |
 | `127.0.0.1:1081` | `qwdtt-client` | SOCKS5-порт qwdtt (секция `qwdtt-test2`, `socks_addr=127.0.0.1:1081`) |
-| `10.57.31.230:7890` | `sing-box` | mixed proxy секции `123` (olcrtc) |
-| `10.57.31.230:7892` | `sing-box` | mixed proxy секции `qwdtt-test2` (wdtt socks) |
+| `10.57.31.230:7891` | `sing-box` | mixed proxy секции `123` (olcrtc) |
+| `10.57.31.230:7892` | `sing-box` | mixed proxy секции `qwdtt-test2` (wdtt socks) — **сейчас отключён** (`mixed_proxy_enabled='0'`) |
 | `0.0.0.0:1602` | `sing-box` | TPROXY (v4+v6) |
 | `127.0.0.42:53` | `sing-box` | DNS-in (dnsmasq → sing-box) |
 | `10.57.31.230:9090` | `sing-box` | Clash API (external controller) |
@@ -242,7 +242,7 @@ TUN-интерфейсов в текущей конфигурации **нет**
    # tcp 127.0.0.1:1081  ← qwdtt socks
    ```
 2. В **Settings** секции включите **Enable Mixed Proxy**, задайте
-   **Mixed Proxy Port** (например `7890`) и при необходимости Auth.
+   **Mixed Proxy Port** (например `7891`) и при необходимости Auth.
 3. Примените секцию — sing-box перегенерирует конфиг и поднимет
    mixed inbound на `LAN-IP:порт`.
 4. В браузере укажите прокси **SOCKS5 `<LAN IP роутера>:<порт>`** — весь
@@ -300,8 +300,8 @@ outbound типа `socks` на порт клиента — тогда тунне
 
 ```sh
 # Через sing-box mixed proxy (как браузер):
-curl -s -x socks5h://10.57.31.230:7890 --max-time 20 http://api.ipify.org   # olcrtc
-curl -s -x socks5h://10.57.31.230:7892 --max-time 20 http://api.ipify.org   # wdtt socks
+curl -s -x socks5h://10.57.31.230:7891 --max-time 20 http://api.ipify.org   # olcrtc
+curl -s -x socks5h://10.57.31.230:7892 --max-time 20 http://api.ipify.org   # wdtt socks (если включён mixed proxy)
 
 # Напрямую через клиент:
 curl -s -x socks5h://127.0.0.1:1080 --max-time 20 http://api.ipify.org      # olcrtc
